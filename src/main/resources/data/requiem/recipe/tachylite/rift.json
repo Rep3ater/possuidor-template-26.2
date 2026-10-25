@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "ORO",
+    "RER",
+    "ORO"
+  ],
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "O": "minecraft:crying_obsidian",
+    "R": "requiem:tachylite/runestone"
+  },
+  "result": {
+    "id": "requiem:tachylite/runic/rift",
+    "count": 1
+  }
+}

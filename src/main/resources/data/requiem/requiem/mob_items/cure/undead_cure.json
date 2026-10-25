@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "tooltip": {
+    "translate": "requiem:tooltip.cure_reagent",
+    "color": "dark_gray"
+  },
+  "mob": {
+    "requiem:can_be_cured": true
+  },
+  "override": {
+    "type": "requiem:cure",
+    "possessed_state": {
+      "effects": {
+        "minecraft:weakness": {
+          "duration": {
+            "min": 1
+          }
+        }
+      }
+    },
+    "reagent": {
+      "tag": "requiem:undead_cures"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 0,
+  "priority": 80,
+  "player": {
+    "minecraft:location": {
+      "light": {
+        "light": {
+          "max": 8
+        }
+      }
+    }
+  },
+  "killing_blow": {
+    "direct_entity": {
+      "minecraft:entity_type": "#requiem:zombies"
+    }
+  },
+  "entity": {
+    "type": "minecraft:zombie"
+  }
+}

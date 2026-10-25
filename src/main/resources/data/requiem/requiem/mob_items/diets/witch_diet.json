@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "tooltip": {
+    "translate": "requiem:tooltip.witch_food",
+    "color": "dark_gray"
+  },
+  "mob": {
+    "type": "#requiem:witches"
+  },
+  "override": {
+    "type": "requiem:diet",
+    "food": {
+      "tag": "requiem:food/witch_diet"
+    },
+    "filter": "remove_harmful_effects"
+  }
+}

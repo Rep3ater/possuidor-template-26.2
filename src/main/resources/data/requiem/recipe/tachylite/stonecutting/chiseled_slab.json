@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "#requiem:tachylite_slabs",
+  "result": {
+    "id": "requiem:tachylite/chiseled_slab",
+    "count": 1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "#O#",
+    "###"
+  ],
+  "key": {
+    "#": "#requiem:tachylite",
+    "O": "minecraft:crying_obsidian"
+  },
+  "result": {
+    "id": "requiem:tachylite/runestone",
+    "count": 1
+  }
+}

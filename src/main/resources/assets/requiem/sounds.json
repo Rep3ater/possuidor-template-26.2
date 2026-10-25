@@ -1,0 +1,464 @@
+{
+  "block.obelisk.activate": {
+    "subtitle": "requiem:subtitles.block.obelisk.activate",
+    "sounds": [
+      "block/end_portal/endportal"
+    ]
+  },
+  "block.obelisk.ambient": {
+    "subtitle": "requiem:subtitles.block.obelisk.ambient",
+    "sounds": [
+      {
+        "name": "ambient/nether/basalt_deltas/ambience",
+        "stream": true,
+        "volume": 0.3
+      }
+    ]
+  },
+  "block.obelisk.charge": {
+    "sounds": [
+      "block/respawn_anchor/charge1",
+      "block/respawn_anchor/charge2",
+      "block/respawn_anchor/charge3"
+    ]
+  },
+  "block.obelisk.deactivate": {
+    "subtitle": "requiem:subtitles.block.obelisk.deactivate",
+    "sounds": [
+      "block/respawn_anchor/deplete1",
+      "block/respawn_anchor/deplete2"
+    ]
+  },
+  "block.runestone.carve": {
+    "subtitle": "requiem:subtitles.block.runestone.carve",
+    "sounds": [
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 0.72
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 0.72
+      }
+    ]
+  },
+  "block.runestone.clear": {
+    "subtitle": "requiem:subtitles.block.runestone.clear",
+    "sounds": [
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 1.42
+      },
+      {
+        "name": "ui/stonecutter/cut1",
+        "volume": 1,
+        "pitch": 1.3
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 1.42
+      },
+      {
+        "name": "ui/stonecutter/cut2",
+        "volume": 1,
+        "pitch": 1.3
+      }
+    ]
+  },
+  "effect.become.remnant": {
+    "subtitle": "requiem:subtitles.effect.become.remnant",
+    "sounds": [
+      "block/beacon/activate"
+    ]
+  },
+  "effect.become.mortal": {
+    "subtitle": "requiem:subtitles.effect.become.mortal",
+    "sounds": [
+      "block/beacon/deactivate"
+    ]
+  },
+  "effect.dissociate": {
+    "subtitle": "requiem:subtitles.effect.dissociating",
+    "sounds": [
+      "block/beacon/activate"
+    ]
+  },
+  "effect.possession.attempt": {
+    "subtitle": "requiem:subtitles.effect.possession.attempt",
+    "sounds": [
+      "mob/vex/idle1",
+      "mob/vex/idle2",
+      "mob/vex/idle3",
+      "mob/vex/idle4"
+    ]
+  },
+  "effect.time.stop": {
+    "subtitle": "requiem:subtitles.effect.time.stop",
+    "sounds": [
+      {
+        "name": "block/bell/resonate",
+        "volume": 1,
+        "pitch": 1
+      },
+      {
+        "name": "block/bell/resonate",
+        "volume": 1,
+        "pitch": 0.9
+      },
+      {
+        "name": "block/bell/resonate",
+        "volume": 1,
+        "pitch": 0.85
+      }
+    ]
+  },
+  "entity.mortician.ambient": {
+    "sounds": [
+      {
+        "name": "mob/skeleton/say1",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "mob/skeleton/say2",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "mob/skeleton/say3",
+        "volume": 1,
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.ambient"
+  },
+  "entity.mortician.cast_spell": {
+    "sounds": [
+      "mob/evocation_illager/cast1",
+      "mob/evocation_illager/cast2"
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.cast_spell"
+  },
+  "entity.mortician.death": {
+    "sounds": [
+      {
+        "name": "mob/skeleton/death",
+        "volume": 1,
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.death"
+  },
+  "entity.mortician.hurt": {
+    "sounds": [
+      {
+        "name": "mob/skeleton/hurt1",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "mob/skeleton/hurt2",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "mob/skeleton/hurt3",
+        "volume": 1,
+        "pitch": 0.8
+      },
+      {
+        "name": "mob/skeleton/hurt4",
+        "volume": 1,
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.hurt"
+  },
+  "entity.mortician.no": {
+    "sounds": [
+      {
+        "name": "mob/skeleton/say1",
+        "volume": 1,
+        "pitch": 0.5
+      },
+      {
+        "name": "mob/skeleton/say2",
+        "volume": 1,
+        "pitch": 0.5
+      },
+      {
+        "name": "mob/skeleton/say3",
+        "volume": 1,
+        "pitch": 0.5
+      }
+    ]
+  },
+  "entity.mortician.prepare_attack": {
+    "sounds": [
+      "mob/evocation_illager/prepare_attack1",
+      "mob/evocation_illager/prepare_attack2"
+    ],
+    "subtitle": "requiem:subtitles.entity.mortician.prepare_attack"
+  },
+  "entity.mortician.yes": {
+    "sounds": [
+      "mob/skeleton/say1",
+      "mob/skeleton/say2",
+      "mob/skeleton/say3"
+    ]
+  },
+  "entity.soul.disintegrate": {
+    "subtitle": "requiem:subtitles.entity.soul.disintegrate",
+    "sounds": [
+      "block/soul_sand/break1",
+      "block/soul_sand/break2",
+      "block/soul_sand/break3",
+      "block/soul_sand/break4",
+      "block/soul_sand/break5",
+      "block/soul_sand/break6",
+      "block/soul_sand/break7",
+      "block/soul_sand/break8",
+      "block/soul_sand/break9"
+    ]
+  },
+  "entity.obelisk_soul.disintegrate": {
+    "subtitle": "requiem:subtitles.entity.soul.disintegrate",
+    "sounds": [
+      {
+        "name": "block/amethyst/break1",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break2",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break3",
+        "volume": 1
+      },
+      {
+        "name": "block/amethyst/break4",
+        "volume": 1
+      }
+    ]
+  },
+  "entity.soul.teleport": {
+    "subtitle": "requiem:subtitles.entity.soul.teleport",
+    "sounds": [
+      "mob/endermen/portal",
+      "mob/endermen/portal2"
+    ]
+  },
+  "item.opus.use": {
+    "subtitle": "requiem:subtitles.item.opus.use",
+    "sounds": [
+      "item/totem/use_totem"
+    ]
+  },
+  "effect.reclamation.clear": {
+    "subtitle": "requiem:subtitles.effect.reclamation.clear",
+    "sounds": [
+      "dig/snow1"
+    ]
+  },
+  "effect.phase": {
+    "subtitle": "requiem:subtitles.effect.phasing",
+    "sounds": [
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed1",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed2",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed3",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed4",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed5",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed6",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed7",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed8",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed9",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed10",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed11",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed12",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed13",
+        "volume": 0.25
+      }
+    ]
+  },
+  "item.empty_vessel.use": {
+    "subtitle": "requiem:subtitles.item.empty_vessel.use",
+    "sounds": [
+      {
+        "name": "block/soul_sand/step2",
+        "volume": 0.45
+      },
+      {
+        "name": "block/soul_sand/step3",
+        "volume": 0.45
+      },
+      {
+        "name": "block/soul_sand/step4",
+        "volume": 0.45
+      },
+      {
+        "name": "block/soul_sand/step5",
+        "volume": 0.45
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed1",
+        "volume": 0.55
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed2",
+        "volume": 0.55
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed3",
+        "volume": 0.55
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed4",
+        "volume": 0.55
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed5",
+        "volume": 0.55
+      }
+    ]
+  },
+  "item.filled_vessel.use": {
+    "subtitle": "requiem:subtitles.item.filled_vessel.use",
+    "sounds": [
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed1",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed2",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed3",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed4",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed5",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed6",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed7",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed8",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed9",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed10",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed11",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed12",
+        "volume": 0.25
+      },
+      {
+        "attenuation_distance": 12,
+        "name": "enchant/soulspeed/soulspeed13",
+        "volume": 0.25
+      }
+    ]
+  }
+}

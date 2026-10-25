@@ -1,0 +1,46 @@
+{
+  "targets": {
+    "swap": {},
+    "zoom_focus": {
+      "persistent": true
+    }
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "requiem:post/fish_eye",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main",
+          "bilinear": true
+        }
+      ],
+      "output": "swap",
+      "uniforms": {
+        "FishEyeConfig": [
+          {
+            "name": "Slider",
+            "type": "float",
+            "value": 0.8
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "requiem:post/combine",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        },
+        {
+          "sampler_name": "Overlay",
+          "target": "zoom_focus"
+        }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

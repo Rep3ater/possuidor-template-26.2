@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": "requiem:tachylite/chiseled"
+  },
+  "result": {
+    "id": "requiem:tachylite/chiseled_stairs",
+    "count": 4
+  }
+}

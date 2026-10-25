@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "package": "ladysnake.requiem.core.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "mixins": [
+    "access.EntityAccessor",
+    "access.LivingEntityAccessor",
+    "access.MobEntityAccessor",
+    "EntityMovementMixin",
+    "noai.BrainMixin",
+    "noai.EntityNavigationMixin",
+    "noai.GoalSelectorMixin",
+    "possession.possessed.PossessableLivingEntityMixin",
+    "possession.possessed.PossessableMobMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

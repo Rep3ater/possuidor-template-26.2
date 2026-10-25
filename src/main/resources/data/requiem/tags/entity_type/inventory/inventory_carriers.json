@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "#requiem:humans",
+    "#requiem:humanoid_zombies",
+    "#requiem:humanoid_skeletons",
+    "minecraft:piglin",
+    "minecraft:enderman",
+    "requiem:cured_piglin",
+    {
+      "id": "artifacts:mimic",
+      "required": false
+    },
+    {
+      "id": "adventurez:orc",
+      "required": false
+    }
+  ]
+}

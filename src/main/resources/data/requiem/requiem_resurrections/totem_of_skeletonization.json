@@ -1,0 +1,10 @@
+{
+  "schema_version": 0,
+  "priority": 50,
+  "consumable": {
+    "items": "requiem:totem_of_skeletonization"
+  },
+  "entity": {
+    "type": "minecraft:skeleton"
+  }
+}

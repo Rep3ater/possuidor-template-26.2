@@ -1,0 +1,16 @@
+{
+  "schema_version": 0,
+  "priority": 60,
+  "possessed": {
+    "minecraft:entity_type": "#requiem:transformation/skeletonizable",
+    "minecraft:effects": {
+      "minecraft:wither": {}
+    }
+  },
+  "consumable": {
+    "items": "requiem:totem_of_skeletonization"
+  },
+  "entity": {
+    "type": "minecraft:wither_skeleton"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "ladysnake.requiem.mixin.common",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "mixins": [
+    "access.EndermanEntityAccessor",
+    "access.ShulkerEntityAccessor",
+    "possession.gameplay.ability.BlazeEntityAccessor",
+    "possession.gameplay.ability.EvokerEntityAccessor",
+    "possession.gameplay.ability.PufferfishEntityAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

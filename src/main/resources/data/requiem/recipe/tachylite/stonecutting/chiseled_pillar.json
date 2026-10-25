@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "#requiem:tachylite",
+  "result": {
+    "id": "requiem:tachylite/chiseled_pillar",
+    "count": 1
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 0,
+  "priority": 100,
+  "player": {
+    "minecraft:location": {
+      "dimension": "minecraft:the_nether"
+    }
+  },
+  "killing_blow": {
+    "damage_type": "minecraft:lava"
+  },
+  "entity": {
+    "type": "minecraft:wither_skeleton"
+  }
+}

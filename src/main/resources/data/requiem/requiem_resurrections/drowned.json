@@ -1,0 +1,26 @@
+{
+  "schema_version": 0,
+  "priority": 100,
+  "player": {
+    "minecraft:location": {
+      "biomes": "#minecraft:is_ocean",
+      "light": {
+        "light": {
+          "max": 10
+        }
+      }
+    }
+  },
+  "killing_blow": {
+    "damage_type": "minecraft:drown",
+    "tags": [
+      {
+        "id": "minecraft:is_drowning",
+        "expected": true
+      }
+    ]
+  },
+  "entity": {
+    "type": "minecraft:drowned"
+  }
+}
