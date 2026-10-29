@@ -83,8 +83,8 @@ public class DerelictObeliskFeature extends Structure {
     @Override
     public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         ChunkPos chunkPos = context.chunkPos();
-        int x = chunkPos.x() * 16;
-        int z = chunkPos.z() * 16;
+        int x = chunkPos.x * 16;
+        int z = chunkPos.z * 16;
 
         BlockPos centerPos = new BlockPos(x, 0, z);
 
