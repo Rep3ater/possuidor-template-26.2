@@ -30,33 +30,23 @@ import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.mixin.client.GameRendererAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.PiglinRenderer;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
-import net.minecraft.client.entity.ClientAvatarEntity;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.core.ClientAsset;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import ;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.PlayerModelType;
-import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
@@ -71,39 +61,20 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
-import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import ;
 import net.neoforged.neoforge.common.NeoForge;
 import org.lwjgl.glfw.GLFW;
 
 public final class RequiemClient {
 
-    public static final Identifier SPECTRE_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "spectre");
-    public static final Identifier LOCKI_SPIRIT_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "locki_spirit");
-    public static final Identifier LOCKI_APPLE_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "locki_apple_vision");
-    public static final Identifier LOCKI_WHITE_VISION_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "locki_white_vision");
-    public static final Identifier NUCLEUS_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "nucleus_transition");
-    public static final ContextKey<Integer> LOCKI_ROT_STAGE = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "locki_rot_stage"));
-    public static final ContextKey<Boolean> HAS_ATTRITION = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "has_attrition"));
-    public static final ContextKey<Integer> CORRUPTION_LEVEL = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "corruption_level"));
-    private static final Identifier VIGNETTE_LOCATION = Identifier.withDefaultNamespace("textures/misc/vignette.png");
-    public static final ContextKey<Boolean> IS_LOCAL_HOST = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "is_local_host"));
-
-    public static final PlayerSkin SOUL_SKIN = new PlayerSkin(
-        new ClientAsset.ResourceTexture(Requiem.id("entity/soul"), Requiem.id("textures/entity/soul.png")),
-        null,
-        null,
-        PlayerModelType.WIDE,
-        true
-    );
+    public static final ResourceLocation SPECTRE_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "spectre");
+    public static final ResourceLocation LOCKI_SPIRIT_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "locki_spirit");
+    public static final ResourceLocation LOCKI_APPLE_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "locki_apple_vision");
+    public static final ResourceLocation LOCKI_WHITE_VISION_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "locki_white_vision");
+    public static final ResourceLocation NUCLEUS_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "nucleus_transition");
 
     /** Opacity of a mob driven through the Shared Body effect, so that it never fully blocks the player's view. */
-    public static final ContextKey<Float> SHARED_BODY_ALPHA = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "shared_body_alpha"));
-    public static final ContextKey<Float> GHOST_ALPHA = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "ghost_alpha"));
-    private static final float SHARED_BODY_MIN_ALPHA = 0.1F;
     /** Angular distance (radians) over which a driven mob fades back to full opacity, measured from the screen center. */
-    private static final double SHARED_BODY_FADE_RADIANS = 0.35;
 
     public static KeyMapping DISSOCIATION_KEY;
     public static KeyMapping CONSTRUCT_ACTION_KEY;
@@ -114,7 +85,6 @@ public final class RequiemClient {
         modEventBus.addListener(RequiemClient::onRegisterRenderers);
         modEventBus.addListener(RequiemClient::onRegisterLayerDefinitions);
         modEventBus.addListener(RequiemClient::onRegisterKeyMappings);
-        modEventBus.addListener(RequiemClient::onRegisterRenderStateModifiers);
         modEventBus.addListener(RequiemClient::onRegisterParticleProviders);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderPlayerPre);
@@ -172,90 +142,6 @@ public final class RequiemClient {
         event.register(CONSTRUCT_SECONDARY_KEY);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static void onRegisterRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
-        event.registerEntityModifier((Class) LivingEntityRenderer.class, (entity, state) -> {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null && entity instanceof LivingEntity living) {
-                if (SharedBodyClientState.isControlled(living.getId())) {
-                    float alpha = sharedBodyAlpha(mc.player, living);
-                    if (alpha < 0.999F) {
-                        ((EntityRenderState) state).setRenderData(SHARED_BODY_ALPHA, alpha);
-                    }
-                }
-                if (living instanceof Player) {
-                    int rotStage = ladysnake.requiem.client.locki.LockiClientState.rotStage(living.getId());
-                    if (rotStage > 0) ((EntityRenderState) state).setRenderData(LOCKI_ROT_STAGE, rotStage);
-                }
-                int corruptionLevel = 0;
-                var attrition = living.getEffect(RequiemStatusEffects.ATTRITION);
-                if (attrition != null) corruptionLevel = Math.max(corruptionLevel, attrition.getAmplifier() + 1);
-                var ashLung = living.getEffect(RequiemStatusEffects.ASH_LUNG);
-                if (ashLung != null) corruptionLevel = Math.max(corruptionLevel, ashLung.getAmplifier() + 1);
-                var brainDamage = living.getEffect(RequiemStatusEffects.BRAIN_DAMAGE);
-                if (brainDamage != null) corruptionLevel = Math.max(corruptionLevel, brainDamage.getAmplifier() + 1);
-                var homunculusMind = living.getEffect(RequiemStatusEffects.HOMUNCULUS_MENTAL_HEALTH);
-                if (homunculusMind != null) corruptionLevel = Math.max(corruptionLevel, homunculusMind.getAmplifier() + 1);
-                if (corruptionLevel > 0) {
-                    ((EntityRenderState) state).setRenderData(HAS_ATTRITION, living.hasEffect(RequiemStatusEffects.ATTRITION));
-                    ((EntityRenderState) state).setRenderData(CORRUPTION_LEVEL, Math.min(10, corruptionLevel));
-                }
-                Mob host = PossessionComponent.getHost(mc.player);
-                if (host != null && host.getId() == living.getId()) {
-                    ((EntityRenderState) state).setRenderData(IS_LOCAL_HOST, true);
-                }
-            }
-        });
-
-        event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
-            @Override
-            public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
-                if (avatar instanceof Player player && ladysnake.requiem.client.locki.LockiClientState.isInvisibleMode(player.getId())) {
-                    // Locki's spirit/root/apple forms have no renderable player body at all: no
-                    // armor layers, player shadow, or translucent avatar. Environmental root
-                    // visuals are separate from the hidden entity.
-                    renderState.headEquipment = ItemStack.EMPTY;
-                    renderState.chestEquipment = ItemStack.EMPTY;
-                    renderState.legsEquipment = ItemStack.EMPTY;
-                    renderState.feetEquipment = ItemStack.EMPTY;
-                    renderState.isInvisible = true;
-                    renderState.isInvisibleToPlayer = true;
-                } else if (avatar instanceof Player player && RemnantComponent.isIncorporeal(player)) {
-                    ((EntityRenderState) renderState).setRenderData(GHOST_ALPHA, 0.10F);
-                    renderState.headEquipment = ItemStack.EMPTY;
-                    renderState.chestEquipment = ItemStack.EMPTY;
-                    renderState.legsEquipment = ItemStack.EMPTY;
-                    renderState.feetEquipment = ItemStack.EMPTY;
-
-                    renderState.isInvisible = false;
-                    renderState.isInvisibleToPlayer = false;
-
-                    boolean isFlying = player.getAbilities().flying || !player.onGround();
-                    Vec3 vel = player.getDeltaMovement();
-                    double hSpeedSqr = vel.x * vel.x + vel.z * vel.z;
-                    boolean isMoving = hSpeedSqr > 0.0005 || Math.abs(vel.y) > 0.03;
-
-                    if (isFlying) {
-                        // Suppress ground-walking leg flailing in mid-air
-                        renderState.walkAnimationSpeed = 0.0F;
-                        renderState.walkAnimationPos = 0.0F;
-
-                        if (isMoving) {
-                            // Ethereal forward glide pose (gliding like a phantom/wraith)
-                            renderState.isFallFlying = true;
-                            renderState.fallFlyingTimeInTicks = 12.0F;
-                            renderState.shouldApplyFlyingYRot = false;
-                        } else {
-                            // Upright hovering stance
-                            renderState.isFallFlying = false;
-                            renderState.fallFlyingTimeInTicks = 0.0F;
-                        }
-                    }
-                }
-            }
-        });
-    }
-
     public static void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(RequiemParticleTypes.GHOST, GhostParticle.Provider::new);
         event.registerSpriteSet(RequiemParticleTypes.ATTRITION, GenericRequiemParticle.SimpleProvider::new);
@@ -268,18 +154,10 @@ public final class RequiemClient {
     }
 
     public static void onRenderPlayerPre(RenderPlayerEvent.Pre<?> event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null) {
-            Entity entity = mc.level.getEntity(event.getRenderState().id);
-            if (entity instanceof Player player) {
-                if (ladysnake.requiem.client.locki.LockiClientState.isInvisibleMode(player.getId())) {
-                    event.setCanceled(true);
-                } else if (PossessionComponent.get(player).isPossessionOngoing()) {
-                    event.setCanceled(true);
-                } else if (RemnantComponent.isIncorporeal(player)) {
-                    // Stealth ghost form: No noisy render-frame particle spam so ghosts can spy
-                }
-            }
+        Player player = event.getEntity();
+        if (ladysnake.requiem.client.locki.LockiClientState.isInvisibleMode(player.getId())
+                || PossessionComponent.get(player).isPossessionOngoing()) {
+            event.setCanceled(true);
         }
     }
 
@@ -294,82 +172,39 @@ public final class RequiemClient {
 
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?, ?> event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.options.getCameraType().isFirstPerson()) {
-            Boolean isHost = event.getRenderState().getRenderData(IS_LOCAL_HOST);
-            if (Boolean.TRUE.equals(isHost)) {
-                event.setCanceled(true);
-            }
+        if (mc.options.getCameraType().isFirstPerson()
+                && SharedBodyClientState.isControlled(event.getEntity().getId())) {
+            event.setCanceled(true);
         }
     }
 
     public static void onRenderGuiPost(RenderGuiEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && RemnantComponent.isIncorporeal(mc.player)
-                && !(ladysnake.requiem.client.locki.LockiClientState.isLockiModeActive()
+        if (mc.player == null || !RemnantComponent.isIncorporeal(mc.player)
+                || (ladysnake.requiem.client.locki.LockiClientState.isLockiModeActive()
                 && !ladysnake.requiem.client.locki.LockiClientState.isSpiritVision())) {
-            GuiGraphicsExtractor graphics = event.getGuiGraphics();
-            long time = System.currentTimeMillis();
-            // Subtle ethereal pulse between 0.35 and 0.60
-            float pulse = 0.45F + 0.15F * Mth.sin((float) (time % 4000L) / 4000.0F * Mth.TWO_PI);
-            int color = ARGB.colorFromFloat(pulse, 0.0F, 0.75F, 1.0F);
-            graphics.blit(
-                RenderPipelines.VIGNETTE,
-                VIGNETTE_LOCATION,
-                0,
-                0,
-                0.0F,
-                0.0F,
-                graphics.guiWidth(),
-                graphics.guiHeight(),
-                graphics.guiWidth(),
-                graphics.guiHeight(),
-                color
-            );
+            return;
+        }
 
-            // Draw possession crosshair target icon
-            Entity target = mc.crosshairPickEntity;
-            if (target instanceof Mob mob) {
-                boolean soulless = SoulHolderComponent.isSoulless(mob);
-                boolean inRange = mc.player != null && mc.player.distanceToSqr(mob) <= 25.0D;
-                int centerX = graphics.guiWidth() / 2;
-                int centerY = graphics.guiHeight() / 2;
+        GuiGraphics graphics = event.getGuiGraphics();
+        Entity target = mc.crosshairPickEntity;
+        if (!(target instanceof Mob mob)) {
+            return;
+        }
 
-                if (soulless) {
-                    Identifier icon = mob.getType() == EntityTypes.ENDERMAN
-                        ? Identifier.fromNamespaceAndPath("requiem", "textures/gui/enderjacking_icon.png")
-                        : Identifier.fromNamespaceAndPath("requiem", "textures/gui/possession_icon.png");
-
-                    // The texture is 16x16 composed of two 16x8 frames: v=0 (idle), v=8 (active in range)
-                    float vOffset = inRange ? 8.0F : 0.0F;
-                    graphics.blit(
-                        RenderPipelines.GUI_TEXTURED,
-                        icon,
-                        centerX - 8,
-                        centerY - 4,
-                        0.0F,
-                        vOffset,
-                        16,
-                        8,
-                        16,
-                        16
-                    );
-                } else {
-                    // Living mob that cannot be possessed directly without soul extraction
-                    Identifier lockIcon = Identifier.fromNamespaceAndPath("requiem", "textures/gui/locked_slot.png");
-                    graphics.blit(
-                        RenderPipelines.GUI_TEXTURED,
-                        lockIcon,
-                        centerX - 8,
-                        centerY - 8,
-                        0.0F,
-                        0.0F,
-                        16,
-                        16,
-                        16,
-                        16
-                    );
-                }
-            }
+        boolean soulless = SoulHolderComponent.isSoulless(mob);
+        boolean inRange = mc.player.distanceToSqr(mob) <= 25.0D;
+        int centerX = graphics.guiWidth() / 2;
+        int centerY = graphics.guiHeight() / 2;
+        if (soulless) {
+            ResourceLocation icon = mob.getType() == EntityType.ENDERMAN
+                ? ResourceLocation.fromNamespaceAndPath("requiem", "textures/gui/enderjacking_icon.png")
+                : ResourceLocation.fromNamespaceAndPath("requiem", "textures/gui/possession_icon.png");
+            float vOffset = inRange ? 8.0F : 0.0F;
+            graphics.blit(icon, centerX - 8, centerY - 4, 0.0F, vOffset, 16, 8, 16, 16);
+        } else {
+            ResourceLocation lockIcon = ResourceLocation.fromNamespaceAndPath("requiem", "textures/gui/locked_slot.png");
+            graphics.blit(lockIcon, centerX - 8, centerY - 8, 0.0F, 0.0F, 16, 16, 16, 16);
         }
     }
 
@@ -446,7 +281,7 @@ public final class RequiemClient {
             boolean attackHeld = inGame && mc.options.keyAttack.isDown();
             boolean useHeld = inGame && mc.options.keyUse.isDown();
             SharedBodyClientState.updateHeldKeys(attackHeld, useHeld,
-                () -> ClientPacketDistributor.sendToServer(new SharedBodyNetworking.InputPayload(attackHeld, useHeld)));
+                () -> PacketDistributor.sendToServer(new SharedBodyNetworking.InputPayload(attackHeld, useHeld)));
             // Keep creative flight enabled client-side only when incorporeal
             if (RemnantComponent.isIncorporeal(mc.player)) {
                 if (!mc.player.isCreative() && !mc.player.isSpectator()) {
@@ -477,8 +312,8 @@ public final class RequiemClient {
             }
 
             // Locki's plant/fruit viewpoints take priority over the generic out-of-body shader.
-            Identifier current = mc.gameRenderer.currentPostEffect();
-            Identifier lockiEffect = ladysnake.requiem.client.locki.LockiClientState.desiredPostEffect();
+            ResourceLocation current = mc.gameRenderer.currentPostEffect();
+            ResourceLocation lockiEffect = ladysnake.requiem.client.locki.LockiClientState.desiredPostEffect();
             if (mc.player.hasEffect(RequiemStatusEffects.NUCLEUS_TRANSITION)) {
                 if (!NUCLEUS_POST_EFFECT.equals(current)) ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(NUCLEUS_POST_EFFECT);
             } else if (ladysnake.requiem.client.locki.LockiClientState.isLockiModeActive()) {
@@ -522,13 +357,13 @@ public final class RequiemClient {
 
             // Check dissociation key press
             if (DISSOCIATION_KEY != null && DISSOCIATION_KEY.consumeClick()) {
-                ClientPacketDistributor.sendToServer(new RequiemNetworking.EtherealFracturePayload());
+                PacketDistributor.sendToServer(new RequiemNetworking.EtherealFracturePayload());
             }
             if (CONSTRUCT_ACTION_KEY != null && CONSTRUCT_ACTION_KEY.consumeClick()) {
-                ClientPacketDistributor.sendToServer(new RequiemNetworking.ConstructActionPayload(1));
+                PacketDistributor.sendToServer(new RequiemNetworking.ConstructActionPayload(1));
             }
             if (CONSTRUCT_SECONDARY_KEY != null && CONSTRUCT_SECONDARY_KEY.consumeClick()) {
-                ClientPacketDistributor.sendToServer(new RequiemNetworking.ConstructActionPayload(2));
+                PacketDistributor.sendToServer(new RequiemNetworking.ConstructActionPayload(2));
             }
         }
     }
