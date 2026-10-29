@@ -36,7 +36,7 @@ package ladysnake.requiem.core.resurrection;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.advancements.predicates.DamageSourcePredicate;
+import net.minecraft.advancements.critereon.DamageSourcePredicate;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;

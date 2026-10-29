@@ -45,7 +45,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class RequiemCoreNetworking {
@@ -100,11 +100,11 @@ public final class RequiemCoreNetworking {
     }
 
     public static void sendAbilityUseMessage(AbilityType type, Entity entity) {
-        ClientPacketDistributor.sendToServer(new UseDirectAbilityPayload(type, entity.getId()));
+        PacketDistributor.sendToServer(new UseDirectAbilityPayload(type, entity.getId()));
     }
 
     public static void sendHugWallMessage(boolean hugging) {
-        ClientPacketDistributor.sendToServer(new HugWallPayload(hugging));
+        PacketDistributor.sendToServer(new HugWallPayload(hugging));
     }
 
     public static void sendItemConsumptionPacket(Entity user, ItemStack stack) {
