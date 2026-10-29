@@ -23,11 +23,11 @@ import java.util.Locale;
 public final class HomunculusBrainScreen extends Screen {
     private static final String[] PALETTE_LABELS = {
         "RETURN HOME", "WAIT", "GUARD", "FIND ITEM", "PICKUP", "TAKE ITEM",
-        "FIND ENTITY", "KILL", "GOTO XYZ", "STORE CHEST", "DROP ITEM", "KILL TARGET"
+        "FIND ENTITY", "KILL", "GOTO XYZ", "STORE CHEST", "DROP ITEM", "KILL TARGET", "SAY"
     };
     private static final String[] PALETTE_COMMANDS = {
         "return home", "wait", "guard", "find item:<id>", "pickup", "take item",
-        "find entity:<name>", "kill", "goto x y z", "store chest", "drop item", "kill:<name>"
+        "find entity:<name>", "kill", "goto x y z", "store chest", "drop item", "kill:<name>", "say:<text>"
     };
 
     private final int entityId;
@@ -49,7 +49,7 @@ public final class HomunculusBrainScreen extends Screen {
         this.program = new EditBox(this.font, left, this.height / 2 - 109, 430, 20,
             Component.literal("Connected brain blocks"));
         this.program.setMaxLength(1024);
-        this.program.setHint(Component.literal("Separate commands with ; — e.g. goto 10 64 -4; kill:Chicken"));
+        this.program.setHint(Component.literal("Separate commands with ; — e.g. goto 10 64 -4; kill:Chicken; say:Hello there"));
         this.program.setResponder(value -> this.validation = validationMessage());
         this.program.setValue(this.currentProgram);
         this.addRenderableWidget(this.program);
@@ -65,7 +65,7 @@ public final class HomunculusBrainScreen extends Screen {
     }
 
     private int controlsTop() {
-        return this.height / 2 + 64;
+        return this.height / 2 + 86;
     }
 
     private List<String> nodes() {
@@ -127,6 +127,8 @@ public final class HomunculusBrainScreen extends Screen {
         if (lower.equals("take")) return "take item";
         if (lower.equals("drop")) return "drop item";
         if (lower.equals("store")) return "store chest";
+        if (lower.equals("say")) return "say:";
+        if (lower.startsWith("say ")) return "say:" + node.substring("say ".length()).trim();
         if (lower.equals("pickup item")) return "pickup";
         if (lower.startsWith("pickup ") && !lower.equals("pickup item")) {
             return "pickup:" + node.substring("pickup ".length()).trim();
@@ -168,7 +170,8 @@ public final class HomunculusBrainScreen extends Screen {
                 || lower.equals("store") || lower.equals("store chest") || lower.startsWith("store chest ")
                 || lower.equals("find item") || lower.startsWith("find item:") || lower.startsWith("find item ")
                 || lower.equals("find entity") || lower.startsWith("find entity:") || lower.startsWith("find entity ")
-                || lower.equals("kill") || lower.equals("kill entity") || lower.startsWith("kill:") || lower.startsWith("kill ");
+                || lower.equals("kill") || lower.equals("kill entity") || lower.startsWith("kill:") || lower.startsWith("kill ")
+                || lower.equals("say") || lower.startsWith("say:") || lower.startsWith("say ");
 
             if (lower.equals("goto") || lower.startsWith("goto ")) {
                 String[] coords = lower.equals("goto") ? new String[0] : lower.substring(5).trim().split("\\s+");
@@ -191,10 +194,16 @@ public final class HomunculusBrainScreen extends Screen {
             }
 
             if (!known) {
-                errors.add("Command " + (i + 1) + ": unknown command `" + node + "`. Use return home, wait, guard, goto X Y Z, find item:<item id>, pickup[:<item id>], take item, find entity:<name>, kill[:<name>], store chest, or drop item.");
+                errors.add("Command " + (i + 1) + ": unknown command `" + node + "`. Use return home, wait, guard, goto X Y Z, find item:<item id>, pickup[:<item id>], take item, find entity:<name>, kill[:<name>], say:<text>, store chest, or drop item.");
             }
-            if (lower.contains("<id>") || lower.contains("<name>") || lower.contains("x y z")) {
-                errors.add("Command " + (i + 1) + ": replace the placeholder with a real item/entity name or three numeric coordinates.");
+            if (lower.startsWith("say:") && lower.substring("say:".length()).trim().isEmpty()) {
+                errors.add("Command " + (i + 1) + ": SAY needs message text after the colon, for example `say:Hello there`.");
+            }
+            if (lower.equals("say") || lower.equals("say ")) {
+                errors.add("Command " + (i + 1) + ": use `say:<text>`, for example `say:Hello there`.");
+            }
+            if (lower.contains("<id>") || lower.contains("<name>") || lower.contains("<text>") || lower.contains("x y z")) {
+                errors.add("Command " + (i + 1) + ": replace the placeholder with a real item/entity name, message text, or three numeric coordinates.");
             }
         }
         return errors;
@@ -203,7 +212,7 @@ public final class HomunculusBrainScreen extends Screen {
     private String validationMessage() {
         List<String> errors = validationErrors();
         if (errors.isEmpty()) {
-            return "Valid chain. PICKUP and KILL without a target choose the nearest eligible target.";
+            return "Valid chain. SAY broadcasts the mob's text to nearby players; PICKUP and KILL can select the nearest eligible target.";
         }
         String first = errors.get(0);
         return errors.size() == 1 ? first : first + "  (+" + (errors.size() - 1) + " more)";
@@ -245,7 +254,7 @@ public final class HomunculusBrainScreen extends Screen {
         int paletteTop = chainTop;
         int paletteWidth = 200;
         if (event.x() >= paletteX && event.x() <= paletteX + paletteWidth
-                && event.y() >= paletteTop && event.y() <= paletteTop + 6 * rowHeight) {
+                && event.y() >= paletteTop && event.y() <= paletteTop + 7 * rowHeight) {
             int row = (int) ((event.y() - paletteTop) / rowHeight);
             int column = event.x() < paletteX + paletteWidth / 2 ? 0 : 1;
             int tile = row * 2 + column;
@@ -335,6 +344,10 @@ public final class HomunculusBrainScreen extends Screen {
                 graphics.fill(left, y, left + chainWidth, y + 20, 0xFF111617);
                 graphics.fill(left, y, left + chainWidth, y + 1, 0xFF303A3B);
             }
+        }
+
+        for (int i = 0; i < 7; i++) {
+            int y = chainTop + i * rowHeight;
             int paletteIndexLeft = i * 2;
             int paletteIndexRight = paletteIndexLeft + 1;
             int tileW = 97;
