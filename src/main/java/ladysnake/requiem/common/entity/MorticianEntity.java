@@ -242,7 +242,7 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
 
     @Override
     public void startPersistentAngerTimer() {
-        this.setTimeToRemainAngry(ANGER_TIME_RANGE.sample(this.random));
+        this.setPersistentAngerEndTime(this.level().getGameTime() + ANGER_TIME_RANGE.sample(this.random));
     }
 
     public void setSpellcasting(boolean spellcasting) {
@@ -378,7 +378,7 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
 
         if (input.hasUUID("linked_obelisk")) {
@@ -401,7 +401,7 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         if (this.linkedObelisk != null) output.putUUID("linked_obelisk", this.linkedObelisk);
         output.putInt("fading_ticks", this.getFadingTicks());
