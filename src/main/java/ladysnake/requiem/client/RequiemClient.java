@@ -156,7 +156,7 @@ public final class RequiemClient {
             "key.requiem.construct_secondary",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_V,
-            KeyMapping.Category.GAMEPLAY
+            "key.categories.gameplay"
         );
         event.register(CONSTRUCT_SECONDARY_KEY);
     }
