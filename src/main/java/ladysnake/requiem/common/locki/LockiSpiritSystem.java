@@ -647,8 +647,8 @@ public final class LockiSpiritSystem {
         // A carried apple may be hundreds of blocks from the soul's original tree, so using only
         // the owner's current bounding box can leave an edible duplicate behind.
         for (ServerLevel level : server.getAllLevels()) {
-            removeOwnedApplesNear(level, ownerUuid, data.getDouble(APPLE_X).orElse(owner.getX()),
-                data.getDouble(APPLE_Y).orElse(owner.getY()), data.getDouble(APPLE_Z).orElse(owner.getZ()));
+            removeOwnedApplesNear(level, ownerUuid, doubleOr(data, APPLE_X, owner.getX()),
+                doubleOr(data, APPLE_Y, owner.getY()), doubleOr(data, APPLE_Z, owner.getZ()));
             if (hasDropSite && destination.dimension().equals(level.dimension())) {
                 removeOwnedApplesNear(level, ownerUuid, x, y, z);
             }
@@ -689,7 +689,7 @@ public final class LockiSpiritSystem {
         // body-regeneration hooks cannot send the newly born player back to the tree.
         RemnantComponent.get(owner).become(RemnantTypes.MORTAL, true);
         if (owner.level() != destination) {
-            owner.teleportTo(destination, x, y, z, Set.of(), owner.getYRot(), owner.getXRot(), false);
+            owner.teleportTo(destination, x, y, z, Set.of(), owner.getYRot(), owner.getXRot());
         } else {
             owner.connection.teleport(x, y, z, owner.getYRot(), owner.getXRot());
         }
@@ -710,7 +710,7 @@ public final class LockiSpiritSystem {
 
     private static void spawnOriginSapling(ServerPlayer player) {
         CompoundTag data = player.getPersistentData();
-        String dimension = data.getString(TREE_DIM).orElse(player.level().dimension().location().toString());
+        String dimension = stringOr(data, TREE_DIM, player.level().dimension().location().toString());
         ResourceKey<Level> dimensionKey;
         try {
             dimensionKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimension));
@@ -720,8 +720,8 @@ public final class LockiSpiritSystem {
         ServerLevel level = player.level().getServer() == null ? null : player.level().getServer().getLevel(dimensionKey);
         if (level == null) level = (player.level() instanceof ServerLevel currentLevel ? currentLevel : null);
 
-        BlockPos source = new BlockPos(data.getInt(TREE_X).orElse(player.blockPosition().getX()),
-            data.getInt(TREE_Y).orElse(player.blockPosition().getY()), data.getInt(TREE_Z).orElse(player.blockPosition().getZ()));
+        BlockPos source = new BlockPos(intOr(data, TREE_X, player.blockPosition().getX()),
+            intOr(data, TREE_Y, player.blockPosition().getY()), intOr(data, TREE_Z, player.blockPosition().getZ()));
         String saplingName = stringOr(data, TREE_SAPLING, "minecraft:oak_sapling");
         Block sapling;
         try {
@@ -797,9 +797,9 @@ public final class LockiSpiritSystem {
             }
         }
         String previousMode = stringOr(data, SYNC_MODE, "");
-        int previousTarget = data.getInt(SYNC_TARGET).orElse(Integer.MIN_VALUE);
-        int previousCamera = data.getInt(SYNC_CAMERA).orElse(Integer.MIN_VALUE);
-        int previousRot = data.getInt(SYNC_ROT).orElse(Integer.MIN_VALUE);
+        int previousTarget = intOr(data, SYNC_TARGET, Integer.MIN_VALUE);
+        int previousCamera = intOr(data, SYNC_CAMERA, Integer.MIN_VALUE);
+        int previousRot = intOr(data, SYNC_ROT, Integer.MIN_VALUE);
         if (!mode.equals(previousMode) || cameraEntityId != previousTarget || cameraMode != previousCamera || rot != previousRot) {
             data.putString(SYNC_MODE, mode);
             data.putInt(SYNC_TARGET, cameraEntityId);
