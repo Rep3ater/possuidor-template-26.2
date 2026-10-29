@@ -329,13 +329,47 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        if (input.contains("PlayerProfile", net.minecraft.nbt.Tag.TAG_COMPOUND)) this.setDisplayProfile(net.minecraft.nbt.NbtUtils.readGameProfile(input.getCompound("PlayerProfile")));
+        if (input.contains("PlayerProfile", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+            CompoundTag profileTag = input.getCompound("PlayerProfile");
+            String profileName = profileTag.getString("Name");
+            java.util.UUID profileId = profileTag.contains("Id", net.minecraft.nbt.Tag.TAG_INT_ARRAY)
+                ? profileTag.getUUID("Id")
+                : java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + profileName).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            com.mojang.authlib.GameProfile profile = new com.mojang.authlib.GameProfile(profileId, profileName);
+            net.minecraft.nbt.ListTag properties = profileTag.getList("Properties", net.minecraft.nbt.Tag.TAG_COMPOUND);
+            for (int i = 0; i < properties.size(); i++) {
+                CompoundTag propertyTag = properties.getCompound(i);
+                String propertyName = propertyTag.getString("Name");
+                String value = propertyTag.getString("Value");
+                com.mojang.authlib.properties.Property property = propertyTag.contains("Signature", net.minecraft.nbt.Tag.TAG_STRING)
+                    ? new com.mojang.authlib.properties.Property(propertyName, value, propertyTag.getString("Signature"))
+                    : new com.mojang.authlib.properties.Property(propertyName, value);
+                profile.getProperties().put(propertyName, property);
+            }
+            this.setDisplayProfile(profile);
+        }
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
-        if (this.getDisplayProfile() != null) output.put("PlayerProfile", net.minecraft.nbt.NbtUtils.writeGameProfile(new CompoundTag(), this.getDisplayProfile()));
+        if (this.getDisplayProfile() != null) {
+            com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
+            CompoundTag profileTag = new CompoundTag();
+            if (profile.getId() != null) profileTag.putUUID("Id", profile.getId());
+            if (profile.getName() != null) profileTag.putString("Name", profile.getName());
+            net.minecraft.nbt.ListTag properties = new net.minecraft.nbt.ListTag();
+            for (var entry : profile.getProperties().entries()) {
+                com.mojang.authlib.properties.Property property = entry.getValue();
+                CompoundTag propertyTag = new CompoundTag();
+                propertyTag.putString("Name", entry.getKey());
+                propertyTag.putString("Value", property.value());
+                if (property.signature() != null) propertyTag.putString("Signature", property.signature());
+                properties.add(propertyTag);
+            }
+            profileTag.put("Properties", properties);
+            output.put("PlayerProfile", profileTag);
+        }
     }
 
     public void playSound(SoundEvent soundEvent) {
