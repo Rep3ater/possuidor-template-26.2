@@ -58,13 +58,13 @@ public class BoundShellLootCondition implements LootItemCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        if (!(lootContext.getParamOrNull(this.entity.contextParam()) instanceof ServerPlayer player)) return false;
+        if (!(lootContext.getParamOrNull(this.entity.getParam()) instanceof ServerPlayer player)) return false;
 
         @Nullable EntityPointer shellPointer = PlayerBodyTracker.get(player)
             .getAnchor()
             .flatMap(record -> record.get(RequiemRecordTypes.ENTITY_REF))
             .orElse(null);
 
-        return this.predicate.test(lootContext.getLevel(), lootContext.getOptionalParameter(LootContextParams.ORIGIN), shellPointer);
+        return this.predicate.test(lootContext.getLevel(), lootContext.getParamOrNull(LootContextParams.ORIGIN), shellPointer);
     }
 }
