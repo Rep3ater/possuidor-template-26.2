@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -97,14 +97,14 @@ public class InertRunestoneBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (itemStack.getItem() == RequiemItems.DEBUG_ITEM) {
             if (!world.isClientSide() && ObeliskMatcher.findObeliskOrigin(world, pos).map(world::getBlockEntity).orElse(null) instanceof RunestoneBlockEntity controller) {
                 player.sendSystemMessage(Component.literal("Width: %d, Height: %d".formatted(controller.getCoreWidth(), controller.getCoreHeight())));
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -115,12 +115,13 @@ public class InertRunestoneBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void affectNeighborsAfterRemoval(BlockState oldState, ServerLevel world, BlockPos pos, boolean isMoving) {
-        if (this.shouldHaveBlockEntity(oldState)) {
+    protected void onRemove(BlockState oldState, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!oldState.is(newState.getBlock()) && this.shouldHaveBlockEntity(oldState)) {
             if (world.getBlockEntity(pos) instanceof RunestoneBlockEntity runestone) {
                 runestone.onDestroyed();
             }
         }
+        super.onRemove(oldState, world, pos, newState, isMoving);
     }
 
     protected boolean shouldHaveBlockEntity(BlockState state) {
@@ -128,7 +129,7 @@ public class InertRunestoneBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @Nullable net.minecraft.core.Direction orientation, boolean notify) {
+    protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         world.scheduleTick(pos, this, 0);
     }
 
