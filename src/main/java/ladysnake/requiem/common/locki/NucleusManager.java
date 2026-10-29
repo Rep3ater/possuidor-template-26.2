@@ -84,8 +84,8 @@ public final class NucleusManager {
         buildFireArenaIfNeeded(level);
         BlockPos phoenixMarker = new BlockPos(0, 79, 0);
         BlockPos devMarker = new BlockPos(100, 79, 0);
-        level.setBlock(phoenixMarker, Blocks.CONCRETE.pick(DyeColor.MAGENTA).defaultBlockState(), 3);
-        level.setBlock(devMarker, Blocks.CONCRETE.pick(DyeColor.YELLOW).defaultBlockState(), 3);
+        level.setBlock(phoenixMarker, Blocks.MAGENTA_CONCRETE.defaultBlockState(), 3);
+        level.setBlock(devMarker, Blocks.YELLOW_CONCRETE.defaultBlockState(), 3);
 
         // The sovereign is played by a consenting developer, not by a mob entity.
         // Clean up the Warden placeholder left behind by older versions.
@@ -125,7 +125,7 @@ public final class NucleusManager {
         for (ServerPlayer candidate : server.getPlayerList().getPlayers()) {
             if (candidate == phoenix || !isDeveloper(candidate)) continue;
             candidate.getPersistentData().putString(PENDING_INVITE, phoenix.getUUID().toString());
-            candidate.sendSystemMessage(Component.literal("§dNucleus arena invitation from " + phoenix.getGameProfile().name() + ". Type `join` to accept."));
+            candidate.sendSystemMessage(Component.literal("§dNucleus arena invitation from " + phoenix.getGameProfile().getName() + ". Type `join` to accept."));
         }
     }
 
@@ -269,15 +269,15 @@ public final class NucleusManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (!owner.equals(player.getPersistentData().getString(SESSION_OWNER).orElse(""))) continue;
             CompoundTag data = player.getPersistentData();
-            ResourceLocation id = ResourceLocation.tryParse(data.getString(RETURN_DIM).orElse("minecraft:overworld"));
+            ResourceLocation id = ResourceLocation.tryParse((data.contains(RETURN_DIM, net.minecraft.nbt.Tag.TAG_STRING) ? data.getString(RETURN_DIM) : "minecraft:overworld"));
             if (id == null) id = ResourceLocation.withDefaultNamespace("overworld");
             ServerLevel target = server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
             if (target == null) target = server.overworld();
-            double x = data.getDouble(RETURN_X).orElse(0.0);
-            double y = data.getDouble(RETURN_Y).orElse(80.0);
-            double z = data.getDouble(RETURN_Z).orElse(0.0);
-            float yaw = data.getFloat(RETURN_YAW).orElse(0.0F);
-            float pitch = data.getFloat(RETURN_PITCH).orElse(0.0F);
+            double x = (data.contains(RETURN_X, net.minecraft.nbt.Tag.TAG_DOUBLE) ? data.getDouble(RETURN_X) : 0.0);
+            double y = (data.contains(RETURN_Y, net.minecraft.nbt.Tag.TAG_DOUBLE) ? data.getDouble(RETURN_Y) : 80.0);
+            double z = (data.contains(RETURN_Z, net.minecraft.nbt.Tag.TAG_DOUBLE) ? data.getDouble(RETURN_Z) : 0.0);
+            float yaw = (data.contains(RETURN_YAW, net.minecraft.nbt.Tag.TAG_FLOAT) ? data.getFloat(RETURN_YAW) : 0.0F);
+            float pitch = (data.contains(RETURN_PITCH, net.minecraft.nbt.Tag.TAG_FLOAT) ? data.getFloat(RETURN_PITCH) : 0.0F);
             player.teleportTo(target, x, y, z, Set.of(), yaw, pitch, false);
             data.remove(SESSION_OWNER);
             data.remove(SESSION_DEV);
