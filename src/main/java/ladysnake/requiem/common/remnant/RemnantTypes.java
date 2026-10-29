@@ -47,7 +47,7 @@ public final class RemnantTypes {
     public static final RemnantType REMNANT = new SimpleRemnantType(DemonRemnantState::new, true, "requiem:opus.remnant_sentence", () -> RequiemItems.SEALED_REMNANT_VESSEL);
 
     public static RemnantType get(ResourceLocation id) {
-        return RequiemRegistries.REMNANT_STATES.getValue(id);
+        return RequiemRegistries.REMNANT_STATES.get(id);
     }
 
     public static RemnantType get(int rawId) {
