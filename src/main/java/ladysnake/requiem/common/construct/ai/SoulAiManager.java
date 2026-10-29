@@ -15,6 +15,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
@@ -86,12 +90,21 @@ public class SoulAiManager {
         EntityType<?> sourceType = parsedType == null
             ? null
             : BuiltInRegistries.ENTITY_TYPE.getOptional(parsedType).orElse(null);
-        boolean foxSoul = lower.equals("fox") || lower.equals("minecraft:fox") || lower.endsWith(":fox");
-        boolean wolfSoul = lower.endsWith(":wolf") || lower.equals("wolf");
-        boolean homunculusSoul = lower.equals("requiem:homunculus") || lower.equals("homunculus");
-        boolean sufferingSoul = lower.equals("requiem:immortal_homunculus") || lower.equals("immortal_homunculus");
-        boolean hostileByName = lower.matches(".*:(zombie|drowned|husk|zombified_piglin|piglin|piglin_brute|pillager|vindicator|evoker|illusioner|ravager|vex|witch|skeleton|stray|bogged|creeper|spider|cave_spider|enderman|blaze|ghast|guardian|elder_guardian|silverfish|endermite|slime|magma_cube|phantom|warden|breeze|hoglin|zoglin|shulker|wither|ender_dragon)$");
+        boolean foxSoul = isOneOf(lower, "fox");
+        boolean wolfSoul = isOneOf(lower, "wolf");
+        boolean homunculusSoul = isOneOf(lower, "homunculus");
+        boolean sufferingSoul = isOneOf(lower, "immortal_homunculus");
+        boolean illagerSoul = isOneOf(lower, "pillager", "vindicator", "evoker", "illusioner", "ravager", "witch");
+        boolean zombieAggressorSoul = isOneOf(lower, "zombie", "zombie_villager", "drowned", "husk");
+        boolean targetsVillagers = illagerSoul || zombieAggressorSoul || sufferingSoul;
+        boolean hostileByName = isOneOf(lower,
+            "zombie", "zombie_villager", "drowned", "husk", "zombified_piglin", "piglin", "piglin_brute",
+            "pillager", "vindicator", "evoker", "illusioner", "ravager", "vex", "witch",
+            "skeleton", "stray", "bogged", "creeper", "spider", "cave_spider", "enderman",
+            "blaze", "ghast", "guardian", "elder_guardian", "silverfish", "endermite", "slime",
+            "magma_cube", "phantom", "warden", "breeze", "hoglin", "zoglin", "shulker", "wither", "ender_dragon");
         boolean hostileSoul = hostileByName || sufferingSoul || (sourceType != null && sourceType.getCategory() == MobCategory.MONSTER);
+        boolean villagerSoul = isOneOf(lower, "villager", "wandering_trader");
 
         if (foxSoul) {
             // Foxes hunt small prey and fish but never choose players.
@@ -124,12 +137,20 @@ public class SoulAiManager {
         // categories have varied between game versions.
         mob.goalSelector.addGoal(1, new FloatGoal(mob));
         mob.goalSelector.addGoal(2, new SoulMeleeAttackGoal(mob, 1.0D));
+        if (villagerSoul) {
+            // A villager soul should evade monsters instead of standing still or fighting them.
+            mob.goalSelector.addGoal(2, new AvoidEntityGoal<>(mob, Monster.class, 8.0F, 0.8D, 1.25D));
+        }
         mob.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(mob, 1.0D));
         mob.goalSelector.addGoal(4, new LookAtPlayerGoal(mob, Player.class, 8.0F));
         mob.goalSelector.addGoal(5, new RandomLookAroundGoal(mob));
         mob.targetSelector.addGoal(1, new HurtByTargetGoal(mob));
         if (hostileSoul) {
             mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Player.class, true));
+            if (targetsVillagers) {
+                mob.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(mob, Villager.class, true));
+                mob.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(mob, IronGolem.class, true));
+            }
         }
     }
 
@@ -248,6 +269,16 @@ public class SoulAiManager {
             || type == EntityTypes.TROPICAL_FISH
             || type == EntityTypes.PUFFERFISH
             || type == EntityTypes.TURTLE;
+    }
+
+    private static boolean isOneOf(String id, String... typePaths) {
+        for (String typePath : typePaths) {
+            if (id.equals(typePath) || id.equals("minecraft:" + typePath)
+                    || id.equals("requiem:" + typePath) || id.endsWith(":" + typePath)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static double followRange(PathfinderMob mob) {
