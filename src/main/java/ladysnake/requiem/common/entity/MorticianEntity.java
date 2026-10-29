@@ -381,13 +381,14 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
     protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
 
-        if (input.hasUUID("linked_obelisk")) {\n            UUID uuid = input.getUUID("linked_obelisk");
+        if (input.hasUUID("linked_obelisk")) {
+            UUID uuid = input.getUUID("linked_obelisk");
             this.setLinkedObelisk(uuid);
             this.setObeliskProjection(true);
             this.checkLegacyData = true;
-        }, () -> {
+        } else {
             this.setObeliskProjection(false);
-        });
+        }
 
         this.setFadingTicks(input.getInt("fading_ticks"));
 
@@ -404,7 +405,8 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
         super.addAdditionalSaveData(output);
         if (this.linkedObelisk != null) output.putUUID("linked_obelisk", this.linkedObelisk);
         output.putInt("fading_ticks", this.getFadingTicks());
-        UUIDUtil.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.capturedSouls).result().ifPresent(tag -> output.put("captured_souls", tag));
+        UUIDUtil.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.capturedSouls).result()
+            .ifPresent(tag -> output.put("captured_souls", tag));
         this.addPersistentAngerSaveData(output);
     }
 
