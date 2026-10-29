@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "requiem:item/construct_heart_icon"
+    "layer0": "minecraft:item/heart_of_the_sea"
   }
 }
