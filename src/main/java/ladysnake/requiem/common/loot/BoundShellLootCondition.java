@@ -52,7 +52,7 @@ public class BoundShellLootCondition implements LootItemCondition {
     }
 
     @Override
-    public Set<ContextKey<?>> getReferencedContextParams() {
+    public Set<LootContextParam<?>> getReferencedContextParams() {
         return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.contextParam());
     }
 

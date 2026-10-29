@@ -79,7 +79,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
     public void toPacket(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(entityMovementConfigs.size());
         for (Map.Entry<EntityType<?>, SerializableMovementConfig> entry : entityMovementConfigs.entrySet()) {
-            buf.writeIdentifier(BuiltInRegistries.ENTITY_TYPE.getKey(entry.getKey()));
+            buf.writeResourceLocation(BuiltInRegistries.ENTITY_TYPE.getKey(entry.getKey()));
             entry.getValue().toPacket(buf);
         }
     }
@@ -89,7 +89,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
         Map<EntityType<?>, SerializableMovementConfig> ret = new HashMap<>();
         int nbConfigs = buf.readVarInt();
         for (int i = 0; i < nbConfigs; i++) {
-            ResourceLocation id = buf.readIdentifier();
+            ResourceLocation id = buf.readResourceLocation();
             SerializableMovementConfig conf = new SerializableMovementConfig();
             conf.fromPacket(buf);
             BuiltInRegistries.ENTITY_TYPE.getOptional(id).ifPresent(type -> ret.put(type, conf));

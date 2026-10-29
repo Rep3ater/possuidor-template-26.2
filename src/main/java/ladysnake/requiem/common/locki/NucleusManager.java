@@ -193,7 +193,7 @@ public final class NucleusManager {
     private static void saveReturn(ServerPlayer player, String owner) {
         CompoundTag data = player.getPersistentData();
         data.putString(SESSION_OWNER, owner);
-        data.putString(RETURN_DIM, player.level().dimension().identifier().toString());
+        data.putString(RETURN_DIM, player.level().dimension().location().toString());
         data.putDouble(RETURN_X, player.getX());
         data.putDouble(RETURN_Y, player.getY());
         data.putDouble(RETURN_Z, player.getZ());
@@ -257,7 +257,7 @@ public final class NucleusManager {
         String owner = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(HEAD_OWNER).orElse("");
         if (owner.isBlank()) return;
         if (!event.getPlayer().getUUID().toString().equals(owner)) {
-            event.setCanPickup(net.minecraft.util.TriState.FALSE);
+            event.setCanPickup(net.neoforged.neoforge.common.util.TriState.FALSE);
             return;
         }
         MinecraftServer server = event.getPlayer().level().getServer();

@@ -9,7 +9,7 @@ import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.PlayerSkin;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.item.component.ResolvableProfile;
 
 import java.util.Map;

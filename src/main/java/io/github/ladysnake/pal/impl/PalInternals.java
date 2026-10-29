@@ -177,7 +177,7 @@ public final class PalInternals implements EntityComponentInitializer {
         public void writeSyncPacket(RegistryFriendlyByteBuf buf, ServerPlayer recipient) {
             buf.writeVarInt(this.trackers.size());
             for (Map.Entry<PlayerAbility, AbilityTracker> entry : this.trackers.entrySet()) {
-                buf.writeIdentifier(entry.getKey().getId());
+                buf.writeResourceLocation(entry.getKey().getId());
                 buf.writeBoolean(entry.getValue().isEnabled());
             }
         }
@@ -186,7 +186,7 @@ public final class PalInternals implements EntityComponentInitializer {
         public void applySyncPacket(RegistryFriendlyByteBuf buf) {
             int count = buf.readVarInt();
             for (int i = 0; i < count; i++) {
-                ResourceLocation id = buf.readIdentifier();
+                ResourceLocation id = buf.readResourceLocation();
                 boolean enabled = buf.readBoolean();
                 PlayerAbility ability = getAbility(id);
                 if (ability != null) {

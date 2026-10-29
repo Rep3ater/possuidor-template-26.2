@@ -4,7 +4,7 @@ import io.github.ladysnake.pal.impl.PalInternals;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public final class Pal {
@@ -12,18 +12,18 @@ public final class Pal {
     }
 
     public static AbilitySource getAbilitySource(String namespace, String name) {
-        return getAbilitySource(Identifier.fromNamespaceAndPath(namespace, name));
+        return getAbilitySource(ResourceLocation.fromNamespaceAndPath(namespace, name));
     }
 
-    public static AbilitySource getAbilitySource(Identifier abilitySourceId) {
+    public static AbilitySource getAbilitySource(ResourceLocation abilitySourceId) {
         return getAbilitySource(abilitySourceId, AbilitySource.DEFAULT);
     }
 
     public static AbilitySource getAbilitySource(String namespace, String name, int priority) {
-        return getAbilitySource(Identifier.fromNamespaceAndPath(namespace, name), priority);
+        return getAbilitySource(ResourceLocation.fromNamespaceAndPath(namespace, name), priority);
     }
 
-    public static AbilitySource getAbilitySource(Identifier abilitySourceId, int priority) {
+    public static AbilitySource getAbilitySource(ResourceLocation abilitySourceId, int priority) {
         return PalInternals.getSource(Objects.requireNonNull(abilitySourceId, "abilitySourceId"), priority);
     }
 
@@ -44,15 +44,15 @@ public final class Pal {
     }
 
     public static PlayerAbility registerAbility(String namespace, String name, BiFunction<PlayerAbility, Player, AbilityTracker> factory) {
-        return registerAbility(Identifier.fromNamespaceAndPath(namespace, name), factory);
+        return registerAbility(ResourceLocation.fromNamespaceAndPath(namespace, name), factory);
     }
 
-    public static PlayerAbility registerAbility(Identifier abilityId, BiFunction<PlayerAbility, Player, AbilityTracker> factory) {
+    public static PlayerAbility registerAbility(ResourceLocation abilityId, BiFunction<PlayerAbility, Player, AbilityTracker> factory) {
         return PalInternals.registerAbility(Objects.requireNonNull(abilityId, "abilityId"), Objects.requireNonNull(factory, "factory"));
     }
 
     @Nullable
-    public static PlayerAbility getRegisteredAbility(Identifier abilityId) {
+    public static PlayerAbility getRegisteredAbility(ResourceLocation abilityId) {
         return PalInternals.getAbility(abilityId);
     }
 }

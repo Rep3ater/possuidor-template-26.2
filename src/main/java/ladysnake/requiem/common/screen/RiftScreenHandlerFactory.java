@@ -44,7 +44,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.neoforged.neoforge.common.extensions.IMenuProviderExtension;
+import net.minecraft.world.MenuProvider;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

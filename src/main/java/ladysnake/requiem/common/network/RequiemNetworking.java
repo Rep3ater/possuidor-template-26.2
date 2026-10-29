@@ -275,7 +275,7 @@ public final class RequiemNetworking {
         buf.writeVarInt(managers.size());
         for (SubDataManager<?> manager : managers) {
             Requiem.LOGGER.info("[Requiem] Synchronizing data for {} ({})", manager.getFabricId(), manager);
-            buf.writeIdentifier(manager.getFabricId());
+            buf.writeResourceLocation(manager.getFabricId());
             manager.toPacket(buf);
         }
         byte[] bytes = new byte[buf.readableBytes()];

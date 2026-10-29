@@ -25,7 +25,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 public final class RequiemLootTables {
-    public static final ContextKeySet POSSESSION = new ContextKeySet.Builder()
+    public static final LootContextParamSet POSSESSION = new LootContextParamSet.Builder()
         .required(LootContextParams.THIS_ENTITY)
         .required(LootContextParams.ORIGIN)
         .build();

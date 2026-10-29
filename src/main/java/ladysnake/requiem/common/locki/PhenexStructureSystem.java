@@ -30,7 +30,7 @@ public final class PhenexStructureSystem {
     private PhenexStructureSystem() {}
 
     private static String key(ServerLevel level, BlockPos pos) {
-        return level.dimension().identifier() + "|" + pos.asLong();
+        return level.dimension().location() + "|" + pos.asLong();
     }
 
     public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event) {

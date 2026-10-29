@@ -400,7 +400,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     private Vec3 applyFallSpeedModifier(Vec3 velocity, float fallSpeedModifier) {
         LivingEntity body = getCurrentBody(player);
         if (body != null) {
-            boolean slowFalling = body.getType() == net.minecraft.world.entity.EntityTypes.CHICKEN
+            boolean slowFalling = body.getType() == net.minecraft.world.entity.EntityType.CHICKEN
                 || body.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.FALL_DAMAGE_IMMUNE)
                 || body.isNoGravity()
                 || (body.getAttributes().hasAttribute(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER) && body.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER) <= 0.0);

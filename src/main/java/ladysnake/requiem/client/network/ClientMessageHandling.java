@@ -4,7 +4,7 @@ import baritone.api.fakeplayer.ClientPlayerShellEntity;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.client.network.RegisterClientPayloadHandlersEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 /**
  * Physical-client-only packet handlers. Keeping UI and client-shell references in this

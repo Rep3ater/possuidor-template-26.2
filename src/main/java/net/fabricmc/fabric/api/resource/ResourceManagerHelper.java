@@ -24,7 +24,7 @@ public final class ResourceManagerHelper {
         initialized = true;
         NeoForge.EVENT_BUS.addListener(AddReloadListenerEvent.class, event -> {
             for (PreparableReloadListener listener : SERVER_LISTENERS) {
-                event.addListener(keyOf(listener), listener);
+                event.addListener(listener);
             }
         });
     }

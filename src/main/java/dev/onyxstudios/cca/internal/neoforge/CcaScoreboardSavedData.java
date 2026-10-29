@@ -6,14 +6,14 @@ import dev.onyxstudios.cca.internal.base.AbstractComponentContainer;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
 public final class CcaScoreboardSavedData extends SavedData {
     public static final SavedDataType<CcaScoreboardSavedData> TYPE = new SavedDataType<>(
-        Identifier.fromNamespaceAndPath("requiem", "cca_scoreboard"),
+        ResourceLocation.fromNamespaceAndPath("requiem", "cca_scoreboard"),
         CcaScoreboardSavedData::new,
         CcaScoreboardSavedData::makeCodec
     );

@@ -5,16 +5,16 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public final class ComponentRegistry {
-    private static final Map<Identifier, ComponentKey<?>> KEYS = new ConcurrentHashMap<>();
+    private static final Map<ResourceLocation, ComponentKey<?>> KEYS = new ConcurrentHashMap<>();
 
     private ComponentRegistry() {
     }
 
     @SuppressWarnings("unchecked")
-    public static <C extends Component> ComponentKey<C> getOrCreate(Identifier componentId, Class<C> componentClass) {
+    public static <C extends Component> ComponentKey<C> getOrCreate(ResourceLocation componentId, Class<C> componentClass) {
         Objects.requireNonNull(componentId, "componentId");
         Objects.requireNonNull(componentClass, "componentClass");
         ComponentKey<?> existing = KEYS.computeIfAbsent(componentId, id -> new ComponentKey<>(id, componentClass));
@@ -26,7 +26,7 @@ public final class ComponentRegistry {
     }
 
     @Nullable
-    public static ComponentKey<?> get(Identifier componentId) {
+    public static ComponentKey<?> get(ResourceLocation componentId) {
         return KEYS.get(componentId);
     }
 

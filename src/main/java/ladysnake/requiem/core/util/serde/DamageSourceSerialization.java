@@ -52,7 +52,7 @@ public final class DamageSourceSerialization {
 
     public static CompoundTag toTag(DamageSource damage) {
         CompoundTag tag = new CompoundTag();
-        String typeId = damage.typeHolder().unwrapKey().map(k -> k.identifier().toString()).orElse("minecraft:generic");
+        String typeId = damage.typeHolder().unwrapKey().map(k -> k.location().toString()).orElse("minecraft:generic");
         tag.putString("type", typeId);
         if (damage.getDirectEntity() != null) {
             tag.putString("sourceUuid", damage.getDirectEntity().getUUID().toString());

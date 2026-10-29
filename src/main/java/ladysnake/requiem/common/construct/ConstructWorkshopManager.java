@@ -44,7 +44,7 @@ public class ConstructWorkshopManager {
         player.getPersistentData().putInt("requiem:construct_ret_x", returnPos.getX());
         player.getPersistentData().putInt("requiem:construct_ret_y", returnPos.getY());
         player.getPersistentData().putInt("requiem:construct_ret_z", returnPos.getZ());
-        player.getPersistentData().putString("requiem:construct_ret_dim", returnDimension.identifier().toString());
+        player.getPersistentData().putString("requiem:construct_ret_dim", returnDimension.location().toString());
         player.getPersistentData().putBoolean("requiem:construct_is_mini", isMini);
 
         // Enable flight so player can construct freely in 3D void
@@ -97,7 +97,7 @@ public class ConstructWorkshopManager {
         player.getPersistentData().putInt("requiem:construct_ret_x", returnPos.getX());
         player.getPersistentData().putInt("requiem:construct_ret_y", returnPos.getY());
         player.getPersistentData().putInt("requiem:construct_ret_z", returnPos.getZ());
-        player.getPersistentData().putString("requiem:construct_ret_dim", returnDimension.identifier().toString());
+        player.getPersistentData().putString("requiem:construct_ret_dim", returnDimension.location().toString());
         player.getPersistentData().putBoolean("requiem:construct_is_mini", isMini);
 
         double spawnX = center.getX() + 0.5;

@@ -44,7 +44,7 @@ public class RiftMorticianLootCondition implements LootItemCondition {
     }
 
     @Override
-    public Set<ContextKey<?>> getReferencedContextParams() {
+    public Set<LootContextParam<?>> getReferencedContextParams() {
         return ImmutableSet.of(this.entity.contextParam());
     }
 
