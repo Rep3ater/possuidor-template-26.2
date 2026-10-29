@@ -50,6 +50,6 @@ public class RiftMorticianLootCondition implements LootItemCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        return lootContext.getParamOrNull(this.entity.contextParam()) instanceof MorticianEntity mortician && mortician.isObeliskProjection();
+        return lootContext.getParamOrNull(this.entity.getParam()) instanceof MorticianEntity mortician && mortician.isObeliskProjection();
     }
 }
