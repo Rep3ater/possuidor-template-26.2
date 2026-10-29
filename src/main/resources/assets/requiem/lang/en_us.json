@@ -279,5 +279,6 @@
   "effect.requiem.ash_lung": "Ash in the Lungs",
   "effect.requiem.brain_damage": "Brain Damage",
   "effect.requiem.homunculus_mental_health": "Homunculus Mental Health",
-  "effect.requiem.nucleus_transition": "Nucleus Transition"
+  "effect.requiem.nucleus_transition": "Nucleus Transition",
+  "block.requiem.suffering_head": "Head of Suffering"
 }
