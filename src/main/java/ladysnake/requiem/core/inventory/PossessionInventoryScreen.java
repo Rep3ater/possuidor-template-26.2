@@ -75,14 +75,14 @@ public class PossessionInventoryScreen extends AbstractContainerScreen<Inventory
         assert this.minecraft.player != null;
 
         if (this.minecraft.player.hasInfiniteMaterials()) {
-            this.minecraft.gui.setScreen(new CreativeModeInventoryScreen(
+            this.minecraft.setScreen(new CreativeModeInventoryScreen(
                 this.minecraft.player,
                 this.minecraft.player.connection.enabledFeatures(),
                 this.minecraft.options.operatorItemsTab().get()
             ));
             return true;
         } else if (InventoryLimiter.instance().getInventoryShape(this.player) != InventoryShape.ALT_LARGE) {
-            this.minecraft.gui.setScreen(new InventoryScreen(this.minecraft.player));
+            this.minecraft.setScreen(new InventoryScreen(this.minecraft.player));
             return true;
         }
         return false;
