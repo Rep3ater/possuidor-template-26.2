@@ -55,6 +55,12 @@ public final class RequiemBlocks {
     public static final RunestoneBlock RUNIC_TACHYLITE_PENANCE = makeRunic("penance", 3);
     public static final ReclamationRunestoneBlock RUNIC_TACHYLITE_RECLAMATION = make(p -> new ReclamationRunestoneBlock(p, () -> RequiemStatusEffects.RECLAMATION, 1), "tachylite/runic/reclamation", CreativeModeTabs.FUNCTIONAL_BLOCKS, BlockBehaviour.Properties.ofFullCopy(TACHYLITE_RUNESTONE));
     public static final RiftRunestoneBlock RIFT_RUNE = make(RiftRunestoneBlock::new, "tachylite/runic/rift", CreativeModeTabs.FUNCTIONAL_BLOCKS, BlockBehaviour.Properties.ofFullCopy(TACHYLITE_RUNESTONE));
+    // The Suffering Head has a custom placed model and supplies its own BlockItem from RequiemItems.
+    public static final Block SUFFERING_HEAD = makeWithoutItem(
+        Block::new,
+        "suffering_head",
+        BlockBehaviour.Properties.ofFullCopy(Blocks.BLACKSTONE).noOcclusion()
+    );
     public static final Block CONSTRUCT_HEART = make(
         ladysnake.requiem.common.construct.block.ConstructHeartBlock::new,
         "construct_heart",
@@ -108,6 +114,14 @@ public final class RequiemBlocks {
             Suppliers.memoize(() -> BuiltInRegistries.MOB_EFFECT.get(Requiem.id(effectName)).orElseThrow()),
             maxLevel
         ), "tachylite/runic/" + effectName, CreativeModeTabs.FUNCTIONAL_BLOCKS, BlockBehaviour.Properties.ofFullCopy(TACHYLITE));
+    }
+
+    private static <B extends Block> B makeWithoutItem(Function<BlockBehaviour.Properties, B> factory, String name, BlockBehaviour.Properties properties) {
+        ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Requiem.id(name));
+        properties.setId(key);
+        B ret = factory.apply(properties);
+        allBlocks.put(ret, new BlockRegistration(name, null));
+        return ret;
     }
 
     private static <B extends Block> B make(Function<BlockBehaviour.Properties, B> factory, String name, ResourceKey<CreativeModeTab> itemGroup, BlockBehaviour.Properties properties) {
