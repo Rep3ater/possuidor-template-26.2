@@ -56,7 +56,7 @@ public class GoatRamAbility<O extends PathfinderMob> extends DirectAbilityBase<O
         Function<? super O, SoundEvent> impactRamSound = o -> o instanceof Goat g && g.isScreamingGoat() ? SoundEvents.GOAT_SCREAMING_RAM_IMPACT : SoundEvents.GOAT_RAM_IMPACT;
         ToIntFunction<? super O> cooldown = o -> o instanceof Goat g && g.isScreamingGoat() ? 100 : 600;
         ToDoubleFunction<? super O> strengthMultiplier = o -> o instanceof Goat g && g.isScreamingGoat() ? 2.0 : 1.0;
-        TargetingConditions targeting = TargetingConditions.forCombat().selector((target, level) -> !target.getType().equals(EntityType.GOAT) && target.level().getWorldBorder().isWithinBounds(target.getBoundingBox()));
+        TargetingConditions targeting = TargetingConditions.forCombat().selector(target -> !target.getType().equals(EntityType.GOAT) && target.level().getWorldBorder().isWithinBounds(target.getBoundingBox()));
 
         return new GoatRamAbility<>(
             owner,
@@ -143,13 +143,13 @@ public class GoatRamAbility<O extends PathfinderMob> extends DirectAbilityBase<O
                 List<LivingEntity> list = world.getNearbyEntities(LivingEntity.class, this.targetPredicate, this.owner, this.owner.getBoundingBox());
                 if (!list.isEmpty()) {
                     LivingEntity livingEntity = list.get(0);
-                    livingEntity.hurtServer(world, this.owner.damageSources().mobAttack(this.owner), (float) this.owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
+                    livingEntity.hurt(this.owner.damageSources().mobAttack(this.owner), (float) this.owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
                     int speedAmount = this.owner.hasEffect(MobEffects.SPEED) ? this.owner.getEffect(MobEffects.SPEED).getAmplifier() + 1 : 0;
-                    int slownessAmount = this.owner.hasEffect(MobEffects.SLOWNESS) ? this.owner.getEffect(MobEffects.SLOWNESS).getAmplifier() + 1 : 0;
+                    int slownessAmount = this.owner.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) ? this.owner.getEffect(MobEffects.MOVEMENT_SLOWDOWN).getAmplifier() + 1 : 0;
                     float multiplier = 0.25F * (float) (speedAmount - slownessAmount);
                     float knockbackSpeed = (float) Mth.clamp(owner.getAttributeValue(Attributes.MOVEMENT_SPEED) * 2.4, 0.2F, 3.0F) + multiplier;
                     float knockbackModifier = livingEntity.isBlocking() ? 0.5F : 1.0F;
-                    livingEntity.knockback((double) (knockbackModifier * knockbackSpeed) * this.strengthMultiplierFactory.applyAsDouble(this.owner), this.direction.x, this.direction.z, this.owner.damageSources().mobAttack(this.owner), 1.0f);
+                    livingEntity.knockback((double) (knockbackModifier * knockbackSpeed) * this.strengthMultiplierFactory.applyAsDouble(this.owner), this.direction.x, this.direction.z);
                     world.playSound(null, this.owner.getX(), this.owner.getY(), this.owner.getZ(), this.impactRamSoundFactory.apply(this.owner), SoundSource.HOSTILE, 1.0F, 1.0F);
                     this.finishRam();
                 } else if (this.owner.position().distanceTo(this.target) < 0.25) {
