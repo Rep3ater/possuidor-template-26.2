@@ -491,7 +491,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void readFromNbt(CompoundTag compound) {
-        this.conversionTimer = compound.getIntOr("conversionTimer", 0);
+        this.conversionTimer = (compound.contains("conversionTimer") ? compound.getInt("conversionTimer") : 0);
     }
 
     public static double reachSq(BlockPos pos, Mob host) {

@@ -328,7 +328,7 @@ public final class RequiemNetworking {
         if (runestone.getLevel() instanceof ServerLevel serverLevel) {
             PacketDistributor.sendToPlayersTrackingChunk(
                 serverLevel,
-                ChunkPos.containing(runestone.getBlockPos()),
+                new ChunkPos(runestone.getBlockPos()),
                 new ObeliskPowerUpdatePayload(runestone.getBlockPos(), runestone.getCoreWidth(), runestone.getCoreHeight(), runestone.getPowerRate())
             );
         }

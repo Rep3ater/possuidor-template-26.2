@@ -120,7 +120,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
             }
         } else {
             if (data.contains(STUN_BASE_YAW)) {
-                this.setYRot(data.getFloat(STUN_BASE_YAW).orElse(this.getYRot()));
+                this.setYRot(data.getFloat(STUN_BASE_YAW));
                 data.remove(STUN_BASE_YAW);
             }
             this.setXRot(0.0F);

@@ -35,9 +35,10 @@ public class OrderedInventory extends SimpleContainer {
         for (int slot = 0; slot < this.getContainerSize(); slot++) {
             ItemStack stack = this.getItem(slot);
             if (stack.isEmpty()) continue;
+            final int slotIndex = slot;
             ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).result().ifPresent(encoded -> {
                 if (encoded instanceof CompoundTag itemTag) {
-                    itemTag.putInt("Slot", slot);
+                    itemTag.putInt("Slot", slotIndex);
                     result.add(itemTag);
                 }
             });

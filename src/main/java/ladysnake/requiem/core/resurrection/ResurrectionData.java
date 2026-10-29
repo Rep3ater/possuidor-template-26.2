@@ -193,7 +193,7 @@ public record ResurrectionData(
         @Nullable CompoundTag nbt;
         if (entityData.has("nbt")) {
             try {
-                nbt = TagParser.parseCompoundFully(GsonHelper.getAsString(entityData, "nbt"));
+                nbt = TagParser.parseTag(GsonHelper.getAsString(entityData, "nbt"));
             } catch (CommandSyntaxException e) {
                 throw new JsonParseException("Failed to read resurrection entity NBT: " + e.getMessage());
             }

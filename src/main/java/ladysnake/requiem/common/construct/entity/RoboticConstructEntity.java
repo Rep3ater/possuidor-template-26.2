@@ -361,9 +361,9 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
         AABB reachBox = this.getBoundingBox().move(dir.scale(1.0)).inflate(0.5);
         List<Entity> targets = level.getEntities(this, reachBox, e -> e instanceof LivingEntity && e != this && e != this.getPossessor());
         for (Entity target : targets) {
-            target.hurtServer(level, level.damageSources().mobAttack(this), (float) (this.voxelModel.isMiniature() ? 4.0 : 8.0));
+            target.hurt(level.damageSources().mobAttack(this), (float) (this.voxelModel.isMiniature() ? 4.0 : 8.0));
             target.push(dir.x * 1.2, 0.35, dir.z * 1.2);
-            level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ANVIL_LAND, SoundSource.HOSTILE, 0.5f, 1.8f);
+            if (this.level() instanceof ServerLevel serverLevel) serverLevel.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ANVIL_LAND, SoundSource.HOSTILE, 0.5f, 1.8f);
         }
     }
 
@@ -399,7 +399,7 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
             serverLevel.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
         } else if (item.is(Items.SNOWBALL)) {
             net.minecraft.world.entity.projectile.Snowball snowball = 
-                new net.minecraft.world.entity.projectile.Snowball(serverLevel, this.getX(), spawnPos.y, this.getZ(), item);
+                new net.minecraft.world.entity.projectile.Snowball(serverLevel, this);
             snowball.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
             snowball.shoot(look.x, look.y, look.z, 1.5f, 1.0f);
             serverLevel.addFreshEntity(snowball);
@@ -428,7 +428,7 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
         double radius = this.voxelModel.isMiniature() ? 2.5 : 5.0;
         List<Entity> nearby = serverLevel.getEntities(this, this.getBoundingBox().inflate(radius), e -> e instanceof LivingEntity && e != this && e != this.getPossessor());
         for (Entity e : nearby) {
-            e.hurtServer(serverLevel, serverLevel.damageSources().mobAttack(this), (float) (this.voxelModel.isMiniature() ? 4.0 : 8.0));
+            e.hurt(serverLevel.damageSources().mobAttack(this), (float) (this.voxelModel.isMiniature() ? 4.0 : 8.0));
             Vec3 pushDir = e.position().subtract(this.position()).normalize();
             e.push(pushDir.x * 0.8, 0.3, pushDir.z * 0.8);
         }
@@ -437,9 +437,9 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
     }
 
     @Override
-    public boolean doHurtTarget(ServerLevel level, Entity target) {
+    public boolean doHurtTarget(Entity target) {
         triggerPistonPunch();
-        boolean hit = super.doHurtTarget(level, target);
+        boolean hit = super.doHurtTarget(target);
         if (hit && this.voxelModel.hasArmActuator(ActuatorType.PISTON_THRUST)) {
             Vec3 look = this.getLookAngle();
             target.push(look.x * 1.2, 0.35, look.z * 1.2);
@@ -449,7 +449,8 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
+        if (!(this.level() instanceof ServerLevel level)) return super.hurt(source, amount);
         Vec3 hitDir = source.getSourcePosition() != null 
             ? source.getSourcePosition().subtract(this.position()).normalize()
             : this.getLookAngle().reverse();
@@ -488,7 +489,7 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
             return true;
         }
 
-        return super.hurtServer(level, source, amount);
+        return super.hurt(source, amount);
     }
 
     @Override
