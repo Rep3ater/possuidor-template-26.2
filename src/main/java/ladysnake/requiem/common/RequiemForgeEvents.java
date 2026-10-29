@@ -497,12 +497,19 @@ public final class RequiemForgeEvents {
 
     @SubscribeEvent
     public static void onEntityJoinLevel(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide() && event.getEntity() instanceof net.minecraft.world.entity.PathfinderMob mob) {
-            if (ladysnake.requiem.common.construct.ai.SoulAiManager.hasInjectedSoul(mob)) {
-                String soulType = ladysnake.requiem.common.construct.ai.SoulAiManager.getInjectedSoulType(mob);
-                java.util.UUID owner = ladysnake.requiem.core.util.NbtCompat.getUuid(mob.getPersistentData(), "requiem:soul_owner").orElse(null);
-                ladysnake.requiem.common.construct.ai.SoulAiManager.applyInjectedGoals(mob, soulType, owner);
-            }
+        if (event.getLevel().isClientSide() || !(event.getEntity() instanceof Mob mob)) return;
+
+        // Restore brain-only control first; do not let a previously saved soul goal set override it.
+        if (MarbasAbilitySystem.hasTransferredBrain(mob)) {
+            MarbasAbilitySystem.activateTransferredBrain(mob);
+            return;
+        }
+
+        if (mob instanceof net.minecraft.world.entity.PathfinderMob pathfinderMob
+                && ladysnake.requiem.common.construct.ai.SoulAiManager.hasInjectedSoul(pathfinderMob)) {
+            String soulType = ladysnake.requiem.common.construct.ai.SoulAiManager.getInjectedSoulType(pathfinderMob);
+            java.util.UUID owner = ladysnake.requiem.core.util.NbtCompat.getUuid(mob.getPersistentData(), "requiem:soul_owner").orElse(null);
+            ladysnake.requiem.common.construct.ai.SoulAiManager.applyInjectedGoals(pathfinderMob, soulType, owner);
         }
     }
 
