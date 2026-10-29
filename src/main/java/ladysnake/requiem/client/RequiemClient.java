@@ -71,8 +71,10 @@ public final class RequiemClient {
     public static final ResourceLocation LOCKI_WHITE_VISION_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "locki_white_vision");
     public static final ResourceLocation NUCLEUS_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "nucleus_transition");
 
-    /** Opacity of a mob driven through the Shared Body effect, so that it never fully blocks the player's view. */
-    /** Angular distance (radians) over which a driven mob fades back to full opacity, measured from the screen center. */
+    /** Opacity of a mob driven through Shared Body, so it never fully blocks the player's view. */
+    private static final float SHARED_BODY_MIN_ALPHA = 0.18F;
+    /** Angular distance (radians) over which a driven mob fades back to full opacity. */
+    private static final double SHARED_BODY_FADE_RADIANS = Math.toRadians(24.0);
 
     private static ResourceLocation activePostEffect;
 
@@ -138,7 +140,7 @@ public final class RequiemClient {
             "key.requiem.dissociation",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_COMMA,
-            KeyMapping.Category.GAMEPLAY
+            "key.categories.gameplay"
         );
         event.register(DISSOCIATION_KEY);
 
