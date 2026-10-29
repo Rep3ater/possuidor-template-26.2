@@ -205,12 +205,12 @@ public final class PalInternals implements EntityComponentInitializer {
 
         @Override
         public void readFromNbt(CompoundTag tag, HolderLookup.Provider registryLookup) {
-            CompoundTag abilitiesTag = tag.getCompoundOrEmpty("abilities");
+            CompoundTag abilitiesTag = tag.getCompound("abilities");
             for (PlayerAbility ability : getAbilities()) {
                 AbilityTracker tracker = this.getOrCreateTracker(ability);
                 String key = ability.getId().toString();
                 if (abilitiesTag.contains(key)) {
-                    tracker.load(abilitiesTag.getCompoundOrEmpty(key));
+                    tracker.load(abilitiesTag.getCompound(key));
                 }
             }
             if (!this.player.level().isClientSide()) {
