@@ -357,9 +357,9 @@ public final class SharedBodyManager {
                 mob.swing(InteractionHand.MAIN_HAND);
                 Entity target = entityHit.getEntity();
                 if (mob.getAttributes().hasAttribute(Attributes.ATTACK_DAMAGE)) {
-                    mob.doHurtTarget(level, target);
+                    mob.doHurtTarget(target);
                 } else {
-                    target.hurtServer(level, level.damageSources().mobAttack(mob), 1.0F);
+                    target.hurt(level.damageSources().mobAttack(mob), 1.0F);
                 }
             }
         } else if (blockHit.getType() == HitResult.Type.BLOCK && canBreakBlocks(mob)) {
