@@ -88,7 +88,8 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
     public void readFromNbt(CompoundTag tag) {
         super.readFromNbt(tag);
         if (tag.contains("original_piglin_type")) {
-            this.originalPiglinType = tag.getString("original_piglin_type").map(ResourceLocation::tryParse).flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional).orElse(null);
+            ResourceLocation id = ResourceLocation.tryParse(tag.getString("original_piglin_type"));
+            this.originalPiglinType = id == null ? null : BuiltInRegistries.ENTITY_TYPE.getOptional(id).orElse(null);
         }
     }
 
