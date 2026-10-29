@@ -90,4 +90,8 @@ public class ReclamationStatusEffect extends MobEffect implements StickyStatusEf
         return true;
     }
 
+    @Override
+    public boolean shouldStick(LivingEntity entity) {
+        return false;
+    }
 }
