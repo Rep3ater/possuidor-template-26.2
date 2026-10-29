@@ -697,7 +697,7 @@ public final class MarbasAbilitySystem {
         if (!(event.getEntity() instanceof ImmortalHomunculusEntity mob)) return false;
         // Cancel ordinary damage; lava briefly interrupts the immortal hunt.
         event.setCanceled(true);
-        if (event.getSource().type().is(DamageTypes.LAVA)) {
+        if (event.getSource().is(DamageTypes.LAVA)) {
             mob.getPersistentData().putLong(STUN_UNTIL, mob.level().getGameTime() + 100L);
             mob.getNavigation().stop();
             mob.setTarget(null);
