@@ -451,15 +451,6 @@ public final class RequiemForgeEvents {
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         if (MarbasAbilitySystem.onBerserkDamage(event)) return;
-        if (event.getSource().getEntity() instanceof ladysnake.requiem.common.entity.ImmortalHomunculusEntity
-                && event.getEntity().level() instanceof ServerLevel level && event.getAmount() > 0.0F) {
-            // Red damage-indicator flecks provide a blood-like cue when its strike connects.
-            LivingEntity victim = event.getEntity();
-            level.sendParticles(net.minecraft.core.particles.ParticleTypes.DAMAGE_INDICATOR,
-                victim.getX(), victim.getY() + victim.getBbHeight() * 0.55D, victim.getZ(),
-                7, victim.getBbWidth() * 0.25D, victim.getBbHeight() * 0.25D,
-                victim.getBbWidth() * 0.25D, 0.08D);
-        }
         if (event.getEntity() instanceof Player player) {
             if (RemnantComponent.isIncorporeal(player)) {
                 if (!event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
