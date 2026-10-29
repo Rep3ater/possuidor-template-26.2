@@ -35,6 +35,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
@@ -147,7 +150,7 @@ public final class MarbasAbilitySystem {
                     return true;
                 }
                 try {
-                    restored.load(savedEntity.copy());
+                    restored.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), savedEntity.copy()));
                 } catch (RuntimeException invalidSnapshot) {
                     player.sendSystemMessage(Component.literal("The stored homunculus data could not be read. The item was not consumed."));
                     return true;
@@ -314,7 +317,7 @@ public final class MarbasAbilitySystem {
         level.sendParticles(ParticleTypes.SOUL, x, y, z, restored ? 24 : 12, 0.35, 0.45, 0.35, 0.04);
         level.sendParticles(restored ? ParticleTypes.REVERSE_PORTAL : ParticleTypes.POOF,
             x, y, z, restored ? 18 : 10, 0.28, 0.38, 0.28, 0.06);
-        level.playSound(null, x, y, z, SoundEvents.AMETHYST_BLOCK_CHIME.value(),
+        level.playSound(null, x, y, z, SoundEvents.AMETHYST_BLOCK_CHIME,
             SoundSource.NEUTRAL, 0.75F, restored ? 0.82F : 0.62F);
     }
 
@@ -442,7 +445,9 @@ public final class MarbasAbilitySystem {
             body.set(DataComponents.CUSTOM_NAME, Component.literal("Homunculus"));
             CompoundTag data = mob.getPersistentData().copy();
             // saveWithoutId retains native entity data and PersistentData, but not the old runtime UUID.
-            CompoundTag fullEntitySnapshot = mob.saveWithoutId(new CompoundTag());
+            TagValueOutput snapshotOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, level.registryAccess());
+            mob.saveWithoutId(snapshotOutput);
+            CompoundTag fullEntitySnapshot = snapshotOutput.buildResult();
             CustomData.update(DataComponents.CUSTOM_DATA, body, tag -> {
                 tag.putString(BRAIN, data.getString(BRAIN).orElse("return home"));
                 tag.putString(TRAITS, data.getString(TRAITS).orElse(""));
