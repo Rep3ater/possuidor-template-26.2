@@ -90,7 +90,7 @@ public final class PhenexStructureSystem {
         ServerPlayer online = level.getServer().getPlayerList().getPlayerByName(requestedName);
         UUID uuid = online != null ? online.getUUID() : UUID.nameUUIDFromBytes(("OfflinePlayer:" + requestedName).getBytes(StandardCharsets.UTF_8));
         GameProfile profile = online != null ? online.getGameProfile() : new GameProfile(uuid, requestedName);
-        PlayerShellEntity shell = RequiemEntities.PLAYER_SHELL.create(level, MobSpawnType.TRIGGERED);
+        PlayerShellEntity shell = RequiemEntities.PLAYER_SHELL.create(level);
         if (shell == null) return;
         shell.setDisplayProfile(profile);
         shell.setPos(found.getX() + 0.5, found.getY() + 1.0, found.getZ() + 0.5);
