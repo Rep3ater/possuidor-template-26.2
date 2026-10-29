@@ -32,7 +32,7 @@ jobs:
           server_pid=$!
           set -e
           for attempt in $(seq 1 150); do
-            if grep -Eqi 'Done \\([0-9.]+s\\)!|For help, type "help"|All dimensions are saved' server-startup.log; then
+            if grep -Eqi 'Done \([0-9.]+s\)!|For help, type "help"|All dimensions are saved' server-startup.log; then
               echo "Server completed datapack reload and reached startup."
               tail -n 100 server-startup.log
               kill "$server_pid" 2>/dev/null || true
