@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 public class RunestoneBlock extends InertRunestoneBlock implements ObeliskEffectRune {
     public static Optional<Block> getByEffect(Holder<MobEffect> effect) {
-        ResourceLocation id = effect.unwrapKey().map(ResourceKey::identifier).orElse(null);
+        ResourceLocation id = effect.unwrapKey().map(ResourceKey::location).orElse(null);
         return Optional.ofNullable(id).flatMap(i ->
             BuiltInRegistries.BLOCK.getOptional(ResourceLocation.fromNamespaceAndPath(i.getNamespace(), "tachylite/runic/" + i.getPath())));
     }
