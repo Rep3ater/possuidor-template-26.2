@@ -333,8 +333,14 @@ public final class MarbasAbilitySystem {
             .create(level, EntitySpawnReason.TRIGGERED);
         if (!(created instanceof Mob mob)) return null;
         mob.setPos(cauldron.getX() + 0.5, cauldron.getY() + 1.0, cauldron.getZ() + 0.5);
-        mob.setCustomName(Component.literal(immortal ? "Immortal Homunculus" : "Homunculus"));
-        mob.setCustomNameVisible(true);
+        if (immortal) {
+            // The mutated form deliberately has no custom name/name tag.
+            mob.setCustomName(null);
+            mob.setCustomNameVisible(false);
+        } else {
+            mob.setCustomName(Component.literal("Homunculus"));
+            mob.setCustomNameVisible(true);
+        }
         mob.setPersistenceRequired();
         CompoundTag data = mob.getPersistentData();
         data.putBoolean(HOMUNCULUS, true);
@@ -373,8 +379,8 @@ public final class MarbasAbilitySystem {
         immortal.setYRot(original.getYRot());
         immortal.setXRot(original.getXRot());
         immortal.setYBodyRot(original.yBodyRot);
-        immortal.setCustomName(Component.literal("Immortal Homunculus"));
-        immortal.setCustomNameVisible(true);
+        immortal.setCustomName(null);
+        immortal.setCustomNameVisible(false);
         immortal.setPersistenceRequired();
 
         CompoundTag oldData = original.getPersistentData();
@@ -395,6 +401,8 @@ public final class MarbasAbilitySystem {
 
     public static boolean onEntityInteract(Player player, Entity target, ItemStack held, boolean shift) {
         if (!(player instanceof ServerPlayer serverPlayer) || !(player.level() instanceof ServerLevel level)) return false;
+        // The suffering form is intentionally silent and has no right-click interaction/messages.
+        if (target instanceof ImmortalHomunculusEntity) return false;
         if (shift && target instanceof Mob homunculus && isHomunculus(homunculus)
                 && held.is(RequiemItems.SUFFERING_HEAD)) {
             if (homunculus instanceof ImmortalHomunculusEntity) {
@@ -581,6 +589,12 @@ public final class MarbasAbilitySystem {
                         ladysnake.requiem.common.entity.effect.RequiemStatusEffects.HOMUNCULUS_MENTAL_HEALTH,
                         40, mentalLevel - 1, false, false, false));
                     applyInheritedTraits(level, mob, now);
+                    // An explicitly injected soul owns this body's AI. Do not overwrite it with
+                    // the homunculus brain or berserk controller on the player tick.
+                    if (mob instanceof net.minecraft.world.entity.PathfinderMob pathfinder
+                            && ladysnake.requiem.common.construct.ai.SoulAiManager.hasInjectedSoul(pathfinder)) {
+                        continue;
+                    }
                     if (mob.getPersistentData().getBoolean(BERSERK).orElse(false)) {
                         tickBerserk(level, mob, now);
                     } else {
@@ -851,44 +865,58 @@ public final class MarbasAbilitySystem {
     }
 
     private static void tickBerserk(ServerLevel level, Mob mob, long now) {
-        mob.setInvulnerable(true);
-        if (mob.isInLava()) {
-            mob.getPersistentData().putLong(STUN_UNTIL, now + 2L);
-            mob.setGlowingTag(true);
-            mob.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 5, 5, false, false, false));
-            Vec3 v = mob.getDeltaMovement();
-            mob.setDeltaMovement(v.x + (mob.getRandom().nextDouble() - 0.5) * 0.15, v.y + (mob.getRandom().nextDouble() - 0.5) * 0.1, v.z + (mob.getRandom().nextDouble() - 0.5) * 0.15);
+        // Keep the entity mortal even if it was saved by an older version of the mod.
+        mob.setInvulnerable(false);
+        var speed = mob.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null) speed.setBaseValue(0.10D); // slow shambling speed while idle
+
+        if (now < mob.getPersistentData().getLong(STUN_UNTIL).orElse(0L)) {
+            mob.getNavigation().stop();
+            mob.setTarget(null);
             return;
         }
-        mob.setGlowingTag(false);
-        if (now < mob.getPersistentData().getLong(STUN_UNTIL).orElse(0L)) {
-            mob.getNavigation().stop(); mob.setTarget(null); return;
-        }
         if (now < mob.getPersistentData().getLong(FED_UNTIL).orElse(0L)) {
-            mob.getNavigation().stop(); mob.setTarget(null); return;
+            mob.getNavigation().stop();
+            mob.setTarget(null);
+            return;
         }
+
         LivingEntity target = level.getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(28.0), e -> e != mob && e.isAlive()
             && !(e instanceof ServerPlayer p && (p.isCreative() || p.isSpectator()))).stream()
             .min((a, b) -> Double.compare(a.distanceToSqr(mob), b.distanceToSqr(mob))).orElse(null);
-        if (target == null) return;
-        var speed = mob.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null) speed.setBaseValue(target instanceof Player p && p.isSprinting() ? 0.13 : 0.10);
-        var attack = mob.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attack != null) attack.setBaseValue(20.0);
+        if (target == null) {
+            mob.setTarget(null);
+            return;
+        }
+
+        // Player-like walking speed only while in pursuit; idle never inherits chase speed.
         mob.setTarget(target);
-        mob.getNavigation().moveTo(target, 1.0);
-        if (mob.distanceToSqr(target) < 3.1 && now % 10 == 0) {
-            target.hurt(level.damageSources().mobAttack(mob), 20.0F);
-            mob.getPersistentData().putLong(FED_UNTIL, now + 1200L);
+        if (speed != null) speed.setBaseValue(0.13D);
+        var attack = mob.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (attack != null) attack.setBaseValue(20.0D);
+        double reach = mob.getBbWidth() * 2.0D + target.getBbWidth();
+        if (mob.distanceToSqr(target) <= reach * reach && now % 12L == 0L) {
+            if (target.hurt(level.damageSources().mobAttack(mob), 20.0F)) {
+                mob.getPersistentData().putLong(FED_UNTIL, now + 1200L);
+            }
+        } else if (mob.distanceToSqr(target) > reach * reach) {
+            mob.getNavigation().moveTo(target, 1.0D);
         }
     }
 
     public static boolean onBerserkDamage(LivingIncomingDamageEvent event) {
         if (!(event.getEntity() instanceof ImmortalHomunculusEntity mob)) return false;
-        // Cancel ordinary damage; lava briefly interrupts the immortal hunt.
-        event.setCanceled(true);
+
+        // This name means "special-case handled", not "damage canceled": the suffering form
+        // must take ordinary damage and must remain killable by commands.
         if (event.getSource().is(DamageTypes.LAVA)) {
-            mob.getPersistentData().putLong(STUN_UNTIL, mob.level().getGameTime() + 100L);
+            long now = mob.level().getGameTime();
+            long until = mob.getPersistentData().getLong(STUN_UNTIL).orElse(0L);
+            if (now >= until) {
+                mob.getPersistentData().putFloat("requiem:immortal_stun_base_yaw", mob.getYRot());
+                mob.playSound(net.minecraft.sounds.SoundEvents.ALLAY_HURT, 1.0F, 0.52F);
+            }
+            mob.getPersistentData().putLong(STUN_UNTIL, Math.max(until, now + 3_600L));
             mob.getNavigation().stop();
             mob.setTarget(null);
         }
@@ -901,11 +929,12 @@ public final class MarbasAbilitySystem {
     }
 
     private static boolean isMobHead(ItemStack stack) {
-        return stack.is(Items.ZOMBIE_HEAD) || stack.is(Items.SKELETON_SKULL) || stack.is(Items.WITHER_SKELETON_SKULL)
+        return stack.is(RequiemItems.SUFFERING_HEAD) || stack.is(Items.ZOMBIE_HEAD) || stack.is(Items.SKELETON_SKULL) || stack.is(Items.WITHER_SKELETON_SKULL)
             || stack.is(Items.CREEPER_HEAD) || stack.is(Items.PIGLIN_HEAD) || stack.is(Items.DRAGON_HEAD) || stack.is(Items.PLAYER_HEAD);
     }
 
     private static String traitsForHead(ItemStack stack) {
+        if (stack.is(RequiemItems.SUFFERING_HEAD)) return "suffering; health";
         if (stack.is(Items.CREEPER_HEAD)) return "explode; health";
         if (stack.is(Items.PIGLIN_HEAD)) return "trade_gold; health";
         if (stack.is(Items.WITHER_SKELETON_SKULL)) return "wither; health";
