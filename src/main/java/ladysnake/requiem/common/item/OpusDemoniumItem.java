@@ -45,7 +45,7 @@ public class OpusDemoniumItem extends WritableBookItem {
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, java.util.List<Component> tooltip, TooltipFlag flag) {
         addTooltipLine(tooltip, RequiemItems.SEALED_REMNANT_VESSEL);
-        addTooltipLine(tooltipAdder, RequiemItems.PURE_SOUL_VESSEL);
+        addTooltipLine(tooltip, RequiemItems.PURE_SOUL_VESSEL);
     }
 
     private void addTooltipLine(java.util.List<Component> tooltip, DemonSoulVesselItem version) {
