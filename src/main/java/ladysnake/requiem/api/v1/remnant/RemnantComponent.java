@@ -27,7 +27,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.apiguardian.api.API;
 import org.jetbrains.annotations.Contract;
 
@@ -37,7 +37,7 @@ import java.util.Optional;
  * @since 1.2.0
  */
 public interface RemnantComponent extends AutoSyncedComponent, ServerTickingComponent {
-    ComponentKey<RemnantComponent> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "remnant"), RemnantComponent.class);
+    ComponentKey<RemnantComponent> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "remnant"), RemnantComponent.class);
 
     static boolean isIncorporeal(Entity entity) {
         RemnantComponent r = KEY.getNullable(entity);

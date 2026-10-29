@@ -21,12 +21,12 @@ import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.UUID;
 
 public interface AttritionFocus extends Component {
-    ComponentKey<AttritionFocus> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "attrition_focus"), AttritionFocus.class);
+    ComponentKey<AttritionFocus> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "attrition_focus"), AttritionFocus.class);
 
     void addAttrition(UUID playerUuid, int level);
 

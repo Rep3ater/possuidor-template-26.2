@@ -22,10 +22,10 @@ import com.demonwav.mcdev.annotations.Env;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public interface DirectAbility<E extends LivingEntity, T extends Entity> extends MobAbility<E> {
-    Identifier ABILITY_ICON = Identifier.fromNamespaceAndPath("requiem", "textures/gui/ability_icon.png");
+    ResourceLocation ABILITY_ICON = ResourceLocation.fromNamespaceAndPath("requiem", "textures/gui/ability_icon.png");
 
     /**
      * If the range is 0, the vanilla targeting system is used
@@ -39,7 +39,7 @@ public interface DirectAbility<E extends LivingEntity, T extends Entity> extends
     InteractionResult trigger(T target);
 
     @CheckEnv(Env.CLIENT)
-    default Identifier getIconTexture() {
+    default ResourceLocation getIconTexture() {
         return ABILITY_ICON;
     }
 }
