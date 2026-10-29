@@ -308,8 +308,17 @@ public final class MarbasAbilitySystem {
         }
         String safe = program == null ? "" : program.trim();
         if (safe.length() > 1024) safe = safe.substring(0, 1024);
-        mob.getPersistentData().putString(BRAIN, safe.isBlank() ? "return home" : safe);
-        mob.getPersistentData().putInt(NODE, 0);
+        String normalized = safe.isBlank() ? "return home" : safe;
+        CompoundTag mobData = mob.getPersistentData();
+        String previousProgram = mobData.getString(BRAIN).orElse("return home");
+        if (normalized.equals(previousProgram)) {
+            player.sendSystemMessage(Component.literal("The brain program is unchanged; its current task progress is preserved."));
+            return;
+        }
+        int previousNode = Math.max(0, mobData.getInt(NODE).orElse(0));
+        int newNodeCount = Math.max(1, normalized.split(";").length);
+        mobData.putString(BRAIN, normalized);
+        mobData.putInt(NODE, Math.min(previousNode, newNodeCount - 1));
         int damage = Math.min(10, player.getPersistentData().getInt("requiem:marbas_brain_damage").orElse(0) + 1);
         player.getPersistentData().putInt("requiem:marbas_brain_damage", damage);
         player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
@@ -417,7 +426,8 @@ public final class MarbasAbilitySystem {
             return;
         }
         if (command.equals("take item") || command.equals("take")
-                || command.equals("pickup") || command.equals("pickup item") || command.startsWith("pickup:")) {
+                || command.equals("pickup") || command.equals("pickup item")
+                || command.startsWith("pickup:") || command.startsWith("pickup ")) {
             Entity targetItem = level.getEntity(mob.getPersistentData().getInt(TARGET_ID).orElse(-1));
             String filter = "";
             if (command.startsWith("pickup:")) filter = command.substring("pickup:".length()).trim();
@@ -467,7 +477,8 @@ public final class MarbasAbilitySystem {
             return;
         }
         if (command.startsWith("find entity")) {
-            String targetName = command.contains(":") ? command.substring(command.indexOf(':') + 1).trim() : "";
+            String targetName = command.contains(":") ? command.substring(command.indexOf(':') + 1).trim()
+                : (command.startsWith("find entity ") ? command.substring("find entity ".length()).trim() : "");
             LivingEntity target = level.getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(24.0), e -> e != mob && !e.isDeadOrDying()
                 && (targetName.isBlank() || e.getName().getString().equalsIgnoreCase(targetName))).stream()
                 .min((a, b) -> Double.compare(a.distanceToSqr(mob), b.distanceToSqr(mob))).orElse(null);
@@ -477,9 +488,10 @@ public final class MarbasAbilitySystem {
             nextNode(mob, nodes.length);
             return;
         }
-        if (command.equals("kill entity") || command.equals("kill") || command.startsWith("kill:")) {
+        if (command.equals("kill entity") || command.equals("kill") || command.startsWith("kill:") || command.startsWith("kill ")) {
             Entity target = level.getEntity(mob.getPersistentData().getInt(TARGET_ID).orElse(-1));
-            String filter = command.startsWith("kill:") ? command.substring("kill:".length()).trim() : "";
+            String filter = command.startsWith("kill:") ? command.substring("kill:".length()).trim()
+                : (command.startsWith("kill ") && !command.equals("kill entity") ? command.substring("kill ".length()).trim() : "");
             LivingEntity living = target instanceof LivingEntity found ? found : null;
             if (living == null || !living.isAlive() || living == mob
                     || (!filter.isBlank() && !matchesEntityFilter(living, filter))) {
