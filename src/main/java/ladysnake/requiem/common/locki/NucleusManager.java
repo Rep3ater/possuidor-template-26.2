@@ -187,7 +187,7 @@ public final class NucleusManager {
         developer.addTag("requiem_nucleus_player_boss");
         developer.teleportTo(nucleus, 100.5, 80.0, 4.5, Set.of(), 90.0F, 0.0F);
         developer.sendSystemMessage(Component.literal("You accepted the Nucleus sovereign role. You are the boss player; your inventory is preserved. Claim your opponent's Suffering Head by defeating Phenex."));
-        phoenix.sendSystemMessage(Component.literal(developer.getGameProfile().name() + " accepted the Nucleus sovereign role."));
+        phoenix.sendSystemMessage(Component.literal(developer.getGameProfile().getName() + " accepted the Nucleus sovereign role."));
     }
 
     private static void saveReturn(ServerPlayer player, String owner) {
