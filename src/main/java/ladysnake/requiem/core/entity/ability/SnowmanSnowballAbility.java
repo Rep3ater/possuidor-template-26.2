@@ -37,8 +37,6 @@ package ladysnake.requiem.core.entity.ability;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Snowball;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 public class SnowmanSnowballAbility<T extends LivingEntity> extends IndirectAbilityBase<T> {
     public SnowmanSnowballAbility(T owner) {
@@ -48,7 +46,7 @@ public class SnowmanSnowballAbility<T extends LivingEntity> extends IndirectAbil
     @Override
     public boolean run() {
         if (!this.owner.level().isClientSide()) {
-            Snowball snowball = new Snowball(this.owner.level(), this.owner, new ItemStack(Items.SNOWBALL));
+            Snowball snowball = new Snowball(this.owner.level(), this.owner);
             snowball.shootFromRotation(this.owner, this.owner.getXRot(), this.owner.getYRot(), 0.0F, 1.5F, 1.0F);
             this.owner.playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 1.0F / (this.owner.getRandom().nextFloat() * 0.4F + 0.8F));
             this.owner.level().addFreshEntity(snowball);

@@ -117,7 +117,7 @@ public final class RequiemCoreNetworking {
 
     public static void sendToAllTrackingIncluding(Entity tracked, Packet<? super ClientGamePacketListener> message) {
         if (tracked.level() instanceof ServerLevel serverLevel) {
-            serverLevel.getChunkSource().sendToTrackingPlayersAndSelf(tracked, message);
+            serverLevel.getChunkSource().broadcastAndSend(tracked, message);
         }
     }
 }

@@ -150,9 +150,9 @@ public record ResurrectionData(
 
     @Nullable
     public Entity createEntity(Level world) {
-        Entity e = this.entityType.create(world, net.minecraft.world.entity.MobSpawnType.LOAD);
+        Entity e = this.entityType.create(world);
         if (e != null && this.entityNbt != null) {
-            e.load(TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, e.registryAccess(), this.entityNbt.copy()));   // some entities may keep direct references to the passed NBT
+            e.load(this.entityNbt.copy());   // some entities may keep direct references to the passed NBT
         }
         return e;
     }

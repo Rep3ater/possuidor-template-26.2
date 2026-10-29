@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class CameraMixin {
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true, require = 0)
     private void requiem$ashLungFov(CallbackInfoReturnable<Float> cir) {
-        Entity cameraEntity = ((Camera) (Object) this).entity();
+        Entity cameraEntity = ((Camera) (Object) this).getEntity();
         if (!(cameraEntity instanceof Player player)) return;
         var effect = player.getEffect(RequiemStatusEffects.ASH_LUNG);
         if (effect == null) return;
@@ -25,7 +25,7 @@ public abstract class CameraMixin {
         float pulse = (player.tickCount / 5) % 2 == 0 ? 1.055F : 0.945F;
         float narrowing = 1.0F - (0.045F + level * 0.009F);
         // A little extra narrowing while a cough is active gives the player a distinct fit cue.
-        if (Minecraft.getInstance().level != null && player.getPersistentData().getLong("requiem:phenex_cough_until").orElse(0L) > Minecraft.getInstance().level.getGameTime()) {
+        if (Minecraft.getInstance().level != null && player.getPersistentData().getLong("requiem:phenex_cough_until") > Minecraft.getInstance().level.getGameTime()) {
             narrowing -= 0.06F;
         }
         cir.setReturnValue(Mth.clamp(cir.getReturnValue() * narrowing * pulse, 25.0F, 130.0F));
