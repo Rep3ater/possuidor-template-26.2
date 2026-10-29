@@ -30,6 +30,7 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.HuskRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.PiglinRenderer;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
@@ -124,6 +125,7 @@ public final class RequiemClient {
         event.registerEntityRenderer(RequiemEntities.CURED_PIGLIN, context -> new PiglinRenderer(context, ModelLayers.PIGLIN, ModelLayers.PIGLIN_BABY, ModelLayers.PIGLIN_ARMOR, ModelLayers.PIGLIN_BABY_ARMOR));
         event.registerEntityRenderer(RequiemEntities.CURED_PIGLIN_BRUTE, context -> new PiglinRenderer(context, ModelLayers.PIGLIN_BRUTE, ModelLayers.PIGLIN_BRUTE, ModelLayers.PIGLIN_BRUTE_ARMOR, ModelLayers.PIGLIN_BRUTE_ARMOR));
         event.registerEntityRenderer(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
+        event.registerEntityRenderer(RequiemEntities.NUCLEUS_SOVEREIGN, HuskRenderer::new);
         event.registerEntityRenderer(RequiemEntities.RELEASED_SOUL, NoopRenderer::new);
         event.registerEntityRenderer(RequiemEntities.OBELISK_SOUL, NoopRenderer::new);
 
