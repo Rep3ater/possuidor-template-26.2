@@ -8,18 +8,18 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public final class ComponentKey<C extends Component> {
-    private final Identifier id;
+    private final ResourceLocation id;
     private final Class<C> componentClass;
 
-    ComponentKey(Identifier id, Class<C> componentClass) {
+    ComponentKey(ResourceLocation id, Class<C> componentClass) {
         this.id = Objects.requireNonNull(id, "id");
         this.componentClass = Objects.requireNonNull(componentClass, "componentClass");
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 

@@ -38,13 +38,13 @@ import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.chicken.Chicken;
+import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.monster.Ravager;
-import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.monster.Spider;
 import net.minecraft.world.entity.monster.Strider;
-import net.minecraft.world.entity.monster.skeleton.Skeleton;
+import net.minecraft.world.entity.monster.Skeleton;
 
 public enum MobRidingType {
     DEFAULT, MOUNT, RIDE;
@@ -65,7 +65,7 @@ public enum MobRidingType {
         } else if (entity instanceof Chicken) {
             return possessed.getType().builtInRegistryHolder().is(RequiemEntityTypeTags.ZOMBIES) && possessed.isBaby() ? RIDE : DEFAULT;
         } else if (entity instanceof Strider) {
-            return possessed.getType() == EntityTypes.ZOMBIFIED_PIGLIN || possessed.getType().builtInRegistryHolder().is(RequiemEntityTypeTags.PIGLINS) ? RIDE : DEFAULT;
+            return possessed.getType() == EntityType.ZOMBIFIED_PIGLIN || possessed.getType().builtInRegistryHolder().is(RequiemEntityTypeTags.PIGLINS) ? RIDE : DEFAULT;
         }
 
         return DEFAULT;

@@ -38,12 +38,12 @@ import ladysnake.requiem.Requiem;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public final class RequiemItemTags {
     public static final TagKey<Item> BONES = TagKey.create(Registries.ITEM, Requiem.id("bones"));
     public static final TagKey<Item> RAW_MEATS = TagKey.create(Registries.ITEM, Requiem.id("raw_meats"));
     public static final TagKey<Item> RAW_FISHES = TagKey.create(Registries.ITEM, Requiem.id("raw_fishes"));
-    public static final TagKey<Item> WATER_BUCKETS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "water_buckets"));
-    public static final TagKey<Item> SHIELDS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "shields"));
+    public static final TagKey<Item> WATER_BUCKETS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "water_buckets"));
+    public static final TagKey<Item> SHIELDS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "shields"));
 }

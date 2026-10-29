@@ -55,14 +55,14 @@ public final class PlayerShellBrain {
     }
 
     private static void addCoreTasks(Brain<PlayerShellEntity> brain) {
-        brain.addActivity(Activity.CORE, ImmutableList.of(
+        brain.addActivityAndRemoveMemoriesWhenStopped(Activity.CORE, ImmutableList.of(
             Pair.of(0, new PlayerLookAroundTask(45, 90)),
             Pair.of(1, new PlayerWanderAroundTask())
         ), Set.of(), Set.of());
     }
 
     private static void addIdleTasks(Brain<PlayerShellEntity> brain) {
-        brain.addActivity(Activity.IDLE, ImmutableList.of(
+        brain.addActivityAndRemoveMemoriesWhenStopped(Activity.IDLE, ImmutableList.of(
             Pair.of(0, new PlayerGoHomeTask(MemoryModuleType.HOME, 1f, 10, 5000)),
             Pair.of(1, new LivingUpdateAttackTargetTask<>(PlayerShellBrain::canFight, PlayerShellBrain::getPriorityAttackTarget)),
             Pair.of(2, SetEntityLookTargetSometimes.create(8.0F, UniformInt.of(30, 60)))
@@ -78,7 +78,7 @@ public final class PlayerShellBrain {
     }
 
     private static void addFightTasks(Brain<PlayerShellEntity> brain) {
-        brain.addActivity(Activity.FIGHT, ImmutableList.of(
+        brain.addActivityAndRemoveMemoriesWhenStopped(Activity.FIGHT, ImmutableList.of(
             Pair.of(0, new LivingApproachTargetTask(1.0F)),
             Pair.of(1, new PlayerMeleeTask()),
             Pair.of(2, new LivingForgetAttackTargetTask<>(e -> e instanceof Monster monster && monster.getTarget() == null))

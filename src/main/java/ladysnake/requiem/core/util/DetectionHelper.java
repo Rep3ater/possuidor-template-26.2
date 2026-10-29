@@ -86,7 +86,7 @@ public final class DetectionHelper {
         List<Monster> sawExchange = hostile.level().getEntitiesOfClass(
             Monster.class,
             hostile.getBoundingBox().inflate(ALERT_RANGE),
-            witness -> isValidEnemy(witness) && witness.isWithinHome(host.blockPosition()) && witness.hasLineOfSight(host)
+            witness -> isValidEnemy(witness) && witness.isWithinRestriction(host.blockPosition()) && witness.hasLineOfSight(host)
         );
 
         for (Monster witness : sawExchange) {

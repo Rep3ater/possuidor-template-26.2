@@ -5,11 +5,11 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public final class LockiComponents implements EntityComponentInitializer {
     public static final ComponentKey<InventoryKeeperBase> INVENTORY_KEEPER = ComponentRegistry.getOrCreate(
-        Identifier.fromNamespaceAndPath("locki", "inventory_keeper"),
+        ResourceLocation.fromNamespaceAndPath("locki", "inventory_keeper"),
         InventoryKeeperBase.class
     );
 

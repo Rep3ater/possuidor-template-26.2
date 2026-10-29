@@ -46,7 +46,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -116,7 +116,7 @@ public class CommonRecordKeeper implements GlobalRecordKeeper {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        tag.getListOrEmpty("records").stream()
+        tag.getList("records", net.minecraft.nbt.Tag.TAG_COMPOUND).stream()
             .mapMulti(MoreStreams.instanceOf(CompoundTag.class))
             .forEach(nbt -> DataResults.ifPresentOrElse(
                 this.deserialize(nbt),
@@ -129,12 +129,12 @@ public class CommonRecordKeeper implements GlobalRecordKeeper {
         return DataResult.unbox(DataResult.instance().apply2(
             (uuid, data) -> new GlobalRecordImpl(this, uuid, data),
             DataResults.tryGet(() -> NbtCompat.getUuid(anchorTag, GlobalRecordImpl.ANCHOR_UUID_NBT).orElseThrow()),
-            this.deserializeRawData(anchorTag.getCompoundOrEmpty("data"))
+            this.deserializeRawData(anchorTag.getCompound("data"))
         ));
     }
 
     private DataResult<Map<RecordType<?>, Object>> deserializeRawData(CompoundTag nbtData) {
-        return nbtData.keySet().stream()
+        return nbtData.getAllKeys().stream()
             // Step 1: equivalent of nbtData.entrySet() (sadly such a method doesn't exist)
             .map(key -> Map.entry(key, Objects.requireNonNull(nbtData.get(key))))
             // Step 2: DataResult go brr
@@ -153,8 +153,8 @@ public class CommonRecordKeeper implements GlobalRecordKeeper {
             key = "requiem:entity_ref";
         }
 
-        Identifier typeId = Identifier.tryParse(key);
-        RecordType<?> type = typeId == null ? null : RecordType.REGISTRY.getValue(typeId);
+        ResourceLocation typeId = ResourceLocation.tryParse(key);
+        RecordType<?> type = typeId == null ? null : RecordType.REGISTRY.getOptional(typeId).orElse(null);
         if (type == null) {
             String unknown = key;
             return DataResult.error(() -> "Unknown record type %s".formatted(unknown));

@@ -44,7 +44,7 @@ public class ConstructWorkshopManager {
         player.getPersistentData().putInt("requiem:construct_ret_x", returnPos.getX());
         player.getPersistentData().putInt("requiem:construct_ret_y", returnPos.getY());
         player.getPersistentData().putInt("requiem:construct_ret_z", returnPos.getZ());
-        player.getPersistentData().putString("requiem:construct_ret_dim", returnDimension.identifier().toString());
+        player.getPersistentData().putString("requiem:construct_ret_dim", returnDimension.location().toString());
         player.getPersistentData().putBoolean("requiem:construct_is_mini", isMini);
 
         // Enable flight so player can construct freely in 3D void
@@ -56,7 +56,7 @@ public class ConstructWorkshopManager {
         double spawnX = center.getX() + 0.5;
         double spawnY = center.getY() + 1.0;
         double spawnZ = center.getZ() - 3.0;
-        player.teleportTo(workshopLevel, spawnX, spawnY, spawnZ, Set.of(), 0.0f, 0.0f, false);
+        player.teleportTo(workshopLevel, spawnX, spawnY, spawnZ, Set.of(), 0.0f, 0.0f);
         player.getAbilities().mayfly = true;
         player.getAbilities().flying = true;
         player.onUpdateAbilities();
@@ -97,13 +97,13 @@ public class ConstructWorkshopManager {
         player.getPersistentData().putInt("requiem:construct_ret_x", returnPos.getX());
         player.getPersistentData().putInt("requiem:construct_ret_y", returnPos.getY());
         player.getPersistentData().putInt("requiem:construct_ret_z", returnPos.getZ());
-        player.getPersistentData().putString("requiem:construct_ret_dim", returnDimension.identifier().toString());
+        player.getPersistentData().putString("requiem:construct_ret_dim", returnDimension.location().toString());
         player.getPersistentData().putBoolean("requiem:construct_is_mini", isMini);
 
         double spawnX = center.getX() + 0.5;
         double spawnY = center.getY() + 1.0;
         double spawnZ = center.getZ() - 3.0;
-        player.teleportTo(workshopLevel, spawnX, spawnY, spawnZ, Set.of(), 0.0f, 0.0f, false);
+        player.teleportTo(workshopLevel, spawnX, spawnY, spawnZ, Set.of(), 0.0f, 0.0f);
         player.getAbilities().mayfly = true;
         player.getAbilities().flying = true;
         player.onUpdateAbilities();
@@ -117,15 +117,15 @@ public class ConstructWorkshopManager {
         MinecraftServer server = currentLevel.getServer();
         if (server == null) return;
 
-        int retX = player.getPersistentData().getInt("requiem:construct_ret_x").orElse(0);
-        int retY = player.getPersistentData().getInt("requiem:construct_ret_y").orElse(64);
-        int retZ = player.getPersistentData().getInt("requiem:construct_ret_z").orElse(0);
-        String dimStr = player.getPersistentData().getString("requiem:construct_ret_dim").orElse("minecraft:overworld");
-        boolean isMini = player.getPersistentData().getBoolean("requiem:construct_is_mini").orElse(false);
+        int retX = player.getPersistentData().getInt("requiem:construct_ret_x");
+        int retY = (player.getPersistentData().contains("requiem:construct_ret_y", net.minecraft.nbt.Tag.TAG_INT) ? player.getPersistentData().getInt("requiem:construct_ret_y") : 64);
+        int retZ = player.getPersistentData().getInt("requiem:construct_ret_z");
+        String dimStr = (player.getPersistentData().contains("requiem:construct_ret_dim", net.minecraft.nbt.Tag.TAG_STRING) ? player.getPersistentData().getString("requiem:construct_ret_dim") : "minecraft:overworld");
+        boolean isMini = player.getPersistentData().getBoolean("requiem:construct_is_mini");
 
         ResourceKey<Level> returnDim = ResourceKey.create(
             Registries.DIMENSION,
-            net.minecraft.resources.Identifier.parse(dimStr)
+            net.minecraft.resources.ResourceLocation.parse(dimStr)
         );
 
         ServerLevel returnLevel = server.getLevel(returnDim);
@@ -152,7 +152,7 @@ public class ConstructWorkshopManager {
         double spawnY = retY;
         double spawnZ = retZ + 0.5;
 
-        player.teleportTo(returnLevel, spawnX, spawnY + 0.5, spawnZ - 1.5, Set.of(), 0.0f, 0.0f, false);
+        player.teleportTo(returnLevel, spawnX, spawnY + 0.5, spawnZ - 1.5, Set.of(), 0.0f, 0.0f);
         returnLevel.playSound(null, spawnX, spawnY, spawnZ, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0f, 1.0f);
 
         if (awaken && model != null && !model.isEmpty()) {

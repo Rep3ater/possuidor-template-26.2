@@ -66,9 +66,9 @@ public class FilledVesselItemDispenserBehavior implements DispenseItemBehavior {
         Vec3 targetPos = Vec3.atCenterOf(pointer.pos().relative(direction));
 
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        @Nullable UUID ownerRecord = tag.getCompound(FilledSoulVesselItem.SOUL_FRAGMENT_NBT)
-            .flatMap(frag -> NbtCompat.getUuid(frag, "uuid"))
-            .orElse(null);
+        @Nullable UUID ownerRecord = tag.contains(FilledSoulVesselItem.SOUL_FRAGMENT_NBT, net.minecraft.nbt.Tag.TAG_COMPOUND)
+            ? NbtCompat.getUuid(tag.getCompound(FilledSoulVesselItem.SOUL_FRAGMENT_NBT), "uuid").orElse(null)
+            : null;
 
         ReleasedSoulEntity releasedSoul = new ReleasedSoulEntity(RequiemEntities.RELEASED_SOUL, level, ownerRecord);
         releasedSoul.setPos(targetPos.x, targetPos.y, targetPos.z);

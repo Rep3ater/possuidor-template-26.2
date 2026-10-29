@@ -49,7 +49,7 @@ public final class InventoryHelper {
             }
             if (!dest.getItemBySlot(slot).isEmpty()) {
                 if (dest.level() instanceof ServerLevel serverLevel) {
-                    dest.spawnAtLocation(serverLevel, stuff, 0.5f);
+                    dest.spawnAtLocation(stuff, 0.5f);
                 }
             } else {
                 dest.setItemSlot(slot, stuff);

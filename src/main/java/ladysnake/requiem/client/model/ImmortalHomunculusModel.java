@@ -2,7 +2,11 @@ package ladysnake.requiem.client.model;
 
 import ladysnake.requiem.Requiem;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -10,17 +14,19 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import ladysnake.requiem.common.entity.ImmortalHomunculusEntity;
 
 /** Blockbench suffering-form model port. Its supplied skin uses 64x64 UV coordinates. */
-public final class ImmortalHomunculusModel extends EntityModel<LivingEntityRenderState> {
+public final class ImmortalHomunculusModel extends EntityModel<ImmortalHomunculusEntity> {
+    private final ModelPart root;
     public static final ModelLayerLocation LAYER_LOCATION =
         new ModelLayerLocation(Requiem.id("immortal_homunculus"), "main");
 
     private final ModelPart waist, head, body, leftArm, rightArm, leftLeg, rightLeg;
 
     public ImmortalHomunculusModel(ModelPart root) {
-        super(root);
+        super(RenderType::entityCutoutNoCull);
+        this.root = root;
         this.waist = root.getChild("waist");
         this.head = this.waist.getChild("head");
         this.body = this.waist.getChild("body");
@@ -56,12 +62,17 @@ PartDefinition waist = partdefinition.addOrReplaceChild("waist", CubeListBuilder
     }
 
     @Override
-    public void setupAnim(LivingEntityRenderState state) {
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int packedColor) {
+        this.root.render(poseStack, buffer, packedLight, packedOverlay, packedColor);
+    }
+
+    @Override
+    public void setupAnim(ImmortalHomunculusEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         float radians = (float) Math.PI / 180.0F;
-        this.head.yRot = state.yRot * radians;
-        this.head.xRot = state.xRot * radians;
-        if (state.isInWater) {
-            float phase = state.ageInTicks * 0.18F;
+        this.head.yRot = entity.getYRot() * radians;
+        this.head.xRot = entity.getXRot() * radians;
+        if (entity.isInWater()) {
+            float phase = entity.tickCount * 0.18F;
             this.body.xRot = 1.1F;
             this.leftArm.xRot = -1.25F + net.minecraft.util.Mth.cos(phase) * 0.65F;
             this.rightArm.xRot = -1.25F + net.minecraft.util.Mth.cos(phase + (float) Math.PI) * 0.65F;
@@ -70,8 +81,8 @@ PartDefinition waist = partdefinition.addOrReplaceChild("waist", CubeListBuilder
             return;
         }
         this.body.xRot = 0.0F;
-        float phase = state.walkAnimationPos * 0.6662F;
-        float swing = 1.4F * state.walkAnimationSpeed;
+        float phase = entity.walkAnimation.position(1.0F) * 0.6662F;
+        float swing = 1.4F * entity.walkAnimation.speed(1.0F);
         this.leftLeg.xRot = net.minecraft.util.Mth.cos(phase) * swing;
         this.rightLeg.xRot = net.minecraft.util.Mth.cos(phase + (float) Math.PI) * swing;
         this.leftArm.xRot = net.minecraft.util.Mth.cos(phase + (float) Math.PI) * swing * 0.7F;

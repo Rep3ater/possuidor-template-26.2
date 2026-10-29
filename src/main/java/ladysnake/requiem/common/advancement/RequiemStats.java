@@ -35,15 +35,15 @@
 package ladysnake.requiem.common.advancement;
 
 import ladysnake.requiem.Requiem;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.StatFormatter;
 import net.minecraft.stats.Stats;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 public final class RequiemStats {
-    public static final Identifier INTERACT_WITH_RIFT = Requiem.id("interact_with_rift");
+    public static final ResourceLocation INTERACT_WITH_RIFT = Requiem.id("interact_with_rift");
 
-    public static void register(RegisterEvent.RegisterHelper<Identifier> helper) {
+    public static void register(RegisterEvent.RegisterHelper<ResourceLocation> helper) {
         helper.register(INTERACT_WITH_RIFT, INTERACT_WITH_RIFT);
         Stats.CUSTOM.get(INTERACT_WITH_RIFT, StatFormatter.DEFAULT);
     }

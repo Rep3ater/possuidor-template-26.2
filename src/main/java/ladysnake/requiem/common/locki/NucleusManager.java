@@ -10,7 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -20,11 +20,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -73,7 +73,7 @@ public final class NucleusManager {
         saveReturn(phoenix, owner);
         ensureArena(nucleus, phoenix);
         phoenix.addEffect(new MobEffectInstance(RequiemStatusEffects.NUCLEUS_TRANSITION, 35, 0, false, false, false));
-        phoenix.teleportTo(nucleus, 0.5, 80.0, 0.5, Set.of(), -90.0F, 0.0F, false);
+        phoenix.teleportTo(nucleus, 0.5, 80.0, 0.5, Set.of(), -90.0F, 0.0F);
         phoenix.playSound(SoundEvents.PORTAL_TRAVEL, 0.8F, 0.7F);
         phoenix.sendSystemMessage(Component.literal("§eYellow light swallows the world. You have entered Nucleus."));
         inviteDevelopers(source.getServer(), phoenix);
@@ -84,14 +84,14 @@ public final class NucleusManager {
         buildFireArenaIfNeeded(level);
         BlockPos phoenixMarker = new BlockPos(0, 79, 0);
         BlockPos devMarker = new BlockPos(100, 79, 0);
-        level.setBlock(phoenixMarker, Blocks.CONCRETE.pick(DyeColor.MAGENTA).defaultBlockState(), 3);
-        level.setBlock(devMarker, Blocks.CONCRETE.pick(DyeColor.YELLOW).defaultBlockState(), 3);
+        level.setBlock(phoenixMarker, Blocks.MAGENTA_CONCRETE.defaultBlockState(), 3);
+        level.setBlock(devMarker, Blocks.YELLOW_CONCRETE.defaultBlockState(), 3);
 
         // The sovereign is played by a consenting developer, not by a mob entity.
         // Clean up the Warden placeholder left behind by older versions.
         AABB oldBossArea = new AABB(94, 80, -6, 106, 88, 6);
         for (Mob oldBoss : level.getEntitiesOfClass(Mob.class, oldBossArea,
-                entity -> entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false))) {
+                entity -> entity.getPersistentData().getBoolean(BOSS_KEY))) {
             oldBoss.discard();
         }
     }
@@ -125,18 +125,18 @@ public final class NucleusManager {
         for (ServerPlayer candidate : server.getPlayerList().getPlayers()) {
             if (candidate == phoenix || !isDeveloper(candidate)) continue;
             candidate.getPersistentData().putString(PENDING_INVITE, phoenix.getUUID().toString());
-            candidate.sendSystemMessage(Component.literal("§dNucleus arena invitation from " + phoenix.getGameProfile().name() + ". Type `join` to accept."));
+            candidate.sendSystemMessage(Component.literal("§dNucleus arena invitation from " + phoenix.getGameProfile().getName() + ". Type `join` to accept."));
         }
     }
 
     public static boolean isDeveloper(Player player) {
-        return player.entityTags().contains("dev") || player.entityTags().contains("DEV")
-            || player.entityTags().contains("Developer") || player.entityTags().contains("tagDeveloper");
+        return player.getTags().contains("dev") || player.getTags().contains("DEV")
+            || player.getTags().contains("Developer") || player.getTags().contains("tagDeveloper");
     }
 
     public static void onChat(ServerChatEvent event) {
         ServerPlayer player = event.getPlayer();
-        String pending = player.getPersistentData().getString(PENDING_INVITE).orElse("");
+        String pending = player.getPersistentData().getString(PENDING_INVITE);
         String message = event.getRawText().trim();
         if (!pending.isBlank() && (message.equalsIgnoreCase("join") || message.equalsIgnoreCase("accept"))) {
             event.setCanceled(true);
@@ -165,13 +165,13 @@ public final class NucleusManager {
             developer.sendSystemMessage(Component.literal("Only a tagged developer can accept this Nucleus role."));
             return;
         }
-        String assignedDeveloper = phoenix.getPersistentData().getString(SESSION_DEV).orElse("");
+        String assignedDeveloper = phoenix.getPersistentData().getString(SESSION_DEV);
         if (!assignedDeveloper.isBlank() && !assignedDeveloper.equals(developer.getUUID().toString())) {
             developer.getPersistentData().remove(PENDING_INVITE);
             developer.sendSystemMessage(Component.literal("Another developer has already accepted this Nucleus encounter."));
             return;
         }
-        if (!developer.getPersistentData().getString(SESSION_OWNER).orElse("").isBlank()) {
+        if (!developer.getPersistentData().getString(SESSION_OWNER).isBlank()) {
             developer.sendSystemMessage(Component.literal("You already have an active Nucleus session."));
             return;
         }
@@ -185,15 +185,15 @@ public final class NucleusManager {
         developer.getPersistentData().putBoolean(BOSS_KEY, true);
         developer.getPersistentData().putString(BOSS_OWNER, ownerString);
         developer.addTag("requiem_nucleus_player_boss");
-        developer.teleportTo(nucleus, 100.5, 80.0, 4.5, Set.of(), 90.0F, 0.0F, false);
+        developer.teleportTo(nucleus, 100.5, 80.0, 4.5, Set.of(), 90.0F, 0.0F);
         developer.sendSystemMessage(Component.literal("You accepted the Nucleus sovereign role. You are the boss player; your inventory is preserved. Claim your opponent's Suffering Head by defeating Phenex."));
-        phoenix.sendSystemMessage(Component.literal(developer.getGameProfile().name() + " accepted the Nucleus sovereign role."));
+        phoenix.sendSystemMessage(Component.literal(developer.getGameProfile().getName() + " accepted the Nucleus sovereign role."));
     }
 
     private static void saveReturn(ServerPlayer player, String owner) {
         CompoundTag data = player.getPersistentData();
         data.putString(SESSION_OWNER, owner);
-        data.putString(RETURN_DIM, player.level().dimension().identifier().toString());
+        data.putString(RETURN_DIM, player.level().dimension().location().toString());
         data.putDouble(RETURN_X, player.getX());
         data.putDouble(RETURN_Y, player.getY());
         data.putDouble(RETURN_Z, player.getZ());
@@ -203,9 +203,9 @@ public final class NucleusManager {
 
     public static void onLivingDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
-        if (!entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)) return;
+        if (!entity.getPersistentData().getBoolean(BOSS_KEY)) return;
         Entity killer = event.getSource().getEntity();
-        String owner = entity.getPersistentData().getString(BOSS_OWNER).orElse("");
+        String owner = entity.getPersistentData().getString(BOSS_OWNER);
         if (!(killer instanceof ServerPlayer phenex) || !PhenexAbilitySystem.isPhenex(phenex)
                 || !phenex.getUUID().toString().equals(owner)) {
             return;
@@ -235,18 +235,18 @@ public final class NucleusManager {
     }
 
     public static void onLivingExperienceDrop(LivingExperienceDropEvent event) {
-        if (event.getEntity().getPersistentData().getBoolean(BOSS_KEY).orElse(false)) {
+        if (event.getEntity().getPersistentData().getBoolean(BOSS_KEY)) {
             event.setCanceled(true);
         }
     }
 
     public static void onLivingDrops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
-        if (!entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)) return;
+        if (!entity.getPersistentData().getBoolean(BOSS_KEY)) return;
         // Player-boss rewards are created by onLivingDeath; never clear a developer's inventory drops.
         if (entity instanceof ServerPlayer) return;
         event.getDrops().clear();
-        String owner = entity.getPersistentData().getString(BOSS_OWNER).orElse("");
+        String owner = entity.getPersistentData().getString(BOSS_OWNER);
         event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), makeOwnedSufferingHead(owner)));
     }
 
@@ -254,10 +254,10 @@ public final class NucleusManager {
     public static void onPickupPre(ItemEntityPickupEvent.Pre event) {
         ItemStack stack = event.getItemEntity().getItem();
         if (!stack.is(RequiemItems.SUFFERING_HEAD)) return;
-        String owner = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(HEAD_OWNER).orElse("");
+        String owner = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(HEAD_OWNER);
         if (owner.isBlank()) return;
         if (!event.getPlayer().getUUID().toString().equals(owner)) {
-            event.setCanPickup(net.minecraft.util.TriState.FALSE);
+            event.setCanPickup(net.neoforged.neoforge.common.util.TriState.FALSE);
             return;
         }
         MinecraftServer server = event.getPlayer().level().getServer();
@@ -267,18 +267,18 @@ public final class NucleusManager {
     private static void returnSession(MinecraftServer server, String owner) {
         if (server == null) return;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            if (!owner.equals(player.getPersistentData().getString(SESSION_OWNER).orElse(""))) continue;
+            if (!owner.equals(player.getPersistentData().getString(SESSION_OWNER))) continue;
             CompoundTag data = player.getPersistentData();
-            Identifier id = Identifier.tryParse(data.getString(RETURN_DIM).orElse("minecraft:overworld"));
-            if (id == null) id = Identifier.withDefaultNamespace("overworld");
+            ResourceLocation id = ResourceLocation.tryParse((data.contains(RETURN_DIM, net.minecraft.nbt.Tag.TAG_STRING) ? data.getString(RETURN_DIM) : "minecraft:overworld"));
+            if (id == null) id = ResourceLocation.withDefaultNamespace("overworld");
             ServerLevel target = server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
             if (target == null) target = server.overworld();
-            double x = data.getDouble(RETURN_X).orElse(0.0);
-            double y = data.getDouble(RETURN_Y).orElse(80.0);
-            double z = data.getDouble(RETURN_Z).orElse(0.0);
-            float yaw = data.getFloat(RETURN_YAW).orElse(0.0F);
-            float pitch = data.getFloat(RETURN_PITCH).orElse(0.0F);
-            player.teleportTo(target, x, y, z, Set.of(), yaw, pitch, false);
+            double x = (data.contains(RETURN_X, net.minecraft.nbt.Tag.TAG_DOUBLE) ? data.getDouble(RETURN_X) : 0.0);
+            double y = (data.contains(RETURN_Y, net.minecraft.nbt.Tag.TAG_DOUBLE) ? data.getDouble(RETURN_Y) : 80.0);
+            double z = (data.contains(RETURN_Z, net.minecraft.nbt.Tag.TAG_DOUBLE) ? data.getDouble(RETURN_Z) : 0.0);
+            float yaw = (data.contains(RETURN_YAW, net.minecraft.nbt.Tag.TAG_FLOAT) ? data.getFloat(RETURN_YAW) : 0.0F);
+            float pitch = (data.contains(RETURN_PITCH, net.minecraft.nbt.Tag.TAG_FLOAT) ? data.getFloat(RETURN_PITCH) : 0.0F);
+            player.teleportTo(target, x, y, z, Set.of(), yaw, pitch);
             data.remove(SESSION_OWNER);
             data.remove(SESSION_DEV);
             data.remove(RETURN_DIM);

@@ -60,7 +60,7 @@ public class FreeFromMortailCoilGoal extends MorticianSpellGoal {
             player.addEffect(new MobEffectInstance(RequiemStatusEffects.PENANCE, PENANCE_TIME, penanceAmplifier, false, false, true));
             ServerPlayer soul = PenanceComponent.KEY.get(player).maxOutPenance(penanceAmplifier);
             ServerPlayer affected = soul != null ? soul : player;
-            affected.knockback(1.0, (double) Mth.sin(this.mortician.getYRot() * (float) Math.PI / 180), (double) -Mth.cos(this.mortician.getYRot() * (float) Math.PI / 180), this.mortician.damageSources().mobAttack(this.mortician), 1.0f);
+            affected.knockback(1.0, (double) Mth.sin(this.mortician.getYRot() * (float) Math.PI / 180), (double) -Mth.cos(this.mortician.getYRot() * (float) Math.PI / 180));
             affected.connection.send(new ClientboundSetEntityMotionPacket(affected));
         }
     }

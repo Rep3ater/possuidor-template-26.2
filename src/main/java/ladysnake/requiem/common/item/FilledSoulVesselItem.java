@@ -29,27 +29,25 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.List;
 
 public class FilledSoulVesselItem extends Item {
     public static final String SOUL_FRAGMENT_NBT = "requiem:soul_fragment";
@@ -72,8 +70,8 @@ public class FilledSoulVesselItem extends Item {
     }
 
     @Override
-    public ItemStackTemplate getCraftingRemainder(ItemInstance instance) {
-        return new ItemStackTemplate(this.emptySoulVessel);
+    public ItemStack getCraftingRemainingItem(ItemStack stack) {
+        return new ItemStack(this.emptySoulVessel);
     }
 
     public void registerCallbacks() {
@@ -87,10 +85,11 @@ public class FilledSoulVesselItem extends Item {
     @Override
     public Component getName(ItemStack stack) {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        java.util.Optional<EntityType<?>> entityType = tag.getCompound(SOUL_FRAGMENT_NBT)
-            .flatMap(c -> c.getString("type"))
-            .map(Identifier::tryParse)
-            .flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional);
+        java.util.Optional<EntityType<?>> entityType = java.util.Optional.empty();
+        if (tag.contains(SOUL_FRAGMENT_NBT, net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+            ResourceLocation id = ResourceLocation.tryParse(tag.getCompound(SOUL_FRAGMENT_NBT).getString("type"));
+            if (id != null) entityType = BuiltInRegistries.ENTITY_TYPE.getOptional(id);
+        }
         if (entityType.isPresent()) {
             return Component.translatable("item.requiem.filled_soul_vessel.entity", entityType.get().getDescription());
         }
@@ -98,14 +97,13 @@ public class FilledSoulVesselItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltipAdder, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        tag.getCompound(SOUL_FRAGMENT_NBT).ifPresent(fragmentData -> {
-            fragmentData.getString("type")
-                .map(Identifier::tryParse)
-                .flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional)
-                .ifPresent(contained -> tooltipAdder.accept(Component.translatable("requiem:tooltip.filled_vessel", contained.getDescription()).withStyle(ChatFormatting.GRAY)));
-        });
+        if (tag.contains(SOUL_FRAGMENT_NBT, net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+            ResourceLocation id = ResourceLocation.tryParse(tag.getCompound(SOUL_FRAGMENT_NBT).getString("type"));
+            if (id != null) BuiltInRegistries.ENTITY_TYPE.getOptional(id).ifPresent(contained ->
+                tooltip.add(Component.translatable("requiem:tooltip.filled_vessel", contained.getDescription()).withStyle(ChatFormatting.GRAY)));
+        }
     }
 
     @Override
@@ -113,9 +111,7 @@ public class FilledSoulVesselItem extends Item {
         if (target instanceof PathfinderMob mob) {
             if (!user.level().isClientSide()) {
                 CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-                String soulType = tag.getCompound(SOUL_FRAGMENT_NBT)
-                    .flatMap(frag -> frag.getString("type"))
-                    .orElse("minecraft:zombie");
+                String soulType = tag.contains(SOUL_FRAGMENT_NBT, net.minecraft.nbt.Tag.TAG_COMPOUND) ? tag.getCompound(SOUL_FRAGMENT_NBT).getString("type") : "minecraft:zombie";
 
                 ladysnake.requiem.common.construct.ai.SoulAiManager.injectSoul(mob, soulType, user);
                 user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, this.getEmptiedStack()));
@@ -127,19 +123,17 @@ public class FilledSoulVesselItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         ItemStack stack = user.getItemInHand(hand);
         if (!world.isClientSide()) {
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            UUID uuid = tag.getCompound(SOUL_FRAGMENT_NBT)
-                .flatMap(frag -> NbtCompat.getUuid(frag, "uuid"))
-                .orElse(null);
+            UUID uuid = tag.contains(SOUL_FRAGMENT_NBT, net.minecraft.nbt.Tag.TAG_COMPOUND) ? NbtCompat.getUuid(tag.getCompound(SOUL_FRAGMENT_NBT), "uuid").orElse(null) : null;
             releaseSoul(user, uuid);
             user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, this.getEmptiedStack()));
-            return InteractionResult.SUCCESS;
+            return InteractionResultHolder.sidedSuccess(user.getItemInHand(hand), world.isClientSide());
         }
         user.playSound(RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, 3f, 0.6F + user.getRandom().nextFloat() * 0.4F);
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.sidedSuccess(user.getItemInHand(hand), world.isClientSide());
     }
 
     public ItemStack getEmptiedStack() {

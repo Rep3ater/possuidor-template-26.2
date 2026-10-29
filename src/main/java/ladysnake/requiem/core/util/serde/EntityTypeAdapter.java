@@ -39,7 +39,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 
 import javax.annotation.Nullable;
@@ -55,7 +55,7 @@ public final class EntityTypeAdapter extends TypeAdapter<EntityType<?>> {
     @Nullable
     @Override
     public EntityType<?> read(JsonReader in) throws IOException {
-        Identifier id = Identifier.tryParse(in.nextString());
+        ResourceLocation id = ResourceLocation.tryParse(in.nextString());
         return id == null ? null : BuiltInRegistries.ENTITY_TYPE.getOptional(id).orElse(null);
     }
 }

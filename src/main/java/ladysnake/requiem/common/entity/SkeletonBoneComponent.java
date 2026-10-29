@@ -45,13 +45,12 @@ import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ConversionParams;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.skeleton.Skeleton;
-import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
+import net.minecraft.world.entity.monster.Skeleton;
+import net.minecraft.world.entity.monster.WitherSkeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -83,7 +82,7 @@ public final class SkeletonBoneComponent implements Component {
 
     private void replaceSkeleton() {
         Player possessor = ((Possessable) this.owner).getPossessor();
-        Skeleton replacement = this.owner.convertTo(EntityTypes.SKELETON, ConversionParams.single(this.owner, true, false), r -> {});
+        Skeleton replacement = this.owner.convertTo(EntityType.SKELETON, true);
         if (replacement != null) {
             replacement.setHealth(this.owner.getHealth());
             if (possessor instanceof ServerPlayer) {
@@ -114,7 +113,7 @@ public final class SkeletonBoneComponent implements Component {
     @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("replaced_bones")) {
-            this.replacedBones = tag.getIntOr("replaced_bones", 0);
+            this.replacedBones = tag.getInt("replaced_bones");
         }
     }
 

@@ -18,7 +18,7 @@
 package ladysnake.requiem.api.v1.record;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -67,12 +67,12 @@ public interface GlobalRecord {
     }
 
     @Deprecated(forRemoval = true)
-    default void addTickingAction(Identifier actionId, Consumer<GlobalRecord> action) {
+    default void addTickingAction(ResourceLocation actionId, Consumer<GlobalRecord> action) {
         throw new UnsupportedOperationException();
     }
 
     @Deprecated(forRemoval = true)
-    default void removeTickingAction(Identifier actionId) {
+    default void removeTickingAction(ResourceLocation actionId) {
         throw new UnsupportedOperationException();
     }
 }

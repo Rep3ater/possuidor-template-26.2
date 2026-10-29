@@ -26,7 +26,7 @@ public abstract class LockiCameraMixin {
         if (LockiClientState.isRootDiving() && !mc.options.getCameraType().isFirstPerson()) {
             // Keep third-person follow distance, but place the camera at spirit-height rather than eye-height.
             double lowerBy = Math.max(0.0, mc.player.getEyeHeight() - 0.045);
-            Vec3 current = ((Camera) (Object) this).position();
+            Vec3 current = ((Camera) (Object) this).getPosition();
             this.setPosition(current.x, current.y - lowerBy, current.z);
             return;
         }

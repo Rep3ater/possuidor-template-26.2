@@ -31,20 +31,19 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.function.Consumer;
 
 public class DemonSoulVesselItem extends Item {
     private final RemnantType remnantType;
@@ -79,11 +78,11 @@ public class DemonSoulVesselItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         if (world.isClientSide()) {
-            return InteractionResult.SUCCESS;
+            return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
         }
 
         if (player instanceof ServerPlayer serverPlayer && stack.getItem() == this) {
@@ -134,19 +133,19 @@ public class DemonSoulVesselItem extends Item {
                     player.awardStat(Stats.ITEM_USED.get(this));
                     ItemStack result = new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL);
                     player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, result));
-                    return InteractionResult.SUCCESS;
+                    return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
                 }
             }
 
-            return InteractionResult.SUCCESS;
+            return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
         }
 
-        return InteractionResult.FAIL;
+        return InteractionResultHolder.fail(player.getItemInHand(hand));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltipAdder, TooltipFlag flag) {
-        tooltipAdder.accept(Component.translatable(tooltip).withStyle(this.getTooltipColor()));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, java.util.List<Component> tooltipComponents, TooltipFlag flag) {
+        tooltipComponents.add(Component.translatable(this.tooltip).withStyle(this.getTooltipColor()));
     }
 
     @Override

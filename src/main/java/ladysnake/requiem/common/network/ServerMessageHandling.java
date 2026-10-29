@@ -118,7 +118,7 @@ public final class ServerMessageHandling {
 
         // Clientbound codecs are declared here, but actual client handlers are registered
         // in RegisterClientPayloadHandlersEvent to keep client-only classes off the server.
-        registerClientboundPayloads(registrar);
+        if (FMLEnvironment.dist.isDedicatedServer()) registerClientboundPayloads(registrar);
     }
 
     private static void handleConsumeResurrectionItem(RequiemCoreNetworking.ConsumeResurrectionItemPayload payload, IPayloadContext context) {
@@ -160,17 +160,17 @@ public final class ServerMessageHandling {
     private static void registerClientboundPayloads(PayloadRegistrar registrar) {
         // Keep the payload IDs/codecs available to the physical server. The client installs
         // the real handlers via RegisterClientPayloadHandlersEvent.
-        registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.EtherealAnimationPayload.TYPE, RequiemNetworking.EtherealAnimationPayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.BodyCurePayload.TYPE, RequiemNetworking.BodyCurePayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.ObeliskPowerUpdatePayload.TYPE, RequiemNetworking.ObeliskPowerUpdatePayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.RiftWitnessedPayload.TYPE, RequiemNetworking.RiftWitnessedPayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.OpenDialoguePayload.TYPE, RequiemNetworking.OpenDialoguePayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.ShellProfileSyncPayload.TYPE, RequiemNetworking.ShellProfileSyncPayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.LockiStatePayload.TYPE, RequiemNetworking.LockiStatePayload.STREAM_CODEC);
-        registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC);
+        registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.EtherealAnimationPayload.TYPE, RequiemNetworking.EtherealAnimationPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.BodyCurePayload.TYPE, RequiemNetworking.BodyCurePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.ObeliskPowerUpdatePayload.TYPE, RequiemNetworking.ObeliskPowerUpdatePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.RiftWitnessedPayload.TYPE, RequiemNetworking.RiftWitnessedPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.OpenDialoguePayload.TYPE, RequiemNetworking.OpenDialoguePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.ShellProfileSyncPayload.TYPE, RequiemNetworking.ShellProfileSyncPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.LockiStatePayload.TYPE, RequiemNetworking.LockiStatePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, (payload, context) -> {});
     }
 
 

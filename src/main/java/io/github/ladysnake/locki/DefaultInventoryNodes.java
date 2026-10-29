@@ -35,7 +35,6 @@ public final class DefaultInventoryNodes {
             case CHEST -> CHEST;
             case HEAD -> HEAD;
             case BODY -> BODY;
-            case SADDLE -> SADDLE;
         };
     }
 

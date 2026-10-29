@@ -62,7 +62,7 @@ public class MeleeAbility extends DirectAbilityBase<Mob, Entity> {
 
         if (this.owner.level().isClientSide()) return true;
 
-        boolean success = owner.level() instanceof net.minecraft.server.level.ServerLevel serverLevel && owner.doHurtTarget(serverLevel, target);
+        boolean success = owner.doHurtTarget(target);
 
         if (success && target instanceof LivingEntity livingTarget) {
             this.owner.setAggressive(true);

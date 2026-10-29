@@ -37,18 +37,18 @@ package ladysnake.requiem.core.util.serde;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
 
-public final class IdentifierAdapter extends TypeAdapter<Identifier> {
+public final class IdentifierAdapter extends TypeAdapter<ResourceLocation> {
     @Override
-    public void write(JsonWriter out, Identifier value) throws IOException {
+    public void write(JsonWriter out, ResourceLocation value) throws IOException {
         out.value(value.toString());
     }
 
     @Override
-    public Identifier read(JsonReader in) throws IOException {
-        return Identifier.tryParse(in.nextString());
+    public ResourceLocation read(JsonReader in) throws IOException {
+        return ResourceLocation.tryParse(in.nextString());
     }
 }

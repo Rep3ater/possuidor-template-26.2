@@ -25,7 +25,6 @@ import ladysnake.requiem.common.item.dispensing.RequiemDispenserBehaviors;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -35,7 +34,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SpawnEggItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -46,18 +45,14 @@ import java.util.List;
 import java.util.Map;
 
 public final class RequiemItems {
-    private static ResourceKey<Item> key(String name) {
-        return ResourceKey.create(Registries.ITEM, Requiem.id(name));
-    }
-
-    public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Properties().setId(key("debug_item")));
-    public static final Item TOTEM_OF_SKELETONIZATION = new Item(new Item.Properties().setId(key("totem_of_skeletonization")).stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final EmptySoulVesselItem EMPTY_SOUL_VESSEL = new EmptySoulVesselItem(new Item.Properties().setId(key("empty_soul_vessel")).stacksTo(1));
-    public static final CreativeSoulVesselItem CREATIVE_SOUL_VESSEL = new CreativeSoulVesselItem(new Item.Properties().setId(key("creative_soul_vessel")).stacksTo(1));
-    public static final FilledSoulVesselItem FILLED_SOUL_VESSEL = new FilledSoulVesselItem(new Item.Properties().setId(key("filled_soul_vessel")).stacksTo(1), EMPTY_SOUL_VESSEL);
-    public static final Item SHATTERED_SOUL_VESSEL = new Item(new Item.Properties().setId(key("shattered_soul_vessel")).stacksTo(1));
+    public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Properties());
+    public static final Item TOTEM_OF_SKELETONIZATION = new Item(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final EmptySoulVesselItem EMPTY_SOUL_VESSEL = new EmptySoulVesselItem(new Item.Properties().stacksTo(1));
+    public static final CreativeSoulVesselItem CREATIVE_SOUL_VESSEL = new CreativeSoulVesselItem(new Item.Properties().stacksTo(1));
+    public static final FilledSoulVesselItem FILLED_SOUL_VESSEL = new FilledSoulVesselItem(new Item.Properties().stacksTo(1), EMPTY_SOUL_VESSEL);
+    public static final Item SHATTERED_SOUL_VESSEL = new Item(new Item.Properties().stacksTo(1));
     private static Item.Properties lockiAppleProperties(String id) {
-        return new Item.Properties().setId(key(id)).stacksTo(64)
+        return new Item.Properties().stacksTo(64)
             .food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.3F).build());
     }
     public static final LockiAppleItem LOCKI_APPLE = new LockiAppleItem(lockiAppleProperties("locki_apple"), 0);
@@ -65,18 +60,18 @@ public final class RequiemItems {
     public static final LockiAppleItem LOCKI_APPLE_ROT_2 = new LockiAppleItem(lockiAppleProperties("locki_apple_rot_2"), 2);
     public static final LockiAppleItem LOCKI_APPLE_ROT_3 = new LockiAppleItem(lockiAppleProperties("locki_apple_rot_3"), 3);
     public static final LockiAppleItem LOCKI_APPLE_ROT_4 = new LockiAppleItem(lockiAppleProperties("locki_apple_rot_4"), 4);
-    public static final DemonSoulVesselItem PURE_SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, ChatFormatting.AQUA, new Item.Properties().setId(key("pure_soul_vessel")).stacksTo(1), "requiem:remnant_vessel.cure");
-    public static final DemonSoulVesselItem SEALED_REMNANT_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, ChatFormatting.RED, new Item.Properties().setId(key("sealed_remnant_vessel")).stacksTo(1), "requiem:remnant_vessel.curse");
-    public static final Item PHENEX_SCROLL = new Item(new Item.Properties().setId(key("phenex_scroll")).stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final Item SOUL_LOCATOR = new Item(new Item.Properties().setId(key("soul_locator")).stacksTo(1).rarity(Rarity.RARE));
+    public static final DemonSoulVesselItem PURE_SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, ChatFormatting.AQUA, new Item.Properties().stacksTo(1), "requiem:remnant_vessel.cure");
+    public static final DemonSoulVesselItem SEALED_REMNANT_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, ChatFormatting.RED, new Item.Properties().stacksTo(1), "requiem:remnant_vessel.curse");
+    public static final Item PHENEX_SCROLL = new Item(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final Item SOUL_LOCATOR = new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
     public static final Item SUFFERING_HEAD = new BlockItem(
         RequiemBlocks.SUFFERING_HEAD,
-        new Item.Properties().setId(key("suffering_head")).stacksTo(1).rarity(Rarity.EPIC));
-    public static final Item SULFUR_CUBE = new Item(new Item.Properties().setId(key("sulfur_cube")).stacksTo(16).rarity(Rarity.UNCOMMON));
-    public static final Item EMBRYO = new Item(new Item.Properties().setId(key("embryo")).stacksTo(16).rarity(Rarity.UNCOMMON));
-    public static final Item VESSEL_SHARD = new Item(new Item.Properties().setId(key("vessel_shard")).stacksTo(16).rarity(Rarity.UNCOMMON));
-    public static final Item HOMUNCULUS = new Item(new Item.Properties().setId(key("homunculus")).stacksTo(1).rarity(Rarity.RARE));
-    public static final Item MORTICIAN_SPAWN_EGG = new SpawnEggItem(new Item.Properties().setId(key("mortician_spawn_egg")).spawnEgg(RequiemEntities.MORTICIAN));
+        new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+    public static final Item SULFUR_CUBE = new Item(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final Item EMBRYO = new Item(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final Item VESSEL_SHARD = new Item(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final Item HOMUNCULUS = new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+    public static final Item MORTICIAN_SPAWN_EGG = new DeferredSpawnEggItem(() -> RequiemEntities.MORTICIAN, 0x4B3323, 0xC7B59D, new Item.Properties());
 
     public static final Map<MobEffect, IchorVesselItem> vesselsByEffect = new LinkedHashMap<>();
 
@@ -93,7 +88,7 @@ public final class RequiemItems {
     private static final Map<ResourceKey<CreativeModeTab>, List<ItemLike>> itemsByGroup = new LinkedHashMap<>();
 
     private static IchorVesselItem makeIchorVessel(String name, Holder<MobEffect> statusEffect) {
-        return new IchorVesselItem(new Item.Properties().setId(key(name)).stacksTo(1), new MobEffectInstance(statusEffect, ICHOR_DEFAULT_DURATION, 0, false, false, true));
+        return new IchorVesselItem(new Item.Properties().stacksTo(1), new MobEffectInstance(statusEffect, ICHOR_DEFAULT_DURATION, 0, false, false, true));
     }
 
     public static void register(RegisterEvent.RegisterHelper<Item> helper) {

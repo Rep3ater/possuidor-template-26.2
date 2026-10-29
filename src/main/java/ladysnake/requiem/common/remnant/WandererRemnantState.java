@@ -98,7 +98,7 @@ public class WandererRemnantState extends MutableRemnantState {
     }
 
     public static void spawnAttritionParticles(ServerPlayer player, LivingEntity body) {
-        player.level().sendParticles(
+        player.serverLevel().sendParticles(
             RequiemParticleTypes.ATTRITION,
             body.getX(),
             body.getY(0.5),

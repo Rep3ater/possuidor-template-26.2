@@ -53,7 +53,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -166,7 +166,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public boolean canCurePossessed(LivingEntity body) {
-        boolean noCure = this.player.level().getServer() != null && this.player.level().getServer().getGameRules().get(RequiemGamerules.NO_CURE);
+        boolean noCure = this.player.level().getServer() != null && RequiemGamerules.noCure(this.player.level().getServer().getGameRules());
         return !noCure && this.state.canCurePossessed(body);
     }
 
@@ -256,10 +256,10 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public void readFromNbt(CompoundTag compoundTag) {
-        RemnantType remnantType = RemnantTypes.get(Identifier.parse(compoundTag.getStringOr("id", RemnantState.NULL_STATE_ID)));
-        this.chosen = compoundTag.getBooleanOr("chosen", false);
+        RemnantType remnantType = RemnantTypes.get(ResourceLocation.parse((compoundTag.contains("id", net.minecraft.nbt.Tag.TAG_STRING) ? compoundTag.getString("id") : RemnantState.NULL_STATE_ID)));
+        this.chosen = compoundTag.getBoolean("chosen");
         this.become(remnantType);
-        this.setVagrant(compoundTag.getBooleanOr(ETHEREAL_TAG, false));
+        this.setVagrant(compoundTag.getBoolean(ETHEREAL_TAG));
     }
 
     @Override

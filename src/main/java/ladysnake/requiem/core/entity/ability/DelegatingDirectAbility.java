@@ -41,7 +41,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class DelegatingDirectAbility<E extends LivingEntity, T extends Entity> implements DirectAbility<E, T> {
     private final LivingEntity owner;
@@ -84,7 +84,7 @@ public class DelegatingDirectAbility<E extends LivingEntity, T extends Entity> i
     }
 
     @Override
-    public Identifier getIconTexture() {
+    public ResourceLocation getIconTexture() {
         return this.getDelegate().getIconTexture(this.delegatedType);
     }
 

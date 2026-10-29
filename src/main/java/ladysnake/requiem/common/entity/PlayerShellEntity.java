@@ -31,6 +31,8 @@ import ladysnake.requiem.common.entity.ai.brain.PlayerShellBrain;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,8 +41,6 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
@@ -150,7 +150,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public boolean isInvulnerableTo(ServerLevel world, net.minecraft.world.damagesource.DamageSource source) {
+    public boolean isInvulnerableTo(net.minecraft.world.damagesource.DamageSource source) {
         return false;
     }
 
@@ -160,10 +160,10 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
         this.invulnerableTime = 0;
         this.getAbilities().invulnerable = false;
-        boolean hurt = super.hurtServer(level, source, amount);
+        boolean hurt = super.hurt(source, amount);
         if (!hurt && amount > 0.0F) {
             float health = this.getHealth() - amount;
             this.setHealth(Math.max(0.0F, health));
@@ -187,7 +187,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public java.util.UUID getOwnerUuid() {
         com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
-        return profile != null ? profile.id() : null;
+        return profile != null ? profile.getId() : null;
     }
 
     @Override
@@ -208,8 +208,8 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    protected Brain<?> makeBrain(Brain.Packed packedBrain) {
-        return PlayerShellBrain.create(Brain.provider(MEMORY_MODULE_TYPES, SENSOR_TYPES, body -> ImmutableList.of()).makeBrain(this, packedBrain));
+    protected Brain<?> makeBrain(Dynamic<?> dynamic) {
+        return PlayerShellBrain.create(Brain.provider(MEMORY_MODULE_TYPES, SENSOR_TYPES).makeBrain(dynamic));
     }
 
     @Override
@@ -234,8 +234,8 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public net.minecraft.network.chat.Component getName() {
         com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
-        if (profile != null && profile.name() != null && !profile.name().isEmpty() && !profile.name().startsWith("[") && !profile.name().equals("Mortal Shell")) {
-            return net.minecraft.network.chat.Component.literal(profile.name() + "'s Shell");
+        if (profile != null && profile.getName() != null && !profile.getName().isEmpty() && !profile.getName().startsWith("[") && !profile.getName().equals("Mortal Shell")) {
+            return net.minecraft.network.chat.Component.literal(profile.getName() + "'s Shell");
         }
         return net.minecraft.network.chat.Component.translatable("entity.requiem.player_shell");
     }
@@ -254,7 +254,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand, Vec3 vec) {
+    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         if (ladysnake.requiem.api.v1.remnant.RemnantComponent.isVagrant(player)) {
             if (!this.level().isClientSide()) {
                 ladysnake.requiem.api.v1.remnant.RemnantComponent.get(player).merge(this);
@@ -327,15 +327,49 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(ValueInput input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        input.read("PlayerProfile", ExtraCodecs.AUTHLIB_GAME_PROFILE).ifPresent(this::setDisplayProfile);
+        if (input.contains("PlayerProfile", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+            CompoundTag profileTag = input.getCompound("PlayerProfile");
+            String profileName = profileTag.getString("Name");
+            java.util.UUID profileId = profileTag.contains("Id", net.minecraft.nbt.Tag.TAG_INT_ARRAY)
+                ? profileTag.getUUID("Id")
+                : java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + profileName).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            com.mojang.authlib.GameProfile profile = new com.mojang.authlib.GameProfile(profileId, profileName);
+            net.minecraft.nbt.ListTag properties = profileTag.getList("Properties", net.minecraft.nbt.Tag.TAG_COMPOUND);
+            for (int i = 0; i < properties.size(); i++) {
+                CompoundTag propertyTag = properties.getCompound(i);
+                String propertyName = propertyTag.getString("Name");
+                String value = propertyTag.getString("Value");
+                com.mojang.authlib.properties.Property property = propertyTag.contains("Signature", net.minecraft.nbt.Tag.TAG_STRING)
+                    ? new com.mojang.authlib.properties.Property(propertyName, value, propertyTag.getString("Signature"))
+                    : new com.mojang.authlib.properties.Property(propertyName, value);
+                profile.getProperties().put(propertyName, property);
+            }
+            this.setDisplayProfile(profile);
+        }
     }
 
     @Override
-    public void addAdditionalSaveData(ValueOutput output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
-        output.storeNullable("PlayerProfile", ExtraCodecs.AUTHLIB_GAME_PROFILE, this.getDisplayProfile());
+        if (this.getDisplayProfile() != null) {
+            com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
+            CompoundTag profileTag = new CompoundTag();
+            if (profile.getId() != null) profileTag.putUUID("Id", profile.getId());
+            if (profile.getName() != null) profileTag.putString("Name", profile.getName());
+            net.minecraft.nbt.ListTag properties = new net.minecraft.nbt.ListTag();
+            for (var entry : profile.getProperties().entries()) {
+                com.mojang.authlib.properties.Property property = entry.getValue();
+                CompoundTag propertyTag = new CompoundTag();
+                propertyTag.putString("Name", entry.getKey());
+                propertyTag.putString("Value", property.value());
+                if (property.signature() != null) propertyTag.putString("Signature", property.signature());
+                properties.add(propertyTag);
+            }
+            profileTag.put("Properties", properties);
+            output.put("PlayerProfile", profileTag);
+        }
     }
 
     public void playSound(SoundEvent soundEvent) {

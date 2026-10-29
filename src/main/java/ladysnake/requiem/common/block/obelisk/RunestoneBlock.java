@@ -5,7 +5,7 @@ import ladysnake.requiem.common.entity.SoulEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.level.BlockGetter;
@@ -22,9 +22,9 @@ import java.util.function.Supplier;
 
 public class RunestoneBlock extends InertRunestoneBlock implements ObeliskEffectRune {
     public static Optional<Block> getByEffect(Holder<MobEffect> effect) {
-        Identifier id = effect.unwrapKey().map(ResourceKey::identifier).orElse(null);
+        ResourceLocation id = effect.unwrapKey().map(ResourceKey::location).orElse(null);
         return Optional.ofNullable(id).flatMap(i ->
-            BuiltInRegistries.BLOCK.getOptional(Identifier.fromNamespaceAndPath(i.getNamespace(), "tachylite/runic/" + i.getPath())));
+            BuiltInRegistries.BLOCK.getOptional(ResourceLocation.fromNamespaceAndPath(i.getNamespace(), "tachylite/runic/" + i.getPath())));
     }
 
     private final Supplier<Holder<MobEffect>> effect;

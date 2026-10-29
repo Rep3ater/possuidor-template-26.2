@@ -51,12 +51,12 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
@@ -65,29 +65,29 @@ import static io.netty.buffer.Unpooled.buffer;
 
 public final class RequiemNetworking {
     // Server -> Client
-    public static final Identifier ANCHOR_DAMAGE = Requiem.id("anchor_damage");
-    public static final Identifier DATA_SYNC = Requiem.id("data_sync");
-    public static final Identifier OPUS_USE = Requiem.id("opus_use");
-    public static final Identifier ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
-    public static final Identifier BODY_CURE = Requiem.id("body_cure");
-    public static final Identifier OBELISK_POWER_UPDATE = Requiem.id("obelisk_power_update");
-    public static final Identifier RIFT_WITNESSED = Requiem.id("rift_witnessed");
-    public static final Identifier OPEN_DIALOGUE = Requiem.id("open_dialogue");
-    public static final Identifier SHELL_PROFILE_SYNC = Requiem.id("shell_profile_sync");
-    public static final Identifier LOCKI_STATE = Requiem.id("locki_state");
-    public static final Identifier HOMUNCULUS_BRAIN_OPEN = Requiem.id("homunculus_brain_open");
+    public static final ResourceLocation ANCHOR_DAMAGE = Requiem.id("anchor_damage");
+    public static final ResourceLocation DATA_SYNC = Requiem.id("data_sync");
+    public static final ResourceLocation OPUS_USE = Requiem.id("opus_use");
+    public static final ResourceLocation ETHEREAL_ANIMATION = Requiem.id("ethereal_animation");
+    public static final ResourceLocation BODY_CURE = Requiem.id("body_cure");
+    public static final ResourceLocation OBELISK_POWER_UPDATE = Requiem.id("obelisk_power_update");
+    public static final ResourceLocation RIFT_WITNESSED = Requiem.id("rift_witnessed");
+    public static final ResourceLocation OPEN_DIALOGUE = Requiem.id("open_dialogue");
+    public static final ResourceLocation SHELL_PROFILE_SYNC = Requiem.id("shell_profile_sync");
+    public static final ResourceLocation LOCKI_STATE = Requiem.id("locki_state");
+    public static final ResourceLocation HOMUNCULUS_BRAIN_OPEN = Requiem.id("homunculus_brain_open");
 
     // Client -> Server
-    public static final Identifier HOMUNCULUS_BRAIN_SAVE = Requiem.id("homunculus_brain_save");
+    public static final ResourceLocation HOMUNCULUS_BRAIN_SAVE = Requiem.id("homunculus_brain_save");
 
     // Client -> Server
-    public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
-    public static final Identifier ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
-    public static final Identifier OPEN_CRAFTING_MENU = Requiem.id("open_crafting");
-    public static final Identifier USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
-    public static final Identifier USE_RIFT = Requiem.id("use_rift");
-    public static final Identifier CONSTRUCT_ACTION = Requiem.id("construct_action");
-    public static final Identifier LOCKI_PLANT_CHOICE = Requiem.id("locki_plant_choice");
+    public static final ResourceLocation DIALOGUE_ACTION = Requiem.id("dialogue_action");
+    public static final ResourceLocation ETHEREAL_FRACTURE = Requiem.id("ethereal_fracture");
+    public static final ResourceLocation OPEN_CRAFTING_MENU = Requiem.id("open_crafting");
+    public static final ResourceLocation USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
+    public static final ResourceLocation USE_RIFT = Requiem.id("use_rift");
+    public static final ResourceLocation CONSTRUCT_ACTION = Requiem.id("construct_action");
+    public static final ResourceLocation LOCKI_PLANT_CHOICE = Requiem.id("locki_plant_choice");
 
     public record LockiStatePayload(int playerEntityId, String mode, int cameraEntityId, int cameraMode, int rotStage) implements CustomPacketPayload {
         public static final Type<LockiStatePayload> TYPE = new Type<>(LOCKI_STATE);
@@ -244,11 +244,11 @@ public final class RequiemNetworking {
     }
 
     public static void sendToServer(CustomPacketPayload payload) {
-        ClientPacketDistributor.sendToServer(payload);
+        PacketDistributor.sendToServer(payload);
     }
 
     public static void sendLockiPlantChoice(int choice) {
-        ClientPacketDistributor.sendToServer(new LockiPlantChoicePayload(choice));
+        PacketDistributor.sendToServer(new LockiPlantChoicePayload(choice));
     }
 
     public static void sendHomunculusBrainOpen(ServerPlayer player, int entityId, String program) {
@@ -256,7 +256,7 @@ public final class RequiemNetworking {
     }
 
     public static void sendHomunculusBrain(int entityId, String program) {
-        ClientPacketDistributor.sendToServer(new HomunculusBrainSavePayload(entityId, program == null ? "" : program));
+        PacketDistributor.sendToServer(new HomunculusBrainSavePayload(entityId, program == null ? "" : program));
     }
 
     public static void sendTo(ServerPlayer player, Packet<?> message) {
@@ -275,7 +275,7 @@ public final class RequiemNetworking {
         buf.writeVarInt(managers.size());
         for (SubDataManager<?> manager : managers) {
             Requiem.LOGGER.info("[Requiem] Synchronizing data for {} ({})", manager.getFabricId(), manager);
-            buf.writeIdentifier(manager.getFabricId());
+            buf.writeResourceLocation(manager.getFabricId());
             manager.toPacket(buf);
         }
         byte[] bytes = new byte[buf.readableBytes()];
@@ -284,19 +284,19 @@ public final class RequiemNetworking {
     }
 
     public static void sendDialogueActionMessage(int choice) {
-        ClientPacketDistributor.sendToServer(new DialogueActionPayload(choice));
+        PacketDistributor.sendToServer(new DialogueActionPayload(choice));
     }
 
     public static void sendRiftUseMessage(ObeliskDescriptor target) {
-        ClientPacketDistributor.sendToServer(new UseRiftPayload(target));
+        PacketDistributor.sendToServer(new UseRiftPayload(target));
     }
 
     public static void sendIndirectAbilityUseMessage(AbilityType type) {
-        ClientPacketDistributor.sendToServer(new UseIndirectAbilityPayload(type));
+        PacketDistributor.sendToServer(new UseIndirectAbilityPayload(type));
     }
 
     public static void sendSupercrafterMessage() {
-        ClientPacketDistributor.sendToServer(new OpenCraftingPayload());
+        PacketDistributor.sendToServer(new OpenCraftingPayload());
     }
 
     public static void sendEtherealAnimationMessage(ServerPlayer player) {
@@ -328,7 +328,7 @@ public final class RequiemNetworking {
         if (runestone.getLevel() instanceof ServerLevel serverLevel) {
             PacketDistributor.sendToPlayersTrackingChunk(
                 serverLevel,
-                ChunkPos.containing(runestone.getBlockPos()),
+                new ChunkPos(runestone.getBlockPos()),
                 new ObeliskPowerUpdatePayload(runestone.getBlockPos(), runestone.getCoreWidth(), runestone.getCoreHeight(), runestone.getPowerRate())
             );
         }

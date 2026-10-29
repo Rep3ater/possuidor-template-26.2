@@ -9,8 +9,7 @@ import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.PlayerSkin;
-import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.client.resources.PlayerSkin;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,11 +68,6 @@ public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneF
     }
 
     @Override
-    public ResolvableProfile getProfile() {
-        return ResolvableProfile.createResolved(this.getDisplayProfile());
-    }
-
-    @Override
     public IBaritone getBaritone() {
         return this.baritone;
     }
@@ -81,8 +75,8 @@ public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneF
     @Override
     public net.minecraft.network.chat.Component getName() {
         GameProfile profile = this.getDisplayProfile();
-        if (profile != null && profile.name() != null && !profile.name().isEmpty() && !profile.name().startsWith("[") && !profile.name().equals("Mortal Shell")) {
-            return net.minecraft.network.chat.Component.literal(profile.name() + "'s Shell");
+        if (profile != null && profile.getName() != null && !profile.getName().isEmpty() && !profile.getName().startsWith("[") && !profile.getName().equals("Mortal Shell")) {
+            return net.minecraft.network.chat.Component.literal(profile.getName() + "'s Shell");
         }
         return net.minecraft.network.chat.Component.translatable("entity.requiem.player_shell");
     }
@@ -101,7 +95,7 @@ public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneF
                 // Shells can use a profile copied from a body/impersonation that has the texture
                 // property but not a fresh session signature (offline servers and imported bodies
                 // are common examples). Requiring a secure signature silently fell back to Steve/Alex.
-                this.skinLookup = Minecraft.getInstance().getSkinManager().createLookup(profile, false);
+                this.skinLookup = Minecraft.getInstance().getSkinManager().lookupInsecure(profile);
             }
             return this.skinLookup.get();
         }

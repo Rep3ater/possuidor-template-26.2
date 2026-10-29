@@ -40,18 +40,18 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public final class RequiemCoreNetworking {
-    public static final Identifier USE_DIRECT_ABILITY = RequiemCore.id("direct_ability");
-    public static final Identifier HUGGING_WALL = RequiemCore.id("hugging_wall");
-    public static final Identifier CONSUME_RESURRECTION_ITEM = RequiemCore.id("consume_resurrection_item");
+    public static final ResourceLocation USE_DIRECT_ABILITY = RequiemCore.id("direct_ability");
+    public static final ResourceLocation HUGGING_WALL = RequiemCore.id("hugging_wall");
+    public static final ResourceLocation CONSUME_RESURRECTION_ITEM = RequiemCore.id("consume_resurrection_item");
 
     public record UseDirectAbilityPayload(AbilityType abilityType, int entityId) implements CustomPacketPayload {
         public static final Type<UseDirectAbilityPayload> TYPE = new Type<>(USE_DIRECT_ABILITY);
@@ -100,11 +100,11 @@ public final class RequiemCoreNetworking {
     }
 
     public static void sendAbilityUseMessage(AbilityType type, Entity entity) {
-        ClientPacketDistributor.sendToServer(new UseDirectAbilityPayload(type, entity.getId()));
+        PacketDistributor.sendToServer(new UseDirectAbilityPayload(type, entity.getId()));
     }
 
     public static void sendHugWallMessage(boolean hugging) {
-        ClientPacketDistributor.sendToServer(new HugWallPayload(hugging));
+        PacketDistributor.sendToServer(new HugWallPayload(hugging));
     }
 
     public static void sendItemConsumptionPacket(Entity user, ItemStack stack) {
@@ -117,7 +117,7 @@ public final class RequiemCoreNetworking {
 
     public static void sendToAllTrackingIncluding(Entity tracked, Packet<? super ClientGamePacketListener> message) {
         if (tracked.level() instanceof ServerLevel serverLevel) {
-            serverLevel.getChunkSource().sendToTrackingPlayersAndSelf(tracked, message);
+            serverLevel.getChunkSource().broadcastAndSend(tracked, message);
         }
     }
 }

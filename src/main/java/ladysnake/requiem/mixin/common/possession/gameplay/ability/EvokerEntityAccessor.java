@@ -17,8 +17,8 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay.ability;
 
-import net.minecraft.world.entity.animal.sheep.Sheep;
-import net.minecraft.world.entity.monster.illager.Evoker;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.monster.Evoker;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 

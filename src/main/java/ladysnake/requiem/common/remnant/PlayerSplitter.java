@@ -60,14 +60,11 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.TagValueInput;
-import net.minecraft.world.level.storage.TagValueOutput;
-import net.minecraft.util.ProblemReporter;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -75,7 +72,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class PlayerSplitter {
-    public static final Identifier BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
+    public static final ResourceLocation BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
 
     /**
      * @see RemnantComponent#splitPlayer(boolean)
@@ -186,7 +183,7 @@ public final class PlayerSplitter {
         }
 
         GameProfile shellProfile = shell.getDisplayProfile();
-        if (shellProfile != null && !Objects.equals(shellProfile.id(), soul.getUUID())) {
+        if (shellProfile != null && !Objects.equals(shellProfile.getId(), soul.getUUID())) {
             Impersonator.get(soul).impersonate(BODY_IMPERSONATION, shellProfile);
         }
 
@@ -212,36 +209,39 @@ public final class PlayerSplitter {
     }
 
     public static ServerPlayer performRespawn(ServerPlayer player) {
-        //Setup location for dummy
         GameRules rules = player.level().getGameRules();
-        boolean keepInv = rules.get(GameRules.KEEP_INVENTORY);
-        ServerPlayer.RespawnConfig config = player.getRespawnConfig();
-        player.setRespawnPosition(null, false);
+        boolean keepInv = rules.getRule(GameRules.RULE_KEEPINVENTORY).get();
+        ResourceKey<Level> respawnDimension = player.getRespawnDimension();
+        BlockPos respawnPosition = player.getRespawnPosition();
+        float respawnAngle = player.getRespawnAngle();
+        boolean respawnForced = player.isRespawnForced();
 
+        player.setRespawnPosition(null, null, 0.0F, false, false);
         try {
-            rules.set(GameRules.KEEP_INVENTORY, false, player.level().getServer());
-            ServerPlayer clone = player.level().getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.DISCARDED);
-            clone.setRespawnPosition(config, false);
+            rules.getRule(GameRules.RULE_KEEPINVENTORY).set(false, player.level().getServer());
+            ServerPlayer clone = player.level().getServer().getPlayerList()
+                .respawn(player, false, Entity.RemovalReason.DISCARDED);
+            clone.setRespawnPosition(respawnDimension, respawnPosition, respawnAngle, respawnForced, false);
             player.connection.player = clone;
             return clone;
         } finally {
-            player.setRespawnPosition(config, false);
-            rules.set(GameRules.KEEP_INVENTORY, keepInv, player.level().getServer());
+            player.setRespawnPosition(respawnDimension, respawnPosition, respawnAngle, respawnForced, false);
+            rules.getRule(GameRules.RULE_KEEPINVENTORY).set(keepInv, player.level().getServer());
         }
     }
 
     private static CompoundTag computeCopyNbt(Entity template) {
         //Player keeps everything that goes through death
-        TagValueOutput out = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, template.registryAccess());
-        template.saveWithoutId(out);
-        CompoundTag templateNbt = out.buildResult();
+        CompoundTag templateNbt = new CompoundTag();
+        template.saveWithoutId(templateNbt);
         deduplicateVanillaData(templateNbt);
         deduplicateComponents(templateNbt, ComponentProvider.fromEntity(template).getComponentContainer().keys());
         return templateNbt;
     }
 
     private static void deduplicateComponents(CompoundTag leftoverData, Set<ComponentKey<?>> keys) {
-        leftoverData.getCompound(AbstractComponentContainer.NBT_KEY).ifPresent(leftoverComponents -> {
+        if (leftoverData.contains(AbstractComponentContainer.NBT_KEY, CompoundTag.TAG_COMPOUND)) {
+            CompoundTag leftoverComponents = leftoverData.getCompound(AbstractComponentContainer.NBT_KEY);
             for (ComponentKey<?> key : keys) {
                 String keyId = key.getId().toString();
                 if (RespawnCopyStrategy.get(key) == RespawnCopyStrategy.ALWAYS_COPY) {
@@ -249,7 +249,7 @@ public final class PlayerSplitter {
                     leftoverComponents.remove(keyId);
                 }
             }
-        });
+        }
     }
 
     private static void deduplicateVanillaData(CompoundTag leftoverData) {
@@ -272,10 +272,9 @@ public final class PlayerSplitter {
     }
 
     public static void performNbtCopy(CompoundTag from, Entity to) {
-        TagValueOutput out = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, to.registryAccess());
-        to.saveWithoutId(out);
-        CompoundTag serialized = out.buildResult();
+        CompoundTag serialized = new CompoundTag();
+        to.saveWithoutId(serialized);
         serialized.merge(from);
-        to.load(TagValueInput.create(ProblemReporter.DISCARDING, to.registryAccess(), serialized));
+        to.load(serialized);
     }
 }

@@ -22,8 +22,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import net.minecraft.advancements.predicates.entity.EntityPredicate;
-import net.minecraft.util.context.ContextKey;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -34,6 +34,11 @@ import java.util.Optional;
 import java.util.Set;
 
 public class HostLootCondition implements LootItemCondition {
+    @Override
+    public net.minecraft.world.level.storage.loot.predicates.LootItemConditionType getType() {
+        return checkedEntity == CheckedEntity.HOST ? RequiemLootTables.HOST_CONDITION : RequiemLootTables.POSSESSOR_CONDITION;
+    }
+
     public static final MapCodec<HostLootCondition> HOST_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(c -> c.entity),
         EntityPredicate.CODEC.optionalFieldOf("predicate").forGetter(c -> Optional.ofNullable(c.predicate))
@@ -56,18 +61,13 @@ public class HostLootCondition implements LootItemCondition {
     }
 
     @Override
-    public MapCodec<? extends LootItemCondition> codec() {
-        return checkedEntity == CheckedEntity.HOST ? HOST_CODEC : POSSESSOR_CODEC;
-    }
-
-    @Override
-    public Set<ContextKey<?>> getReferencedContextParams() {
-        return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.contextParam());
+    public Set<LootContextParam<?>> getReferencedContextParams() {
+        return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.getParam());
     }
 
     @Override
     public boolean test(LootContext lootContext) {
-        if (!(lootContext.getOptionalParameter(this.entity.contextParam()) instanceof LivingEntity e)) return false;
+        if (!(lootContext.getParamOrNull(this.entity.getParam()) instanceof LivingEntity e)) return false;
         if (predicate == null) return true;
 
         LivingEntity target = switch (checkedEntity) {
@@ -75,7 +75,7 @@ public class HostLootCondition implements LootItemCondition {
             case POSSESSOR -> e instanceof Possessable p ? p.getPossessor() : null;
         };
 
-        return predicate.matches(lootContext.getLevel(), lootContext.getOptionalParameter(LootContextParams.ORIGIN), target);
+        return predicate.matches(lootContext.getLevel(), lootContext.getParamOrNull(LootContextParams.ORIGIN), target);
     }
 
     public enum CheckedEntity {

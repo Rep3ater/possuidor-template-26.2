@@ -37,7 +37,7 @@ package ladysnake.requiem.common.structure;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
@@ -83,8 +83,8 @@ public class DerelictObeliskFeature extends Structure {
     @Override
     public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         ChunkPos chunkPos = context.chunkPos();
-        int x = chunkPos.x() * 16;
-        int z = chunkPos.z() * 16;
+        int x = chunkPos.x * 16;
+        int z = chunkPos.z * 16;
 
         BlockPos centerPos = new BlockPos(x, 0, z);
 

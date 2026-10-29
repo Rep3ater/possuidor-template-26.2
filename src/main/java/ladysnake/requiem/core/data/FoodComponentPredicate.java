@@ -37,7 +37,7 @@ package ladysnake.requiem.core.data;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.advancements.predicates.MinMaxBounds;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.food.FoodProperties;

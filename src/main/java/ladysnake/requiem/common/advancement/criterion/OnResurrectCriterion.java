@@ -2,23 +2,23 @@ package ladysnake.requiem.common.advancement.criterion;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.predicates.ContextAwarePredicate;
-import net.minecraft.advancements.predicates.entity.EntityPredicate;
-import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
-import net.minecraft.resources.Identifier;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
 
 public class OnResurrectCriterion extends SimpleCriterionTrigger<OnResurrectCriterion.Conditions> {
-    private final Identifier id;
+    private final ResourceLocation id;
 
-    public OnResurrectCriterion(Identifier id) {
+    public OnResurrectCriterion(ResourceLocation id) {
         this.id = id;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 

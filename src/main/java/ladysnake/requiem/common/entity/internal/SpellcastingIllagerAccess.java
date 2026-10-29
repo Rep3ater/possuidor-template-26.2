@@ -18,7 +18,7 @@
 package ladysnake.requiem.common.entity.internal;
 
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.illager.SpellcasterIllager;
+import net.minecraft.world.entity.monster.SpellcasterIllager;
 import net.minecraft.world.level.Level;
 
 import java.lang.reflect.Method;

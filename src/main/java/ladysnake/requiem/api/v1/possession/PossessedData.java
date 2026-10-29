@@ -23,10 +23,10 @@ import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public interface PossessedData extends ClientTickingComponent {
-    ComponentKey<PossessedData> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "possessed_data"), PossessedData.class);
+    ComponentKey<PossessedData> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "possessed_data"), PossessedData.class);
 
     CompoundTag getHungerData();
 

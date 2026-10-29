@@ -4,7 +4,7 @@ import com.mojang.serialization.Lifecycle;
 import net.minecraft.core.DefaultedMappedRegistry;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 
 import java.util.EnumSet;
@@ -12,11 +12,11 @@ import java.util.Set;
 
 public final class FabricRegistryBuilder<T, R extends Registry<T>> {
     private final ResourceKey<Registry<T>> registryKey;
-    private final Identifier defaultId;
+    private final ResourceLocation defaultId;
     private final Set<RegistryAttribute> attributes = EnumSet.noneOf(RegistryAttribute.class);
     private R existingRegistry;
 
-    private FabricRegistryBuilder(ResourceKey<Registry<T>> key, Identifier defaultId) {
+    private FabricRegistryBuilder(ResourceKey<Registry<T>> key, ResourceLocation defaultId) {
         this.registryKey = key;
         this.defaultId = defaultId;
     }
@@ -28,11 +28,11 @@ public final class FabricRegistryBuilder<T, R extends Registry<T>> {
         return builder;
     }
 
-    public static <T> FabricRegistryBuilder<T, MappedRegistry<T>> createSimple(Class<T> type, Identifier id) {
+    public static <T> FabricRegistryBuilder<T, MappedRegistry<T>> createSimple(Class<T> type, ResourceLocation id) {
         return new FabricRegistryBuilder<>(ResourceKey.createRegistryKey(id), null);
     }
 
-    public static <T> FabricRegistryBuilder<T, DefaultedMappedRegistry<T>> createDefaulted(Class<T> type, Identifier id, Identifier defaultId) {
+    public static <T> FabricRegistryBuilder<T, DefaultedMappedRegistry<T>> createDefaulted(Class<T> type, ResourceLocation id, ResourceLocation defaultId) {
         return new FabricRegistryBuilder<>(ResourceKey.createRegistryKey(id), defaultId);
     }
 

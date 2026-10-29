@@ -25,7 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class DummyMobAbilityController implements MobAbilityController {
     public static final MobAbilityController INSTANCE = new DummyMobAbilityController();
@@ -81,7 +81,7 @@ public class DummyMobAbilityController implements MobAbilityController {
     }
 
     @Override
-    public Identifier getIconTexture(AbilityType type) {
+    public ResourceLocation getIconTexture(AbilityType type) {
         return DirectAbility.ABILITY_ICON;
     }
 }

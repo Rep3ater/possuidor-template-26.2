@@ -36,6 +36,8 @@ package ladysnake.requiem.common.entity;
 
 import ladysnake.requiem.Requiem;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -43,7 +45,13 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import java.util.Optional;
 
 public final class RequiemTrackedDataHandlers {
-    public static final EntityDataSerializer<Optional<Vec3>> OPTIONAL_VEC_3D = EntityDataSerializer.forValueType(ByteBufCodecs.optional(Vec3.STREAM_CODEC));
+    private static final StreamCodec<RegistryFriendlyByteBuf, Vec3> VEC3_CODEC = StreamCodec.composite(
+        ByteBufCodecs.DOUBLE, Vec3::x,
+        ByteBufCodecs.DOUBLE, Vec3::y,
+        ByteBufCodecs.DOUBLE, Vec3::z,
+        Vec3::new
+    );
+    public static final EntityDataSerializer<Optional<Vec3>> OPTIONAL_VEC_3D = EntityDataSerializer.forValueType(ByteBufCodecs.optional(VEC3_CODEC));
     public static final EntityDataSerializer<net.minecraft.nbt.CompoundTag> COMPOUND_TAG = EntityDataSerializer.forValueType(ByteBufCodecs.COMPOUND_TAG);
 
     public static void register(RegisterEvent.RegisterHelper<EntityDataSerializer<?>> helper) {

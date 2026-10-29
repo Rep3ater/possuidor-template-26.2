@@ -43,10 +43,10 @@ import ladysnake.requiem.core.util.OrderedInventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -101,21 +101,21 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
                     this.inventory.setItem(i, inventory.removeItemNoUpdate(i));
                 }
             }
-            this.selectedSlot = inventory.getSelectedSlot();
+            this.selectedSlot = inventory.selected;
             this.onPossessed();
         } else {
             if (this.inventory != null) {
                 for (int i = 0; i < this.inventory.getContainerSize(); i++) {
                     ItemStack playerStack = inventory.removeItemNoUpdate(i);
                     if (!playerStack.isEmpty() && this.holder.level() instanceof ServerLevel serverLevel) {
-                        this.holder.spawnAtLocation(serverLevel, playerStack);
+                        this.holder.spawnAtLocation(playerStack);
                     }
                     inventory.setItem(i, this.inventory.removeItemNoUpdate(i));
                 }
                 this.inventory = null;
-                inventory.setSelectedSlot(this.selectedSlot);
+                inventory.selected = this.selectedSlot;
                 if (inventory.player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.connection.send(new ClientboundSetHeldSlotPacket(inventory.getSelectedSlot()));
+                    serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(inventory.selected));
                 }
             }
         }
@@ -126,7 +126,7 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
     @Override
     public void dropItems() {
         if (this.inventory != null && this.holder.level() instanceof ServerLevel serverLevel) {
-            this.inventory.clearToList().forEach(stack -> this.holder.spawnAtLocation(serverLevel, stack));
+            this.inventory.clearToList().forEach(stack -> this.holder.spawnAtLocation(stack));
         }
     }
 
@@ -158,19 +158,19 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
     @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("hunger_data")) {
-            this.hungerData = tag.getCompoundOrEmpty("hunger_data");
+            this.hungerData = tag.getCompound("hunger_data");
         }
 
         if (tag.contains("inventory_size")) {
-            ListTag items = tag.getListOrEmpty("inventory");
-            this.inventory = new OrderedInventory(tag.getIntOr("inventory_size", 0));
+            ListTag items = tag.getList("inventory", net.minecraft.nbt.Tag.TAG_COMPOUND);
+            this.inventory = new OrderedInventory(tag.getInt("inventory_size"));
             this.inventory.readNbtList(items);
         }
 
-        this.selectedSlot = tag.getIntOr("selected_slot", 0);
+        this.selectedSlot = tag.getInt("selected_slot");
 
         if (tag.contains("converted_under_possession")) {
-            this.convertedUnderPossession = tag.getBooleanOr("converted_under_possession", false);
+            this.convertedUnderPossession = tag.getBoolean("converted_under_possession");
         }
     }
 

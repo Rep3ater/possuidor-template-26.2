@@ -74,7 +74,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -168,8 +168,8 @@ public final class PossessionComponentImpl implements PossessionComponent {
             }
             if (host.getType().builtInRegistryHolder().is(RequiemCoreTags.Entity.EATERS)) {
                 CompoundTag hungerData = PossessedData.KEY.get(host).getHungerData();
-                player.getFoodData().setFoodLevel(hungerData.getIntOr("foodLevel", 20));
-                player.getFoodData().setSaturation(hungerData.getFloatOr("foodSaturationLevel", 5.0F));
+                player.getFoodData().setFoodLevel((hungerData.contains("foodLevel") ? hungerData.getInt("foodLevel") : 20));
+                player.getFoodData().setSaturation((hungerData.contains("foodSaturationLevel") ? hungerData.getFloat("foodSaturationLevel") : 5.0F));
             }
 
             host.setTarget(null);
@@ -415,11 +415,11 @@ public final class PossessionComponentImpl implements PossessionComponent {
             return false;
         }
         if (host.isNoGravity()
-            || host.getType() == EntityTypes.GHAST
-            || host.getType() == EntityTypes.PHANTOM
-            || host.getType() == EntityTypes.BAT
-            || host.getType() == EntityTypes.ALLAY
-            || host.getType() == EntityTypes.BEE
+            || host.getType() == EntityType.GHAST
+            || host.getType() == EntityType.PHANTOM
+            || host.getType() == EntityType.BAT
+            || host.getType() == EntityType.ALLAY
+            || host.getType() == EntityType.BEE
             || host.getMoveControl() instanceof FlyingMoveControl) {
             return true;
         }
@@ -451,7 +451,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             RandomSource rand = this.player.getRandom();
             this.conversionTimer = rand.nextInt(1201) + 2400;  // a bit shorter than villager
             this.player.removeEffect(MobEffects.WEAKNESS);
-            this.player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, conversionTimer, 0));
+            this.player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, conversionTimer, 0));
             this.player.level().playSound(null, this.player.getX() + 0.5D, this.player.getY() + 0.5D, this.player.getZ() + 0.5D, SoundEvents.ZOMBIE_VILLAGER_CURE, this.player.getSoundSource(), 1.0F + rand.nextFloat(), rand.nextFloat() * 0.7F + 0.3F);
         }
     }
@@ -491,7 +491,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
 
     @Override
     public void readFromNbt(CompoundTag compound) {
-        this.conversionTimer = compound.getIntOr("conversionTimer", 0);
+        this.conversionTimer = (compound.contains("conversionTimer") ? compound.getInt("conversionTimer") : 0);
     }
 
     public static double reachSq(BlockPos pos, Mob host) {

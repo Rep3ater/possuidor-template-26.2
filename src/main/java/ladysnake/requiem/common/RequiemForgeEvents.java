@@ -34,11 +34,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.TriState;
+import net.neoforged.neoforge.common.util.TriState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -61,7 +61,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public final class RequiemForgeEvents {
@@ -116,7 +116,7 @@ public final class RequiemForgeEvents {
                 && attacker.level() instanceof ServerLevel level) {
             // Match the infected homunculus' olive-yellow dust: /particle dust{color:[0.59,0.57,0.11],scale:1}.
             net.minecraft.core.particles.DustParticleOptions infectedDust =
-                new net.minecraft.core.particles.DustParticleOptions(0x96911C, 1.0F);
+                new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.59F, 0.57F, 0.11F), 1.0F);
             level.sendParticles(infectedDust,
                 attacker.getX(), attacker.getY() + attacker.getBbHeight() * 0.55D, attacker.getZ(),
                 24, 0.45D, 0.5D, 0.45D, 0.035D);
@@ -216,7 +216,7 @@ public final class RequiemForgeEvents {
             }
             if (host != null && target instanceof LivingEntity livingTarget) {
                 if (!player.level().isClientSide() && player.level() instanceof ServerLevel serverLevel) {
-                    host.doHurtTarget(serverLevel, livingTarget);
+                    host.doHurtTarget(livingTarget);
                     host.swing(InteractionHand.MAIN_HAND);
                 } else {
                     host.swing(InteractionHand.MAIN_HAND);
@@ -321,7 +321,7 @@ public final class RequiemForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onBreakBlock(BreakBlockEvent event) {
+    public static void onBreakBlock(BlockEvent.BreakEvent event) {
         Player player = event.getPlayer();
         if (player != null && RemnantComponent.isIncorporeal(player) && !player.isCreative()) {
             event.setCanceled(true);
@@ -388,7 +388,7 @@ public final class RequiemForgeEvents {
                 && event.getItemStack().is(Items.PLAYER_HEAD)) {
             if (!serverPlayer.isCreative()) event.getItemStack().shrink(1);
             serverPlayer.addEffect(new MobEffectInstance(RequiemStatusEffects.WHITE_VISION, 20 * 60 * 10, 0, false, true, true));
-            serverPlayer.playSound(SoundEvents.GENERIC_EAT.value(), 0.8F, 0.65F);
+            serverPlayer.playSound(SoundEvents.GENERIC_EAT, 0.8F, 0.65F);
             serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.literal("White Vision awakens. Corruption appears in yellow; the astral sky shifts to magenta."));
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
@@ -470,8 +470,8 @@ public final class RequiemForgeEvents {
                 if (host != null && host.isAlive()) {
                     if (event.getSource().is(DamageTypeTags.IS_FALL)) {
                         if (host.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.FALL_DAMAGE_IMMUNE)
-                                || host.getType() == EntityTypes.CHICKEN
-                                || host.getType() == EntityTypes.IRON_GOLEM
+                                || host.getType() == EntityType.CHICKEN
+                                || host.getType() == EntityType.IRON_GOLEM
                                 || host.isNoGravity()
                                 || (host.getAttributes().hasAttribute(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER)
                                     && host.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER) <= 0.0)) {
@@ -590,8 +590,8 @@ public final class RequiemForgeEvents {
                 }
 
                 boolean slowFall = host.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.FALL_DAMAGE_IMMUNE)
-                        || host.getType() == EntityTypes.CHICKEN
-                        || host.getType() == EntityTypes.IRON_GOLEM
+                        || host.getType() == EntityType.CHICKEN
+                        || host.getType() == EntityType.IRON_GOLEM
                         || host.isNoGravity()
                         || (host.getAttributes().hasAttribute(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER)
                             && host.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER) <= 0.0);
@@ -623,7 +623,7 @@ public final class RequiemForgeEvents {
                     }
                 }
 
-                if ((host.getType() == EntityTypes.SPIDER || host.getType() == EntityTypes.CAVE_SPIDER || host.onClimbable()) && player.horizontalCollision) {
+                if ((host.getType() == EntityType.SPIDER || host.getType() == EntityType.CAVE_SPIDER || host.onClimbable()) && player.horizontalCollision) {
                     net.minecraft.world.phys.Vec3 delta = player.getDeltaMovement();
                     player.setDeltaMovement(delta.x, 0.2, delta.z);
                 }

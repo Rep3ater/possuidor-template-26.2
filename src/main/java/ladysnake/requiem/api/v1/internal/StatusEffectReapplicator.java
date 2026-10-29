@@ -23,10 +23,10 @@ import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public interface StatusEffectReapplicator extends ServerTickingComponent {
-    ComponentKey<StatusEffectReapplicator> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "effect_reapplicator"), StatusEffectReapplicator.class);
+    ComponentKey<StatusEffectReapplicator> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "effect_reapplicator"), StatusEffectReapplicator.class);
 
     void onStatusEffectRemoved(MobEffectInstance effect);
 

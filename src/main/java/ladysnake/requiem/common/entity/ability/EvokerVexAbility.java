@@ -21,7 +21,7 @@ import ladysnake.requiem.common.entity.internal.SpellcastingIllagerAccess;
 import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
 import ladysnake.requiem.core.util.reflection.UncheckedReflectionException;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.illager.Evoker;
+import net.minecraft.world.entity.monster.Evoker;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -85,7 +85,7 @@ public class EvokerVexAbility extends IndirectAbilityBase<Evoker> {
 
     static {
         try {
-            Class<?> clazz = Class.forName("net.minecraft.world.entity.monster.illager.Evoker$EvokerSummonSpellGoal");
+            Class<?> clazz = Class.forName("net.minecraft.world.entity.monster.Evoker$EvokerSummonSpellGoal");
             Constructor<? extends Goal> ctor = (Constructor<? extends Goal>) clazz.getDeclaredConstructor(Evoker.class);
             ctor.setAccessible(true);
             VEX_GOAL_FACTORY = ctor;

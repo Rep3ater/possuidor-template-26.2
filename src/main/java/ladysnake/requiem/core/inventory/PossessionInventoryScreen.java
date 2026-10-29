@@ -38,19 +38,18 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.requiem.api.v1.entity.InventoryLimiter;
 import ladysnake.requiem.api.v1.entity.InventoryShape;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 
 public class PossessionInventoryScreen extends AbstractContainerScreen<InventoryMenu> {
-    private static final Identifier INVENTORY_LOCATION = Identifier.withDefaultNamespace("textures/gui/container/inventory.png");
+    private static final ResourceLocation INVENTORY_LOCATION = ResourceLocation.withDefaultNamespace("textures/gui/container/inventory.png");
     private final Player player;
 
     public PossessionInventoryScreen(Player player) {
@@ -76,40 +75,39 @@ public class PossessionInventoryScreen extends AbstractContainerScreen<Inventory
         assert this.minecraft.player != null;
 
         if (this.minecraft.player.hasInfiniteMaterials()) {
-            this.minecraft.gui.setScreen(new CreativeModeInventoryScreen(
+            this.minecraft.setScreen(new CreativeModeInventoryScreen(
                 this.minecraft.player,
                 this.minecraft.player.connection.enabledFeatures(),
                 this.minecraft.options.operatorItemsTab().get()
             ));
             return true;
         } else if (InventoryLimiter.instance().getInventoryShape(this.player) != InventoryShape.ALT_LARGE) {
-            this.minecraft.gui.setScreen(new InventoryScreen(this.minecraft.player));
+            this.minecraft.setScreen(new InventoryScreen(this.minecraft.player));
             return true;
         }
         return false;
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         Mob possessedEntity = PossessionComponent.getHost(this.player);
         Component title = possessedEntity != null ? possessedEntity.getName() : this.title;
-        guiGraphics.text(this.font, title, this.titleLabelX, this.titleLabelY, 0x404040, false);
+        guiGraphics.drawString(this.font, title, this.titleLabelX, this.titleLabelY, 0x404040, false);
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float delta) {
-        super.extractBackground(guiGraphics, mouseX, mouseY, delta);
+    protected void renderBg(GuiGraphics guiGraphics, float delta, int mouseX, int mouseY) {
         assert this.minecraft != null;
         assert this.minecraft.player != null;
 
         InventoryShape shape = InventoryLimiter.instance().getInventoryShape(this.player);
         int x = this.leftPos;
         int y = this.topPos;
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, shape.swapBackground(INVENTORY_LOCATION), x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
+        guiGraphics.blit(shape.swapBackground(INVENTORY_LOCATION), x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
         shape.setupEntityCrop(guiGraphics, this.leftPos, this.topPos);
         int entityCenterX = (int) shape.shiftEntityX(x + 51);
         int entityCenterY = (int) shape.shiftEntityY(y + 75);
-        InventoryScreen.extractEntityInInventoryFollowsMouse(
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
             guiGraphics,
             entityCenterX - 25,
             entityCenterY - 60,

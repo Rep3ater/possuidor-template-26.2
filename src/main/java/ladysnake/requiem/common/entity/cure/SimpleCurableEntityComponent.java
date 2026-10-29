@@ -38,7 +38,7 @@ import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Mob;
@@ -69,7 +69,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        if (tag.contains("cured")) this.cured = tag.getBooleanOr("cured", false);
+        if (tag.contains("cured")) this.cured = tag.getBoolean("cured");
     }
 
     @Override
@@ -100,13 +100,13 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
                     if (EnchantmentHelper.has(itemStack, net.minecraft.world.item.enchantment.EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) {
                         cured.setItemSlot(equipmentSlot, itemStack);
                     } else {
-                        this.entity.spawnAtLocation((ServerLevel) this.entity.level(), itemStack);
+                        this.entity.spawnAtLocation(itemStack);
                     }
                 }
             }
             ServerLevel serverLevel = (ServerLevel) this.entity.level();
-            cured.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(cured.blockPosition()), EntitySpawnReason.CONVERSION, null);
-            cured.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
+            cured.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(cured.blockPosition()), MobSpawnType.CONVERSION, null);
+            cured.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
             cured.setBaby(this.entity.isBaby());
 
             if (!this.entity.isSilent()) {

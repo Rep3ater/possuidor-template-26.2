@@ -42,7 +42,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.GameRules;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -109,7 +109,7 @@ public final class RequiemEtherealCommand {
         if (source.getEntity() == player) {
             source.sendSuccess(() -> Component.translatable("requiem:commands.ethereal.set.success.self", name), true);
         } else {
-            if (source.getLevel().getGameRules().get(GameRules.SEND_COMMAND_FEEDBACK)) {
+            if (source.getLevel().getGameRules().getBoolean(GameRules.RULE_SENDCOMMANDFEEDBACK)) {
                 player.sendSystemMessage(Component.translatable("requiem:commands.ethereal.set.target", name));
             }
 

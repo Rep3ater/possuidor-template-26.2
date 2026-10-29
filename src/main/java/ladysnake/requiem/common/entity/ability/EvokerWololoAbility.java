@@ -23,8 +23,8 @@ import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.mixin.common.possession.gameplay.ability.EvokerEntityAccessor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.sheep.Sheep;
-import net.minecraft.world.entity.monster.illager.Evoker;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.monster.Evoker;
 import org.jetbrains.annotations.Nullable;
 
 public class EvokerWololoAbility extends DirectAbilityBase<Evoker, Entity> {
@@ -41,7 +41,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<Evoker, Entity> {
         if (!super.canTarget(target)) return false;
         if (target instanceof Sheep sheep) {
             if (this.owner.level() instanceof ServerLevel serverLevel) {
-                return this.wololoGoal.requiem_getConvertibleSheepPredicate().test(serverLevel, this.owner, sheep);
+                return this.wololoGoal.requiem_getConvertibleSheepPredicate().test(this.owner, sheep);
             }
             return false;
         }

@@ -2,38 +2,21 @@ package ladysnake.requiem.client.render.entity;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.entity.MorticianEntity;
+import net.minecraft.client.model.VillagerModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.npc.VillagerModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.layers.CrossedArmsItemLayer;
-import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
-import net.minecraft.client.renderer.entity.state.HoldingEntityRenderState;
-import net.minecraft.client.renderer.entity.state.VillagerRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
-public class MorticianEntityRenderer extends MobRenderer<MorticianEntity, VillagerRenderState, VillagerModel> {
-    private static final Identifier TEXTURE = Requiem.id("textures/entity/mortician.png");
+public class MorticianEntityRenderer extends MobRenderer<MorticianEntity, VillagerModel<MorticianEntity>> {
+    private static final ResourceLocation TEXTURE = Requiem.id("textures/entity/mortician.png");
 
     public MorticianEntityRenderer(EntityRendererProvider.Context context) {
-        super(context, new VillagerModel(context.bakeLayer(ModelLayers.VILLAGER)), 0.5F);
-        this.addLayer(new CustomHeadLayer<>(this, context.getModelSet(), context.getPlayerSkinRenderCache()));
-        this.addLayer(new CrossedArmsItemLayer<>(this));
+        super(context, new VillagerModel<>(context.bakeLayer(ModelLayers.VILLAGER)), 0.5F);
     }
 
     @Override
-    public Identifier getTextureLocation(VillagerRenderState state) {
+    public ResourceLocation getTextureLocation(MorticianEntity entity) {
         return TEXTURE;
-    }
-
-    @Override
-    public VillagerRenderState createRenderState() {
-        return new VillagerRenderState();
-    }
-
-    @Override
-    public void extractRenderState(MorticianEntity entity, VillagerRenderState state, float partialTicks) {
-        super.extractRenderState(entity, state, partialTicks);
-        HoldingEntityRenderState.extractHoldingEntityRenderState(entity, state, this.itemModelResolver);
     }
 }

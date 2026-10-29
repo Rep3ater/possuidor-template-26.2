@@ -89,7 +89,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
 
         long now = serverLevel.getGameTime();
         var data = this.getPersistentData();
-        long stunUntil = data.getLong(STUN_UNTIL).orElse(0L);
+        long stunUntil = data.getLong(STUN_UNTIL);
         if (this.isInLava()) {
             if (now >= stunUntil) {
                 data.putFloat(STUN_BASE_YAW, this.getYRot());
@@ -105,7 +105,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
             this.getNavigation().stop();
             this.setTarget(null);
             this.setDeltaMovement(Vec3.ZERO);
-            float baseYaw = data.getFloat(STUN_BASE_YAW).orElse(this.getYRot());
+            float baseYaw = data.getFloat(STUN_BASE_YAW);
             this.setYRot(baseYaw + Mth.sin(this.tickCount * 1.75F) * 5.0F);
             this.setXRot(Mth.sin(this.tickCount * 2.4F) * 7.0F);
             if (this.tickCount % 8 == 0) {
@@ -120,7 +120,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
             }
         } else {
             if (data.contains(STUN_BASE_YAW)) {
-                this.setYRot(data.getFloat(STUN_BASE_YAW).orElse(this.getYRot()));
+                this.setYRot(data.getFloat(STUN_BASE_YAW));
                 data.remove(STUN_BASE_YAW);
             }
             this.setXRot(0.0F);
@@ -132,7 +132,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
         if (speed != null) speed.setBaseValue(chasing ? 0.42D : 0.18D);
 
         // Heavy, low-pitched footsteps ramp up during pursuit and taper off after the target is lost.
-        int soundLevel = data.getInt(CHASE_SOUND_LEVEL).orElse(0);
+        int soundLevel = data.getInt(CHASE_SOUND_LEVEL);
         soundLevel = chasing ? Math.min(100, soundLevel + 3) : Math.max(0, soundLevel - 1);
         data.putInt(CHASE_SOUND_LEVEL, soundLevel);
         if (soundLevel > 0 && this.tickCount % 14 == 0) {

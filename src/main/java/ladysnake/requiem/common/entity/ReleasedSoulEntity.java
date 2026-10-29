@@ -27,6 +27,7 @@ import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -34,8 +35,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Nullable;
@@ -198,15 +197,15 @@ public class ReleasedSoulEntity extends SoulEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        this.ownerRecord = input.read("owner_record", UUIDUtil.CODEC).orElse(null);
+        this.ownerRecord = UUIDUtil.CODEC.parse(NbtOps.INSTANCE, input.get("owner_record")).result().orElse(null);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
-        output.storeNullable("owner_record", UUIDUtil.CODEC, this.ownerRecord);
+        if (this.ownerRecord != null) UUIDUtil.CODEC.encodeStart(NbtOps.INSTANCE, this.ownerRecord).result().ifPresent(tag -> output.put("owner_record", tag));
     }
 
     protected Vec3 selectPosTowards(Vec3 targetPos) {

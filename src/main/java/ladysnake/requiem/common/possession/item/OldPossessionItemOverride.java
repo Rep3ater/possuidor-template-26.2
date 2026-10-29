@@ -49,7 +49,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
 
@@ -60,7 +60,7 @@ public record OldPossessionItemOverride(
     int useTime,
     OldPossessionItemOverride.Result result
 ) implements InstancedItemOverride, PossessionItemOverride {
-    public static final Identifier ID = Requiem.id("override_v0");
+    public static final ResourceLocation ID = Requiem.id("override_v0");
 
     static Codec<OldPossessionItemOverride> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create((instance) -> instance.group(
@@ -79,7 +79,7 @@ public record OldPossessionItemOverride(
     }
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 
@@ -169,7 +169,7 @@ public record OldPossessionItemOverride(
             InteractionResult result = this.getAction().interact(player, possessedEntity, stack, world, hand);
             if (result.consumesAction()) {
                 if (this.getCooldown() > 0) {
-                    player.getCooldowns().addCooldown(stack, this.getCooldown());
+                    player.getCooldowns().addCooldown(item, this.getCooldown());
                 }
             }
             return result;

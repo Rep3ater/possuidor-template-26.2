@@ -2,18 +2,18 @@ package dev.onyxstudios.cca.api.v3.component;
 
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public interface ComponentRegistryV3 {
     ComponentRegistryV3 INSTANCE = new ComponentRegistryV3() {
         @Override
-        public <C extends Component> ComponentKey<C> getOrCreate(Identifier componentId, Class<C> componentClass) {
+        public <C extends Component> ComponentKey<C> getOrCreate(ResourceLocation componentId, Class<C> componentClass) {
             return ComponentRegistry.getOrCreate(componentId, componentClass);
         }
 
         @Nullable
         @Override
-        public ComponentKey<?> get(Identifier componentId) {
+        public ComponentKey<?> get(ResourceLocation componentId) {
             return ComponentRegistry.get(componentId);
         }
 
@@ -23,10 +23,10 @@ public interface ComponentRegistryV3 {
         }
     };
 
-    <C extends Component> ComponentKey<C> getOrCreate(Identifier componentId, Class<C> componentClass);
+    <C extends Component> ComponentKey<C> getOrCreate(ResourceLocation componentId, Class<C> componentClass);
 
     @Nullable
-    ComponentKey<?> get(Identifier componentId);
+    ComponentKey<?> get(ResourceLocation componentId);
 
     Stream<ComponentKey<?>> stream();
 }

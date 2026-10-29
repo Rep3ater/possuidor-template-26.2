@@ -46,7 +46,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
 
@@ -58,7 +58,7 @@ public record HealingItemOverride(
     int cooldown,
     HealingItemOverride.Usage usage
 ) implements PossessionItemOverride, InstancedItemOverride {
-    public static final Identifier ID = Requiem.id("healing");
+    public static final ResourceLocation ID = Requiem.id("healing");
 
     public static Codec<HealingItemOverride> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
@@ -75,7 +75,7 @@ public record HealingItemOverride(
     }
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 
@@ -111,7 +111,7 @@ public record HealingItemOverride(
     public InteractionResult finishUsing(Player user, Mob possessedEntity, ItemStack heldStack, Level world, InteractionHand activeHand) {
         Item item = heldStack.getItem();
         InteractionResult ret = usage.consume(user, possessedEntity, heldStack, world, activeHand);
-        if (this.cooldown > 0) user.getCooldowns().addCooldown(heldStack, this.cooldown);
+        if (this.cooldown > 0) user.getCooldowns().addCooldown(item, this.cooldown);
         return ret;
     }
 

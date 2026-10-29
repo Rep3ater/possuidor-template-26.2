@@ -61,11 +61,11 @@ public class RequiemSyncedGamerules implements AutoSyncedComponent, TransientCom
     }
 
     public boolean shouldShowPossessorNametag() {
-        return server == null ? showPossessorNametag : server.getGameRules().get(RequiemGamerules.SHOW_POSSESSOR_NAMETAG);
+        return server == null ? showPossessorNametag : RequiemGamerules.showPossessorNametag(server.getGameRules());
     }
 
     public StartingRemnantType getStartingRemnantType() {
-        return server == null ? startingRemnantType : server.getGameRules().get(RequiemGamerules.STARTING_SOUL_MODE);
+        return server == null ? startingRemnantType : RequiemGamerules.startingSoulMode(server.getGameRules());
     }
 
     @Override

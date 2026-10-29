@@ -12,7 +12,7 @@ import ladysnake.requiem.common.screen.RiftScreenHandlerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRune, VagrantTargetableBlock {
-    public static final Identifier RIFT_ICON_ID = Requiem.id("textures/gui/rift_icon.png");
+    public static final ResourceLocation RIFT_ICON_ID = Requiem.id("textures/gui/rift_icon.png");
 
     public RiftRunestoneBlock(BlockBehaviour.Properties settings) {
         super(settings);
@@ -92,7 +92,7 @@ public class RiftRunestoneBlock extends InertRunestoneBlock implements ObeliskRu
     }
 
     @Override
-    public Identifier getTargetedIcon() {
+    public ResourceLocation getTargetedIcon() {
         return RIFT_ICON_ID;
     }
 

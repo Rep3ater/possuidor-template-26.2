@@ -105,7 +105,7 @@ public class AbstractComponentContainer implements ComponentContainer {
 
     @Override
     public void fromTag(CompoundTag tag, @Nullable HolderLookup.Provider registryLookup) {
-        CompoundTag componentMap = tag.contains(NBT_KEY) ? tag.getCompoundOrEmpty(NBT_KEY) : tag;
+        CompoundTag componentMap = tag.contains(NBT_KEY) ? tag.getCompound(NBT_KEY) : tag;
         this.fromComponentsTag(componentMap, registryLookup);
     }
 
@@ -118,7 +118,7 @@ public class AbstractComponentContainer implements ComponentContainer {
             String id = entry.getKey().getId().toString();
             if (componentMap.contains(id)) {
                 try {
-                    CompoundTag componentTag = componentMap.getCompoundOrEmpty(id);
+                    CompoundTag componentTag = componentMap.getCompound(id);
                     if (registryLookup != null) {
                         component.readFromNbt(componentTag, registryLookup);
                     } else {

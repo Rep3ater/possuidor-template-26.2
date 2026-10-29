@@ -85,7 +85,7 @@ public class ReclamationStatusEffect extends MobEffect implements StickyStatusEf
     }
 
     @Override
-    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         playersToHeal.put(entity, amplifier + 1);
         return true;
     }
@@ -93,10 +93,5 @@ public class ReclamationStatusEffect extends MobEffect implements StickyStatusEf
     @Override
     public boolean shouldStick(LivingEntity entity) {
         return false;
-    }
-
-    @Override
-    public boolean shouldFreezeDuration(LivingEntity entity) {
-        return RemnantComponent.isIncorporeal(entity);
     }
 }

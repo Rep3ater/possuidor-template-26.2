@@ -3,10 +3,9 @@ package ladysnake.requiem.common.block.obelisk;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -55,14 +54,14 @@ public abstract class BaseRunestoneBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
-        input.read("custom_name", ComponentSerialization.CODEC).ifPresent(c -> this.customName = c);
+    protected void loadAdditional(CompoundTag input, HolderLookup.Provider registries) {
+        super.loadAdditional(input, registries);
+        ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, input.get("custom_name")).result().ifPresent(c -> this.customName = c);
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        output.storeNullable("custom_name", ComponentSerialization.CODEC, this.customName);
+    protected void saveAdditional(CompoundTag output, HolderLookup.Provider registries) {
+        super.saveAdditional(output, registries);
+        if (this.customName != null) ComponentSerialization.CODEC.encodeStart(NbtOps.INSTANCE, this.customName).result().ifPresent(tag -> output.put("custom_name", tag));
     }
 }

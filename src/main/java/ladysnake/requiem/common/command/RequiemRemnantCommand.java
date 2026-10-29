@@ -41,7 +41,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.GameRules;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -99,7 +99,7 @@ public final class RequiemRemnantCommand {
         if (source.getEntity() == player) {
             source.sendSuccess(() -> Component.translatable("requiem:commands.remnant.set.success.self", type.getName()), true);
         } else {
-            if (source.getLevel().getGameRules().get(GameRules.SEND_COMMAND_FEEDBACK)) {
+            if (source.getLevel().getGameRules().getBoolean(GameRules.RULE_SENDCOMMANDFEEDBACK)) {
                 player.sendSystemMessage(Component.translatable("requiem:commands.remnant.set.target", type.getName()));
             }
 

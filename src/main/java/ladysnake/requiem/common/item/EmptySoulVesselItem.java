@@ -43,9 +43,10 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -55,7 +56,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
@@ -134,7 +135,7 @@ public class EmptySoulVesselItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         ItemStack stack = user.getItemInHand(hand);
         LivingEntity target = findTarget(user);
         if (target != null) {
@@ -150,7 +151,7 @@ public class EmptySoulVesselItem extends Item {
             }
         }
         user.startUsingItem(hand);
-        return InteractionResult.CONSUME;
+        return InteractionResultHolder.consume(stack);
     }
 
     @Override
@@ -159,8 +160,8 @@ public class EmptySoulVesselItem extends Item {
             if (!user.level().isClientSide()) {
                 String soulTypeStr = ladysnake.requiem.common.construct.ai.SoulAiManager.getInjectedSoulType(mob);
                 ladysnake.requiem.common.construct.ai.SoulAiManager.extractSoul(mob);
-                net.minecraft.resources.Identifier id = net.minecraft.resources.Identifier.tryParse(soulTypeStr);
-                EntityType<?> type = id != null ? net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(id).map(Holder::value).orElse(EntityTypes.ZOMBIE) : EntityTypes.ZOMBIE;
+                net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(soulTypeStr);
+                EntityType<?> type = id != null ? net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(id).orElse(EntityType.ZOMBIE) : EntityType.ZOMBIE;
                 ItemStack filled = FilledSoulVesselItem.forEntityType(type);
                 user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, filled));
             }
@@ -207,7 +208,7 @@ public class EmptySoulVesselItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
         if (!(world instanceof ServerLevel serverWorld)) return stack;
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        CompoundTag activeData = tag.getCompound(ACTIVE_DATA_TAG).orElse(null);
+        CompoundTag activeData = tag.contains(ACTIVE_DATA_TAG, net.minecraft.nbt.Tag.TAG_COMPOUND) ? tag.getCompound(ACTIVE_DATA_TAG) : null;
         UUID targetId = activeData != null ? NbtCompat.getUuid(activeData, "target").orElse(null) : null;
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.remove(ACTIVE_DATA_TAG));
 
@@ -234,7 +235,7 @@ public class EmptySoulVesselItem extends Item {
                 case AGGREGATE -> UUID.randomUUID();
             };
             CustomData.update(DataComponents.CUSTOM_DATA, result, resTag -> {
-                CompoundTag soulFragment = resTag.getCompound(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).orElseGet(CompoundTag::new);
+                CompoundTag soulFragment = resTag.contains(FilledSoulVesselItem.SOUL_FRAGMENT_NBT, net.minecraft.nbt.Tag.TAG_COMPOUND) ? resTag.getCompound(FilledSoulVesselItem.SOUL_FRAGMENT_NBT) : new CompoundTag();
                 NbtCompat.putUuid(soulFragment, "uuid", recordUuid);
                 soulFragment.putString("type", net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(finalTarget.getType()).toString());
                 resTag.put(FilledSoulVesselItem.SOUL_FRAGMENT_NBT, soulFragment);
@@ -243,7 +244,7 @@ public class EmptySoulVesselItem extends Item {
                 case NORMAL -> SoulHolderComponent.get(finalTarget).removeSoul();
                 case AGGREGATE -> finalTarget.hurt(finalTarget.damageSources().magic(), SOUL_AGGREGATE_STEALING_DAMAGE);
             }
-            remnant.getCooldowns().addCooldown(result, POST_CAPTURE_COOLDOWN);
+            remnant.getCooldowns().addCooldown(result.getItem(), POST_CAPTURE_COOLDOWN);
             remnant.level().playSound(null, remnant.getX(), remnant.getY(), remnant.getZ(), RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, remnant.getSoundSource(), 1.0F, 1.0F);
         } else {
             AttritionStatusEffect.apply(remnant, 1, 20 * 60 * 5);
@@ -263,14 +264,14 @@ public class EmptySoulVesselItem extends Item {
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        return tag.getCompound(ACTIVE_DATA_TAG).flatMap(c -> c.getInt("use_time")).orElse(40);
+        return tag.contains(ACTIVE_DATA_TAG, net.minecraft.nbt.Tag.TAG_COMPOUND) && tag.getCompound(ACTIVE_DATA_TAG).contains("use_time", net.minecraft.nbt.Tag.TAG_INT) ? tag.getCompound(ACTIVE_DATA_TAG).getInt("use_time") : 40;
     }
 
     @Override
     public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         if (world instanceof ServerLevel serverWorld) {
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            UUID targetId = tag.getCompound(ACTIVE_DATA_TAG).flatMap(c -> NbtCompat.getUuid(c, "target")).orElse(null);
+            UUID targetId = tag.contains(ACTIVE_DATA_TAG, net.minecraft.nbt.Tag.TAG_COMPOUND) ? NbtCompat.getUuid(tag.getCompound(ACTIVE_DATA_TAG), "target").orElse(null) : null;
             LivingEntity target = null;
             if (targetId != null && serverWorld.getEntity(targetId) instanceof LivingEntity living) {
                 target = living;
@@ -363,7 +364,7 @@ public class EmptySoulVesselItem extends Item {
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        return ItemUseAnimation.BOW;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 }

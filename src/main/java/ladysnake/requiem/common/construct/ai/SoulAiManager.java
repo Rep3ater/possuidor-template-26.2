@@ -4,13 +4,13 @@ import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.util.NbtCompat;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -73,7 +73,7 @@ public class SoulAiManager {
     }
 
     public static String getInjectedSoulType(PathfinderMob mob) {
-        return mob.getPersistentData().getString("requiem:injected_soul").orElse("");
+        return mob.getPersistentData().getString("requiem:injected_soul");
     }
 
     public static void applyInjectedGoals(PathfinderMob mob, String soulTypeStr, @Nullable UUID ownerUuid) {
@@ -85,7 +85,7 @@ public class SoulAiManager {
         // Souls supply behavior, not the donor's attributes. Keep each vessel body's own
         // health, speed, armor, attack damage and dimensions intact.
         String lower = soulTypeStr == null ? "" : soulTypeStr.toLowerCase(Locale.ROOT);
-        Identifier parsedType = Identifier.tryParse(lower);
+        ResourceLocation parsedType = ResourceLocation.tryParse(lower);
         EntityType<?> sourceType = parsedType == null
             ? null
             : BuiltInRegistries.ENTITY_TYPE.getOptional(parsedType).orElse(null);
@@ -205,7 +205,7 @@ public class SoulAiManager {
                     float damage = attack == null || attack.getValue() <= 0.0D
                         ? 1.0F : (float) Math.max(0.0D, attack.getValue());
                     if (damage > 0.0F) {
-                        target.hurtServer(serverLevel, serverLevel.damageSources().mobAttack(this.mob), damage);
+                        target.hurt(serverLevel.damageSources().mobAttack(this.mob), damage);
                     }
                 }
             } else {
@@ -261,13 +261,13 @@ public class SoulAiManager {
 
     private static boolean isFoxPrey(LivingEntity entity) {
         var type = entity.getType();
-        return type == EntityTypes.CHICKEN
-            || type == EntityTypes.RABBIT
-            || type == EntityTypes.COD
-            || type == EntityTypes.SALMON
-            || type == EntityTypes.TROPICAL_FISH
-            || type == EntityTypes.PUFFERFISH
-            || type == EntityTypes.TURTLE;
+        return type == EntityType.CHICKEN
+            || type == EntityType.RABBIT
+            || type == EntityType.COD
+            || type == EntityType.SALMON
+            || type == EntityType.TROPICAL_FISH
+            || type == EntityType.PUFFERFISH
+            || type == EntityType.TURTLE;
     }
 
     /** Check a living target by its registry path rather than a version-sensitive Java package. */

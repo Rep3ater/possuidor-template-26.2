@@ -321,12 +321,13 @@ public class ConstructVoxelModel {
     public static ConstructVoxelModel fromNbt(CompoundTag tag) {
         ConstructVoxelModel model = new ConstructVoxelModel();
         if (tag != null) {
-            model.setScale(tag.getFloat("scale").orElse(1.0f));
-            tag.getList("voxels").ifPresent(list -> {
+            model.setScale(tag.getFloat("scale"));
+            ListTag list = tag.getList("voxels", net.minecraft.nbt.Tag.TAG_COMPOUND);
+            {
                 for (int i = 0; i < list.size(); i++) {
-                    list.getCompound(i).ifPresent(comp -> model.addVoxel(ConstructVoxel.fromNbt(comp)));
+                    model.addVoxel(ConstructVoxel.fromNbt(list.getCompound(i)));
                 }
-            });
+            }
         }
         return model;
     }

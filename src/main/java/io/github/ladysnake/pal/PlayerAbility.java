@@ -5,11 +5,11 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public final class PlayerAbility {
-    private final Identifier id;
+    private final ResourceLocation id;
     private final BiFunction<PlayerAbility, Player, AbilityTracker> trackerFactory;
     private final Event<PlayerAbilityUpdatedCallback> updatedEvent = EventFactory.createArrayBacked(
         PlayerAbilityUpdatedCallback.class,
@@ -20,12 +20,12 @@ public final class PlayerAbility {
         }
     );
 
-    public PlayerAbility(Identifier id, BiFunction<PlayerAbility, Player, AbilityTracker> trackerFactory) {
+    public PlayerAbility(ResourceLocation id, BiFunction<PlayerAbility, Player, AbilityTracker> trackerFactory) {
         this.id = Objects.requireNonNull(id, "id");
         this.trackerFactory = Objects.requireNonNull(trackerFactory, "trackerFactory");
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 

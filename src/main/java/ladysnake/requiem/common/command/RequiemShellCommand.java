@@ -41,7 +41,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.server.players.NameAndId;
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.commands.CommandSourceStack;
@@ -92,10 +92,9 @@ public final class RequiemShellCommand {
             .then(literal("identity").then(literal("set")
                     .then(argument("shells", entities()).then(argument("profile", gameProfile())
                         .executes(context -> {
-                            Collection<NameAndId> profiles = GameProfileArgument.getGameProfiles(context, "profile");
+                            Collection<GameProfile> profiles = GameProfileArgument.getGameProfiles(context, "profile");
                             if (profiles.size() > 1) throw TOO_MANY_PLAYERS_EXCEPTION.create();
-                            NameAndId p = profiles.iterator().next();
-                            GameProfile profile = new GameProfile(p.id(), p.name());
+                            GameProfile profile = profiles.iterator().next();
                             return RequiemCommand.runMany(context.getSource(), getEntities(context, "shells"), s -> setIdentity(s, profile));
                         })
                     ))
@@ -130,7 +129,7 @@ public final class RequiemShellCommand {
         if (remnantComponent.isVagrant()) {
             throw new CommandRuntimeException(Component.translatable("requiem:commands.shell.split.fail.vagrant", player.getDisplayName()));
         }
-        if (!remnantComponent.getRemnantType().isDemon() && !player.isCreative() && (player.level().getServer() == null || !player.level().getServer().getPlayerList().isOp(new NameAndId(player.getGameProfile())))) {
+        if (!remnantComponent.getRemnantType().isDemon() && !player.isCreative() && (player.level().getServer() == null || !player.level().getServer().getPlayerList().isOp(player.getGameProfile()))) {
             throw new CommandRuntimeException(Component.translatable("requiem:commands.shell.split.fail.mortal", player.getDisplayName()));
         }
         if (!remnantComponent.getRemnantType().isDemon()) {

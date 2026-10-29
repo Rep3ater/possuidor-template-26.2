@@ -180,7 +180,7 @@ public final class PenanceComponent implements ServerTickingComponent, ClientTic
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        this.timeWithPenance = tag.getIntOr("countdown", 0);
+        this.timeWithPenance = tag.getInt("countdown");
     }
 
     @Override

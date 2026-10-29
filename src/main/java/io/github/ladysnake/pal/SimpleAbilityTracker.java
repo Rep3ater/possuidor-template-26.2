@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public class SimpleAbilityTracker implements AbilityTracker {
@@ -116,14 +116,13 @@ public class SimpleAbilityTracker implements AbilityTracker {
             return;
         }
         this.abilitySources.clear();
-        ListTag list = tag.getListOrEmpty("ability_sources");
+        ListTag list = tag.getList("ability_sources", Tag.TAG_STRING);
         for (Tag element : list) {
-            element.asString().ifPresent(str -> {
-                Identifier id = Identifier.tryParse(str);
-                if (id != null) {
-                    this.abilitySources.add(Pal.getAbilitySource(id));
-                }
-            });
+            String str = element.getAsString();
+            ResourceLocation id = ResourceLocation.tryParse(str);
+            if (id != null) {
+                this.abilitySources.add(Pal.getAbilitySource(id));
+            }
         }
     }
 }

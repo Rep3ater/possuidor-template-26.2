@@ -17,7 +17,7 @@
  */
 package ladysnake.requiem.mixin.common.possession.gameplay.ability;
 
-import net.minecraft.world.entity.animal.fish.Pufferfish;
+import net.minecraft.world.entity.animal.Pufferfish;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 

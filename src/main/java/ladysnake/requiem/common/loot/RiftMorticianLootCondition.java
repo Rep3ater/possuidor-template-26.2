@@ -21,13 +21,18 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import ladysnake.requiem.common.entity.MorticianEntity;
-import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.Set;
 
 public class RiftMorticianLootCondition implements LootItemCondition {
+    @Override
+    public net.minecraft.world.level.storage.loot.predicates.LootItemConditionType getType() {
+        return RequiemLootTables.RIFT_MORTICIAN_CONDITION;
+    }
+
     public static final MapCodec<RiftMorticianLootCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(c -> c.entity)
     ).apply(instance, RiftMorticianLootCondition::new));
@@ -39,17 +44,12 @@ public class RiftMorticianLootCondition implements LootItemCondition {
     }
 
     @Override
-    public MapCodec<? extends LootItemCondition> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public Set<ContextKey<?>> getReferencedContextParams() {
-        return ImmutableSet.of(this.entity.contextParam());
+    public Set<LootContextParam<?>> getReferencedContextParams() {
+        return ImmutableSet.of(this.entity.getParam());
     }
 
     @Override
     public boolean test(LootContext lootContext) {
-        return lootContext.getOptionalParameter(this.entity.contextParam()) instanceof MorticianEntity mortician && mortician.isObeliskProjection();
+        return lootContext.getParamOrNull(this.entity.getParam()) instanceof MorticianEntity mortician && mortician.isObeliskProjection();
     }
 }

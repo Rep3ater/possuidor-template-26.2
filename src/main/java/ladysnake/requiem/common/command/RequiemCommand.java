@@ -2,7 +2,6 @@ package ladysnake.requiem.common.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.permissions.Permissions;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -26,11 +25,11 @@ public final class RequiemCommand {
     }
 
     public static Predicate<CommandSourceStack> permission(String name) {
-        return source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+        return source -> source.hasPermission(2);
     }
 
     private static boolean checkPermissions(CommandSourceStack source) {
-        return source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+        return source.hasPermission(2);
     }
 
     public static <T> int runOne(T element, Consumer<T> action) {

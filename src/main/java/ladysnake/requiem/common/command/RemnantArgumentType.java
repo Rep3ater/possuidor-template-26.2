@@ -15,7 +15,7 @@ import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,15 +39,15 @@ public class RemnantArgumentType implements ArgumentType<RemnantType> {
         try {
             return stringReader.readBoolean() ? RemnantTypes.REMNANT : RemnantTypes.MORTAL;
         } catch (CommandSyntaxException e) {
-            Identifier identifier = parseIdentifier(stringReader);
+            ResourceLocation identifier = parseIdentifier(stringReader);
             return RequiemRegistries.REMNANT_STATES.getOptional(identifier).orElseThrow(() -> NOT_FOUND_EXCEPTION.create(identifier));
         }
     }
 
-    private static Identifier parseIdentifier(StringReader reader) throws CommandSyntaxException {
+    private static ResourceLocation parseIdentifier(StringReader reader) throws CommandSyntaxException {
         int i = reader.getCursor();
 
-        while(reader.canRead() && Identifier.isAllowedInIdentifier(reader.peek())) {
+        while(reader.canRead() && ResourceLocation.isAllowedInResourceLocation(reader.peek())) {
             reader.skip();
         }
 
@@ -55,9 +55,9 @@ public class RemnantArgumentType implements ArgumentType<RemnantType> {
 
         try {
             if (string.contains(":")) {
-                return Identifier.parse(string);
+                return ResourceLocation.parse(string);
             } else {
-                return Identifier.fromNamespaceAndPath(Requiem.MOD_ID, string);
+                return ResourceLocation.fromNamespaceAndPath(Requiem.MOD_ID, string);
             }
         } catch (Exception var4) {
             reader.setCursor(i);

@@ -20,7 +20,7 @@ package ladysnake.requiem.api.v1.block;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.apiguardian.api.API;
 
 /**
@@ -30,9 +30,9 @@ import org.apiguardian.api.API;
  */
 @API(status = API.Status.EXPERIMENTAL, since = "2.0.0")
 public interface VagrantTargetableBlock {
-    BlockApiLookup<VagrantTargetableBlock, Void> LOOKUP = BlockApiLookup.get(Identifier.fromNamespaceAndPath("requiem", "remnant_focusable"), VagrantTargetableBlock.class, Void.class);
+    BlockApiLookup<VagrantTargetableBlock, Void> LOOKUP = BlockApiLookup.get(ResourceLocation.fromNamespaceAndPath("requiem", "remnant_focusable"), VagrantTargetableBlock.class, Void.class);
 
-    Identifier getTargetedIcon();
+    ResourceLocation getTargetedIcon();
 
     boolean canBeUsedByVagrant(Player player);
 }

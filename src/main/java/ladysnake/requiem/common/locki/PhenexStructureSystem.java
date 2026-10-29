@@ -9,7 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -30,7 +30,7 @@ public final class PhenexStructureSystem {
     private PhenexStructureSystem() {}
 
     private static String key(ServerLevel level, BlockPos pos) {
-        return level.dimension().identifier() + "|" + pos.asLong();
+        return level.dimension().location() + "|" + pos.asLong();
     }
 
     public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event) {
@@ -52,9 +52,9 @@ public final class PhenexStructureSystem {
                 origin.south(2), origin.south(2).east(), origin.south(2).east(2)
             };
             BlockState[] expected = new BlockState[] {
-                Blocks.IRON_BLOCK.defaultBlockState(), Blocks.IRON_CHAIN.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState(),
-                Blocks.IRON_CHAIN.defaultBlockState(), Blocks.REDSTONE_BLOCK.defaultBlockState(), Blocks.IRON_CHAIN.defaultBlockState(),
-                Blocks.IRON_BLOCK.defaultBlockState(), Blocks.IRON_CHAIN.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState()
+                Blocks.IRON_BLOCK.defaultBlockState(), Blocks.CHAIN.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState(),
+                Blocks.CHAIN.defaultBlockState(), Blocks.REDSTONE_BLOCK.defaultBlockState(), Blocks.CHAIN.defaultBlockState(),
+                Blocks.IRON_BLOCK.defaultBlockState(), Blocks.CHAIN.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState()
             };
             boolean valid = true;
             for (int i = 0; i < cells.length; i++) {
@@ -90,7 +90,7 @@ public final class PhenexStructureSystem {
         ServerPlayer online = level.getServer().getPlayerList().getPlayerByName(requestedName);
         UUID uuid = online != null ? online.getUUID() : UUID.nameUUIDFromBytes(("OfflinePlayer:" + requestedName).getBytes(StandardCharsets.UTF_8));
         GameProfile profile = online != null ? online.getGameProfile() : new GameProfile(uuid, requestedName);
-        PlayerShellEntity shell = RequiemEntities.PLAYER_SHELL.create(level, EntitySpawnReason.TRIGGERED);
+        PlayerShellEntity shell = RequiemEntities.PLAYER_SHELL.create(level);
         if (shell == null) return;
         shell.setDisplayProfile(profile);
         shell.setPos(found.getX() + 0.5, found.getY() + 1.0, found.getZ() + 0.5);

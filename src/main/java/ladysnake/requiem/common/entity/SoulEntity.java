@@ -39,8 +39,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
@@ -196,7 +194,7 @@ public class SoulEntity extends Entity {
         this.setTarget(newTarget);
 
         BlockPos targetPos = BlockPos.containing(newTarget);
-        if (this.level().getBlockState(targetPos).isSolidRender() && !this.level().getBlockState(targetPos).is(RequiemBlockTags.WANDERING_SOUL_TRAVERSABLE)) {
+        if (this.level().getBlockState(targetPos).isSolidRender(this.level(), targetPos) && !this.level().getBlockState(targetPos).is(RequiemBlockTags.WANDERING_SOUL_TRAVERSABLE)) {
             this.targetChangeCooldown = 0;
             return;
         }
@@ -218,17 +216,17 @@ public class SoulEntity extends Entity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        this.maxAge = input.getIntOr("max_age", this.maxAge);
+    protected void readAdditionalSaveData(CompoundTag input) {
+        if (input.contains("max_age")) this.maxAge = input.getInt("max_age");
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         output.putInt("max_age", this.maxAge);
     }
 }

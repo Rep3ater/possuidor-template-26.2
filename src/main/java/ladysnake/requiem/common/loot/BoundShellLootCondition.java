@@ -24,7 +24,7 @@ import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.remnant.PlayerBodyTracker;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -33,6 +33,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public class BoundShellLootCondition implements LootItemCondition {
+    @Override
+    public net.minecraft.world.level.storage.loot.predicates.LootItemConditionType getType() {
+        return RequiemLootTables.BOUND_SHELL_CONDITION;
+    }
+
     public static final MapCodec<BoundShellLootCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(c -> c.entity),
         EntityRefPredicate.CODEC.optionalFieldOf("predicate", EntityRefPredicate.ANY).forGetter(c -> c.predicate)
@@ -47,24 +52,19 @@ public class BoundShellLootCondition implements LootItemCondition {
     }
 
     @Override
-    public MapCodec<? extends LootItemCondition> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public Set<ContextKey<?>> getReferencedContextParams() {
-        return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.contextParam());
+    public Set<LootContextParam<?>> getReferencedContextParams() {
+        return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.getParam());
     }
 
     @Override
     public boolean test(LootContext lootContext) {
-        if (!(lootContext.getOptionalParameter(this.entity.contextParam()) instanceof ServerPlayer player)) return false;
+        if (!(lootContext.getParamOrNull(this.entity.getParam()) instanceof ServerPlayer player)) return false;
 
         @Nullable EntityPointer shellPointer = PlayerBodyTracker.get(player)
             .getAnchor()
             .flatMap(record -> record.get(RequiemRecordTypes.ENTITY_REF))
             .orElse(null);
 
-        return this.predicate.test(lootContext.getLevel(), lootContext.getOptionalParameter(LootContextParams.ORIGIN), shellPointer);
+        return this.predicate.test(lootContext.getLevel(), lootContext.getParamOrNull(LootContextParams.ORIGIN), shellPointer);
     }
 }

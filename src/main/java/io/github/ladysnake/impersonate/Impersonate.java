@@ -10,7 +10,7 @@ import dev.onyxstudios.cca.internal.neoforge.CcaNeoForgeEngine;
 import io.github.ladysnake.impersonate.impl.PlayerImpersonator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 public final class Impersonate implements EntityComponentInitializer {
     public static final Logger LOGGER = LogManager.getLogger("Impersonate");
     public static final ComponentKey<Impersonator> IMPERSONATION = ComponentRegistryV3.INSTANCE
-        .getOrCreate(Identifier.fromNamespaceAndPath("impersonate", "impersonation"), Impersonator.class);
+        .getOrCreate(ResourceLocation.fromNamespaceAndPath("impersonate", "impersonation"), Impersonator.class);
 
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
@@ -41,8 +41,8 @@ public final class Impersonate implements EntityComponentInitializer {
         Impersonator impersonator = IMPERSONATION.getNullable(event.getEntity());
         if (impersonator != null) {
             GameProfile profile = impersonator.getImpersonatedProfile();
-            if (profile != null && !profile.name().isEmpty()) {
-                event.setDisplayname(Component.literal(profile.name()));
+            if (profile != null && !profile.getName().isEmpty()) {
+                event.setDisplayname(Component.literal(profile.getName()));
             }
         }
     }
@@ -51,8 +51,8 @@ public final class Impersonate implements EntityComponentInitializer {
         Impersonator impersonator = IMPERSONATION.getNullable(event.getEntity());
         if (impersonator != null) {
             GameProfile profile = impersonator.getImpersonatedProfile();
-            if (profile != null && !profile.name().isEmpty()) {
-                event.setDisplayName(Component.literal(profile.name()));
+            if (profile != null && !profile.getName().isEmpty()) {
+                event.setDisplayName(Component.literal(profile.getName()));
             }
         }
     }

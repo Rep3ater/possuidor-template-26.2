@@ -38,7 +38,7 @@ import ladysnake.requiem.api.v1.remnant.VagrantInteractionRegistry;
 import ladysnake.requiem.core.RequiemCore;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ import java.util.function.BiPredicate;
 
 public final class VagrantInteractionRegistryImpl implements VagrantInteractionRegistry {
     public static final VagrantInteractionRegistryImpl INSTANCE = new VagrantInteractionRegistryImpl();
-    public static final Identifier POSSESSION_ICON = RequiemCore.id("textures/gui/possession_icon.png");
+    public static final ResourceLocation POSSESSION_ICON = RequiemCore.id("textures/gui/possession_icon.png");
 
     private final List<VagrantInteraction> interactions = new ArrayList<>();
 
@@ -58,7 +58,7 @@ public final class VagrantInteractionRegistryImpl implements VagrantInteractionR
     }
 
     @Override
-    public <E extends LivingEntity> void registerPossessionInteraction(Class<E> targetType, BiPredicate<E, Player> precondition, BiConsumer<E, Player> action, Identifier icon) {
+    public <E extends LivingEntity> void registerPossessionInteraction(Class<E> targetType, BiPredicate<E, Player> precondition, BiConsumer<E, Player> action, ResourceLocation icon) {
         this.interactions.add(new VagrantInteraction((e, p) -> targetType.isInstance(e) && precondition.test(targetType.cast(e), p), (e, p) -> action.accept(targetType.cast(e), p), icon));
     }
 

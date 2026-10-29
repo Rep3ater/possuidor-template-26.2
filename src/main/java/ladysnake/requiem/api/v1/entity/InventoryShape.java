@@ -18,8 +18,8 @@
 package ladysnake.requiem.api.v1.entity;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public enum InventoryShape {
@@ -35,17 +35,17 @@ public enum InventoryShape {
         }
 
         @Override
-        public Identifier swapBackground(Identifier baseBackground) {
+        public ResourceLocation swapBackground(ResourceLocation baseBackground) {
             return baseBackground;
         }
 
         @Override
-        public void setupEntityCrop(GuiGraphicsExtractor graphics, int screenX, int screenY) {
+        public void setupEntityCrop(GuiGraphics graphics, int screenX, int screenY) {
             // NO-OP
         }
 
         @Override
-        public void tearDownEntityCrop(GuiGraphicsExtractor graphics) {
+        public void tearDownEntityCrop(GuiGraphics graphics) {
             // NO-OP
         }
     },
@@ -60,13 +60,13 @@ public enum InventoryShape {
     private final int entityShiftX;
     private final int entityShiftY;
 
-    private static Identifier background(String name) {
-        return Identifier.fromNamespaceAndPath("requiem", "textures/gui/" + name);
+    private static ResourceLocation background(String name) {
+        return ResourceLocation.fromNamespaceAndPath("requiem", "textures/gui/" + name);
     }
 
-    private final @Nullable Identifier background;
+    private final @Nullable ResourceLocation background;
 
-    InventoryShape(@Nullable Identifier background, int entityX, int entityY, int entityWidth, int entityHeight, int entityShiftX, int entityShiftY) {
+    InventoryShape(@Nullable ResourceLocation background, int entityX, int entityY, int entityWidth, int entityHeight, int entityShiftX, int entityShiftY) {
         this.background = background;
         this.entityX = entityX;
         this.entityY = entityY;
@@ -76,7 +76,7 @@ public enum InventoryShape {
         this.entityShiftY = entityShiftY;
     }
 
-    public Identifier swapBackground(Identifier baseBackground) {
+    public ResourceLocation swapBackground(ResourceLocation baseBackground) {
         assert this.background != null;
         return this.background;
     }
@@ -91,15 +91,15 @@ public enum InventoryShape {
 
     /**
      * Sets up cropping before rendering an entity in the inventory.
-     * Minecraft 26 renders GUIs through a render state, so the crop is expressed in scaled GUI coordinates.
+     * The crop uses scaled GUI coordinates.
      */
-    public void setupEntityCrop(GuiGraphicsExtractor graphics, int screenX, int screenY) {
+    public void setupEntityCrop(GuiGraphics graphics, int screenX, int screenY) {
         int x0 = screenX + entityX;
         int y0 = screenY + entityY;
         graphics.enableScissor(x0, y0, x0 + entityWidth, y0 + entityHeight);
     }
 
-    public void tearDownEntityCrop(GuiGraphicsExtractor graphics) {
+    public void tearDownEntityCrop(GuiGraphics graphics) {
         graphics.disableScissor();
     }
 

@@ -127,9 +127,9 @@ public final class RevivingDeathSuspender implements DeathSuspender {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        this.setLifeTransient(tag.getBooleanOr("lifeTransient", false));
+        this.setLifeTransient(tag.getBoolean("lifeTransient"));
         if (tag.contains("deathCause") && !this.player.level().isClientSide()) {
-            this.deathCause = DamageSourceSerialization.fromTag(tag.getCompoundOrEmpty("deathCause"), (ServerLevel) this.player.level());
+            this.deathCause = DamageSourceSerialization.fromTag(tag.getCompound("deathCause"), (ServerLevel) this.player.level());
         }
     }
 }

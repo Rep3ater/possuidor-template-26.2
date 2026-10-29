@@ -21,7 +21,7 @@ import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.core.remnant.VagrantInteraction;
 import ladysnake.requiem.core.remnant.VagrantInteractionRegistryImpl;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -65,7 +65,7 @@ public class VagrantPossessAbility extends DirectAbilityBase<Player, LivingEntit
     }
 
     @Override
-    public Identifier getIconTexture() {
+    public ResourceLocation getIconTexture() {
         return this.interaction != null ? this.interaction.icon() : VagrantInteractionRegistryImpl.POSSESSION_ICON;
     }
 }

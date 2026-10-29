@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -55,8 +55,8 @@ public final class LockiSpiritSystem {
     private static final String MODE = DATA_PREFIX + "mode";
     private static final String SAVED_FLYING_SPEED = DATA_PREFIX + "saved_flying_speed";
     private static final String HAS_SAVED_FLYING_SPEED = DATA_PREFIX + "has_saved_flying_speed";
-    private static final Identifier ASTRAL_LAND_SLOWDOWN = Identifier.fromNamespaceAndPath("requiem", "locki_astral_land_slowdown");
-    private static final Identifier ASTRAL_ROOT_SPEED = Identifier.fromNamespaceAndPath("requiem", "locki_astral_root_speed");
+    private static final ResourceLocation ASTRAL_LAND_SLOWDOWN = ResourceLocation.fromNamespaceAndPath("requiem", "locki_astral_land_slowdown");
+    private static final ResourceLocation ASTRAL_ROOT_SPEED = ResourceLocation.fromNamespaceAndPath("requiem", "locki_astral_root_speed");
     private static final String TARGET_X = DATA_PREFIX + "target_x";
     private static final String TARGET_Y = DATA_PREFIX + "target_y";
     private static final String TARGET_Z = DATA_PREFIX + "target_z";
@@ -94,14 +94,14 @@ public final class LockiSpiritSystem {
 
     /** Requiem normally enables ghost flight; these Locki states intentionally suspend it. */
     public static boolean shouldSuppressFlight(Player player) {
-        if (player == null || !player.entityTags().contains(TAG)) return false;
-        String mode = player.getPersistentData().getString(MODE).orElse(MODE_NONE);
+        if (player == null || !player.getTags().contains(TAG)) return false;
+        String mode = stringOr(player.getPersistentData(), MODE, MODE_NONE);
         return MODE_ROOTS.equals(mode) || MODE_CONVERSATION.equals(mode) || MODE_APPLE.equals(mode);
     }
 
     public static boolean isAstralVisionActive(Player player) {
-        if (player == null || !player.entityTags().contains(TAG)) return false;
-        String mode = player.getPersistentData().getString(MODE).orElse(MODE_NONE);
+        if (player == null || !player.getTags().contains(TAG)) return false;
+        String mode = stringOr(player.getPersistentData(), MODE, MODE_NONE);
         return MODE_SPIRIT.equals(mode) || MODE_ROOTS.equals(mode);
     }
 
@@ -114,8 +114,8 @@ public final class LockiSpiritSystem {
         CompoundTag data = serverPlayer.getPersistentData();
         // Force one initial state sync after joining/rejoining a world; the persistent data survives reconnects.
         if (serverPlayer.tickCount <= 2) data.remove(SYNC_MODE);
-        String mode = data.getString(MODE).orElse(MODE_NONE);
-        boolean tagged = player.entityTags().contains(TAG);
+        String mode = stringOr(data, MODE, MODE_NONE);
+        boolean tagged = player.getTags().contains(TAG);
 
         if (!tagged) {
             applyMovementMode(serverPlayer, MODE_NONE);
@@ -191,7 +191,7 @@ public final class LockiSpiritSystem {
         // Incorporeal movement normally uses flight controls, so also scale the actual flying speed.
         // Save the player's pre-Locki value once and restore it when leaving the spirit state.
         if (needLandSlow) {
-            if (!data.getBoolean(HAS_SAVED_FLYING_SPEED).orElse(false)) {
+            if (!booleanOr(data, HAS_SAVED_FLYING_SPEED, false)) {
                 data.putDouble(SAVED_FLYING_SPEED, player.getAbilities().getFlyingSpeed());
                 data.putBoolean(HAS_SAVED_FLYING_SPEED, true);
             }
@@ -199,8 +199,8 @@ public final class LockiSpiritSystem {
                 player.getAbilities().setFlyingSpeed(0.0075F);
                 player.onUpdateAbilities();
             }
-        } else if (data.getBoolean(HAS_SAVED_FLYING_SPEED).orElse(false)) {
-            float original = data.getDouble(SAVED_FLYING_SPEED).orElse(0.05D).floatValue();
+        } else if (booleanOr(data, HAS_SAVED_FLYING_SPEED, false)) {
+            float original = (float) doubleOr(data, SAVED_FLYING_SPEED, 0.05D);
             player.getAbilities().setFlyingSpeed(original);
             player.onUpdateAbilities();
             data.remove(SAVED_FLYING_SPEED);
@@ -288,7 +288,7 @@ public final class LockiSpiritSystem {
             data.putInt(TREE_X, plant.pos().getX());
             data.putInt(TREE_Y, plant.pos().getY());
             data.putInt(TREE_Z, plant.pos().getZ());
-            data.putString(TREE_DIM, player.level().dimension().identifier().toString());
+            data.putString(TREE_DIM, player.level().dimension().location().toString());
             data.putString(TREE_SAPLING, BuiltInRegistries.BLOCK.getKey(LockiRootNetwork.getMatchingSapling(player.level().getBlockState(plant.pos()).getBlock())).toString());
         }
         setMode(player, MODE_CONVERSATION);
@@ -298,7 +298,7 @@ public final class LockiSpiritSystem {
     }
 
     public static void handlePlantChoice(ServerPlayer player, int choice) {
-        if (!player.entityTags().contains(TAG) || !MODE_CONVERSATION.equals(player.getPersistentData().getString(MODE).orElse(MODE_NONE))) return;
+        if (!player.getTags().contains(TAG) || !MODE_CONVERSATION.equals(stringOr(player.getPersistentData(), MODE, MODE_NONE))) return;
         if (choice != 1) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal("The plant closes its mind. You are expelled into the spirit realm."));
             setMode(player, MODE_SPIRIT);
@@ -308,8 +308,8 @@ public final class LockiSpiritSystem {
         }
 
         CompoundTag data = player.getPersistentData();
-        BlockPos plantPos = new BlockPos(data.getInt(TARGET_X).orElse(0), data.getInt(TARGET_Y).orElse(64), data.getInt(TARGET_Z).orElse(0));
-        boolean tree = data.getBoolean(TARGET_IS_TREE).orElse(false);
+        BlockPos plantPos = new BlockPos(intOr(data, TARGET_X, 0), intOr(data, TARGET_Y, 64), intOr(data, TARGET_Z, 0));
+        boolean tree = booleanOr(data, TARGET_IS_TREE, false);
         if (!(player.level() instanceof ServerLevel level)
                 || (tree && !level.getBlockState(plantPos).is(net.minecraft.tags.BlockTags.LOGS))
                 || (!tree && !LockiRootNetwork.isPlant(level.getBlockState(plantPos)))) {
@@ -356,7 +356,7 @@ public final class LockiSpiritSystem {
         data.putDouble(APPLE_X, appleEntity.getX());
         data.putDouble(APPLE_Y, appleEntity.getY());
         data.putDouble(APPLE_Z, appleEntity.getZ());
-        data.putString(APPLE_DIM, level.dimension().identifier().toString());
+        data.putString(APPLE_DIM, level.dimension().location().toString());
         data.remove(APPLE_DROP_X);
         data.remove(APPLE_DROP_Y);
         data.remove(APPLE_DROP_Z);
@@ -397,11 +397,11 @@ public final class LockiSpiritSystem {
         CompoundTag itemData = new CompoundTag();
         itemData.putString("locki:owner", owner.toString());
         itemData.putInt("locki:stage", stage);
-        itemData.putInt("locki:tree_x", playerData.getInt(TREE_X).orElse(0));
-        itemData.putInt("locki:tree_y", playerData.getInt(TREE_Y).orElse(64));
-        itemData.putInt("locki:tree_z", playerData.getInt(TREE_Z).orElse(0));
-        itemData.putString("locki:tree_dimension", playerData.getString(TREE_DIM).orElse("minecraft:overworld"));
-        itemData.putString("locki:tree_sapling", playerData.getString(TREE_SAPLING).orElse("minecraft:oak_sapling"));
+        itemData.putInt("locki:tree_x", intOr(playerData, TREE_X, 0));
+        itemData.putInt("locki:tree_y", intOr(playerData, TREE_Y, 64));
+        itemData.putInt("locki:tree_z", intOr(playerData, TREE_Z, 0));
+        itemData.putString("locki:tree_dimension", stringOr(playerData, TREE_DIM, "minecraft:overworld"));
+        itemData.putString("locki:tree_sapling", stringOr(playerData, TREE_SAPLING, "minecraft:oak_sapling"));
         stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, CustomData.of(itemData));
         // Deliberately omit a custom name: this must look and read as an ordinary apple.
         return stack;
@@ -415,7 +415,7 @@ public final class LockiSpiritSystem {
             player.onUpdateAbilities();
         }
         CompoundTag data = player.getPersistentData();
-        long age = data.getLong(APPLE_AGE).orElse(0L) + 1L;
+        long age = longOr(data, APPLE_AGE, 0L) + 1L;
         data.putLong(APPLE_AGE, age);
 
         AppleTarget target = findAppleTarget(player);
@@ -424,26 +424,26 @@ public final class LockiSpiritSystem {
                 data.putDouble(APPLE_X, target.itemEntity().getX());
                 data.putDouble(APPLE_Y, target.itemEntity().getY());
                 data.putDouble(APPLE_Z, target.itemEntity().getZ());
-                data.putString(APPLE_DIM, target.itemEntity().level().dimension().identifier().toString());
+                data.putString(APPLE_DIM, target.itemEntity().level().dimension().location().toString());
             } else if (target.holder() != null) {
                 data.putDouble(APPLE_X, target.holder().getX());
                 data.putDouble(APPLE_Y, target.holder().getY());
                 data.putDouble(APPLE_Z, target.holder().getZ());
-                data.putString(APPLE_DIM, target.holder().level().dimension().identifier().toString());
+                data.putString(APPLE_DIM, target.holder().level().dimension().location().toString());
             }
             if (target.holder() != null) {
                 data.putBoolean(APPLE_HAS_BEEN_CARRIED, true);
                 if (target.holder().level() instanceof ServerLevel holderLevel) {
                     if (player.level() != holderLevel) {
-                        player.teleportTo(holderLevel, target.holder().getX(), target.holder().getY(), target.holder().getZ(), Set.of(), target.holder().getYRot(), target.holder().getXRot(), false);
+                        player.teleportTo(holderLevel, target.holder().getX(), target.holder().getY(), target.holder().getZ(), Set.of(), target.holder().getYRot(), target.holder().getXRot());
                     } else {
                         player.setPos(target.holder().getX(), target.holder().getY(), target.holder().getZ());
                     }
                 }
             } else if (target.itemEntity() != null) {
                 // A fruit that has already been picked up begins to fade if it is abandoned on the ground.
-                if (data.getBoolean(APPLE_HAS_BEEN_CARRIED).orElse(false)) {
-                    long droppedAt = data.getLong(APPLE_DROPPED_AT).orElse(-1L);
+                if (booleanOr(data, APPLE_HAS_BEEN_CARRIED, false)) {
+                    long droppedAt = longOr(data, APPLE_DROPPED_AT, -1L);
                     if (droppedAt < 0L) {
                         droppedAt = player.level().getGameTime();
                         data.putLong(APPLE_DROPPED_AT, droppedAt);
@@ -454,7 +454,7 @@ public final class LockiSpiritSystem {
                     data.putDouble(APPLE_DROP_X, target.itemEntity().getX());
                     data.putDouble(APPLE_DROP_Y, target.itemEntity().getY());
                     data.putDouble(APPLE_DROP_Z, target.itemEntity().getZ());
-                    data.putString(APPLE_DROP_DIM, target.itemEntity().level().dimension().identifier().toString());
+                    data.putString(APPLE_DROP_DIM, target.itemEntity().level().dimension().location().toString());
                     if (player.level().getGameTime() - droppedAt >= DROP_TIMEOUT) {
                         releaseApple(player, false, false);
                         syncState(player);
@@ -469,7 +469,7 @@ public final class LockiSpiritSystem {
                 }
             }
         } else {
-            long droppedAt = data.getLong(APPLE_DROPPED_AT).orElse(-1L);
+            long droppedAt = longOr(data, APPLE_DROPPED_AT, -1L);
             if (droppedAt < 0L) {
                 data.putLong(APPLE_DROPPED_AT, player.level().getGameTime());
                 droppedAt = player.level().getGameTime();
@@ -482,11 +482,11 @@ public final class LockiSpiritSystem {
         }
 
         int stage = (int) Math.min(4L, age < TICKS_PER_DAY ? 0L : 1L + ((age - TICKS_PER_DAY) / (3L * TICKS_PER_DAY)));
-        int oldStage = data.getInt(ROT_STAGE).orElse(0);
+        int oldStage = intOr(data, ROT_STAGE, 0);
         if (stage != oldStage) {
             data.putInt(ROT_STAGE, stage);
             updateAppleStage(player, stage);
-            int applied = data.getInt(APPLIED_ATTRITION).orElse(0);
+            int applied = intOr(data, APPLIED_ATTRITION, 0);
             while (applied < Math.min(3, stage)) {
                 AttritionStatusEffect.apply(player, 1, (int) Math.min(Integer.MAX_VALUE, ROTTING_AWAY_AT));
                 applied++;
@@ -506,14 +506,14 @@ public final class LockiSpiritSystem {
         MinecraftServer server = locki.level().getServer();
         if (server == null) return null;
         for (ServerPlayer candidate : server.getPlayerList().getPlayers()) {
-            for (ItemStack stack : candidate.getInventory().getNonEquipmentItems()) {
+            for (ItemStack stack : candidate.getInventory().items) {
                 if (isOwnedApple(stack, owner)) return new AppleTarget(null, candidate, stack == candidate.getMainHandItem(), stack);
             }
             ItemStack offhand = candidate.getOffhandItem();
             if (isOwnedApple(offhand, owner)) return new AppleTarget(null, candidate, false, offhand);
         }
 
-        String uuidString = locki.getPersistentData().getString(APPLE_UUID).orElse("");
+        String uuidString = stringOr(locki.getPersistentData(), APPLE_UUID, "");
         if (!uuidString.isBlank()) {
             try {
                 UUID id = UUID.fromString(uuidString);
@@ -533,7 +533,7 @@ public final class LockiSpiritSystem {
     private static boolean isOwnedApple(ItemStack stack, UUID owner) {
         if (stack.isEmpty() || !(stack.getItem() instanceof LockiAppleItem)) return false;
         String id = stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-            .copyTag().getString("locki:owner").orElse("");
+            .copyTag().getString("locki:owner");
         return owner.toString().equals(id);
     }
 
@@ -543,9 +543,9 @@ public final class LockiSpiritSystem {
         UUID uuid = owner.getUUID();
         CompoundTag data = owner.getPersistentData();
         for (ServerPlayer candidate : server.getPlayerList().getPlayers()) {
-            for (int i = 0; i < candidate.getInventory().getNonEquipmentItems().size(); i++) {
-                ItemStack stack = candidate.getInventory().getNonEquipmentItems().get(i);
-                if (isOwnedApple(stack, uuid)) candidate.getInventory().getNonEquipmentItems().set(i, makeAppleStack(uuid, stage, data));
+            for (int i = 0; i < candidate.getInventory().items.size(); i++) {
+                ItemStack stack = candidate.getInventory().items.get(i);
+                if (isOwnedApple(stack, uuid)) candidate.getInventory().items.set(i, makeAppleStack(uuid, stage, data));
             }
             ItemStack offhand = candidate.getOffhandItem();
             if (isOwnedApple(offhand, uuid)) candidate.setItemSlot(EquipmentSlot.OFFHAND, makeAppleStack(uuid, stage, data));
@@ -557,9 +557,9 @@ public final class LockiSpiritSystem {
     private static void releaseApple(ServerPlayer player, boolean oldAge, boolean removeFruit) {
         CompoundTag data = player.getPersistentData();
         AppleTarget target = findAppleTarget(player);
-        double x = data.getDouble(APPLE_X).orElse(player.getX());
-        double y = data.getDouble(APPLE_Y).orElse(player.getY());
-        double z = data.getDouble(APPLE_Z).orElse(player.getZ());
+        double x = doubleOr(data, APPLE_X, player.getX());
+        double y = doubleOr(data, APPLE_Y, player.getY());
+        double z = doubleOr(data, APPLE_Z, player.getZ());
         if (target != null) {
             if (target.itemEntity() != null) {
                 x = target.itemEntity().getX(); y = target.itemEntity().getY(); z = target.itemEntity().getZ();
@@ -573,10 +573,10 @@ public final class LockiSpiritSystem {
         MinecraftServer server = player.level().getServer();
         if (server != null) {
             for (ServerPlayer candidate : server.getPlayerList().getPlayers()) {
-                for (int i = 0; i < candidate.getInventory().getNonEquipmentItems().size(); i++) {
-                    ItemStack stack = candidate.getInventory().getNonEquipmentItems().get(i);
+                for (int i = 0; i < candidate.getInventory().items.size(); i++) {
+                    ItemStack stack = candidate.getInventory().items.get(i);
                     if (!isOwnedApple(stack, player.getUUID())) continue;
-                    candidate.getInventory().getNonEquipmentItems().set(i, removeFruit ? ItemStack.EMPTY : new ItemStack(Items.APPLE));
+                    candidate.getInventory().items.set(i, removeFruit ? ItemStack.EMPTY : new ItemStack(Items.APPLE));
                 }
                 ItemStack offhand = candidate.getOffhandItem();
                 if (isOwnedApple(offhand, player.getUUID())) {
@@ -604,8 +604,8 @@ public final class LockiSpiritSystem {
     }
 
     private static void removeOwnedApplesNear(ServerLevel level, UUID owner, double x, double y, double z) {
-        AABB search = new AABB(x - 32.0, Math.max(level.getMinY(), y - 16.0), z - 32.0,
-            x + 32.0, Math.min(level.getMaxY(), y + 16.0), z + 32.0);
+        AABB search = new AABB(x - 32.0, Math.max(level.getMinBuildHeight(), y - 16.0), z - 32.0,
+            x + 32.0, Math.min(level.getMaxBuildHeight(), y + 16.0), z + 32.0);
         for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, search,
                 entity -> isOwnedApple(entity.getItem(), owner))) {
             item.discard();
@@ -616,7 +616,7 @@ public final class LockiSpiritSystem {
     public static void onAppleEaten(ItemStack stack, net.minecraft.world.entity.LivingEntity eater) {
         if (!(eater.level() instanceof ServerLevel eaterLevel)) return;
         String ownerId = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-            .copyTag().getString("locki:owner").orElse("");
+            .copyTag().getString("locki:owner");
         UUID ownerUuid;
         try {
             ownerUuid = UUID.fromString(ownerId);
@@ -626,18 +626,17 @@ public final class LockiSpiritSystem {
         MinecraftServer server = eaterLevel.getServer();
         if (server == null) return;
         ServerPlayer owner = server.getPlayerList().getPlayer(ownerUuid);
-        if (owner == null || !MODE_APPLE.equals(owner.getPersistentData().getString(MODE).orElse(MODE_NONE))) return;
+        if (owner == null || !MODE_APPLE.equals(stringOr(owner.getPersistentData(), MODE, MODE_NONE))) return;
 
         CompoundTag data = owner.getPersistentData();
-        String destinationDimension = data.getString(APPLE_DROP_DIM)
-            .orElseGet(() -> data.getString(APPLE_DIM).orElse(eaterLevel.dimension().identifier().toString()));
+        String destinationDimension = stringOr(data, APPLE_DROP_DIM, stringOr(data, APPLE_DIM, eaterLevel.dimension().location().toString()));
         boolean hasDropSite = data.contains(APPLE_DROP_X) && data.contains(APPLE_DROP_Y) && data.contains(APPLE_DROP_Z);
-        double x = hasDropSite ? data.getDouble(APPLE_DROP_X).orElse(owner.getX()) : data.getDouble(APPLE_X).orElse(owner.getX());
-        double y = hasDropSite ? data.getDouble(APPLE_DROP_Y).orElse(owner.getY()) : data.getDouble(APPLE_Y).orElse(owner.getY());
-        double z = hasDropSite ? data.getDouble(APPLE_DROP_Z).orElse(owner.getZ()) : data.getDouble(APPLE_Z).orElse(owner.getZ());
+        double x = hasDropSite ? doubleOr(data, APPLE_DROP_X, owner.getX()) : doubleOr(data, APPLE_X, owner.getX());
+        double y = hasDropSite ? doubleOr(data, APPLE_DROP_Y, owner.getY()) : doubleOr(data, APPLE_Y, owner.getY());
+        double z = hasDropSite ? doubleOr(data, APPLE_DROP_Z, owner.getZ()) : doubleOr(data, APPLE_Z, owner.getZ());
         ResourceKey<Level> destinationKey;
         try {
-            destinationKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(destinationDimension));
+            destinationKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(destinationDimension));
         } catch (Exception ignored) {
             destinationKey = eaterLevel.dimension();
         }
@@ -648,8 +647,8 @@ public final class LockiSpiritSystem {
         // A carried apple may be hundreds of blocks from the soul's original tree, so using only
         // the owner's current bounding box can leave an edible duplicate behind.
         for (ServerLevel level : server.getAllLevels()) {
-            removeOwnedApplesNear(level, ownerUuid, data.getDouble(APPLE_X).orElse(owner.getX()),
-                data.getDouble(APPLE_Y).orElse(owner.getY()), data.getDouble(APPLE_Z).orElse(owner.getZ()));
+            removeOwnedApplesNear(level, ownerUuid, doubleOr(data, APPLE_X, owner.getX()),
+                doubleOr(data, APPLE_Y, owner.getY()), doubleOr(data, APPLE_Z, owner.getZ()));
             if (hasDropSite && destination.dimension().equals(level.dimension())) {
                 removeOwnedApplesNear(level, ownerUuid, x, y, z);
             }
@@ -660,10 +659,10 @@ public final class LockiSpiritSystem {
             }
         }
         for (ServerPlayer candidate : server.getPlayerList().getPlayers()) {
-            for (int i = 0; i < candidate.getInventory().getNonEquipmentItems().size(); i++) {
-                ItemStack candidateStack = candidate.getInventory().getNonEquipmentItems().get(i);
+            for (int i = 0; i < candidate.getInventory().items.size(); i++) {
+                ItemStack candidateStack = candidate.getInventory().items.get(i);
                 if (candidateStack != stack && isOwnedApple(candidateStack, ownerUuid)) {
-                    candidate.getInventory().getNonEquipmentItems().set(i, ItemStack.EMPTY);
+                    candidate.getInventory().items.set(i, ItemStack.EMPTY);
                 }
             }
             ItemStack offhand = candidate.getOffhandItem();
@@ -690,7 +689,7 @@ public final class LockiSpiritSystem {
         // body-regeneration hooks cannot send the newly born player back to the tree.
         RemnantComponent.get(owner).become(RemnantTypes.MORTAL, true);
         if (owner.level() != destination) {
-            owner.teleportTo(destination, x, y, z, Set.of(), owner.getYRot(), owner.getXRot(), false);
+            owner.teleportTo(destination, x, y, z, Set.of(), owner.getYRot(), owner.getXRot());
         } else {
             owner.connection.teleport(x, y, z, owner.getYRot(), owner.getXRot());
         }
@@ -703,7 +702,7 @@ public final class LockiSpiritSystem {
     }
 
     public static void onDeath(ServerPlayer player) {
-        if (MODE_APPLE.equals(player.getPersistentData().getString(MODE).orElse(MODE_NONE))) {
+        if (MODE_APPLE.equals(stringOr(player.getPersistentData(), MODE, MODE_NONE))) {
             releaseApple(player, true, true);
             syncState(player);
         }
@@ -711,22 +710,22 @@ public final class LockiSpiritSystem {
 
     private static void spawnOriginSapling(ServerPlayer player) {
         CompoundTag data = player.getPersistentData();
-        String dimension = data.getString(TREE_DIM).orElse(player.level().dimension().identifier().toString());
+        String dimension = stringOr(data, TREE_DIM, player.level().dimension().location().toString());
         ResourceKey<Level> dimensionKey;
         try {
-            dimensionKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(dimension));
+            dimensionKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimension));
         } catch (Exception ignored) {
             dimensionKey = player.level().dimension();
         }
         ServerLevel level = player.level().getServer() == null ? null : player.level().getServer().getLevel(dimensionKey);
         if (level == null) level = (player.level() instanceof ServerLevel currentLevel ? currentLevel : null);
 
-        BlockPos source = new BlockPos(data.getInt(TREE_X).orElse(player.blockPosition().getX()),
-            data.getInt(TREE_Y).orElse(player.blockPosition().getY()), data.getInt(TREE_Z).orElse(player.blockPosition().getZ()));
-        String saplingName = data.getString(TREE_SAPLING).orElse("minecraft:oak_sapling");
+        BlockPos source = new BlockPos(intOr(data, TREE_X, player.blockPosition().getX()),
+            intOr(data, TREE_Y, player.blockPosition().getY()), intOr(data, TREE_Z, player.blockPosition().getZ()));
+        String saplingName = stringOr(data, TREE_SAPLING, "minecraft:oak_sapling");
         Block sapling;
         try {
-            sapling = BuiltInRegistries.BLOCK.getOptional(Identifier.parse(saplingName))
+            sapling = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(saplingName))
                 .filter(block -> block instanceof SaplingBlock || block instanceof net.minecraft.world.level.block.BushBlock)
                 .orElse(net.minecraft.world.level.block.Blocks.OAK_SAPLING);
         } catch (Exception ignored) {
@@ -739,7 +738,7 @@ public final class LockiSpiritSystem {
                 for (int dz = -radius; dz <= radius; dz++) {
                     if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) continue;
                     BlockPos candidate = new BlockPos(source.getX() + dx, source.getY(), source.getZ() + dz);
-                    if (candidate.getY() >= level.getMaxY() - 1) continue;
+                    if (candidate.getY() >= level.getMaxBuildHeight() - 1) continue;
                     if (level.getBlockState(candidate).isAir() && saplingState.canSurvive(level, candidate)) {
                         level.setBlock(candidate, saplingState, 3);
                         return;
@@ -755,7 +754,7 @@ public final class LockiSpiritSystem {
     }
 
     private static void resetPhysicalState(ServerPlayer player) {
-        String mode = player.getPersistentData().getString(MODE).orElse(MODE_NONE);
+        String mode = stringOr(player.getPersistentData(), MODE, MODE_NONE);
         player.setInvisible(MODE_SPIRIT.equals(mode) || MODE_ROOTS.equals(mode)
             || MODE_CONVERSATION.equals(mode) || MODE_APPLE.equals(mode));
         if (!player.isPassenger()) player.setPose(net.minecraft.world.entity.Pose.STANDING);
@@ -779,10 +778,10 @@ public final class LockiSpiritSystem {
 
     private static void syncState(ServerPlayer player) {
         CompoundTag data = player.getPersistentData();
-        String mode = data.getString(MODE).orElse(MODE_NONE);
+        String mode = stringOr(data, MODE, MODE_NONE);
         int cameraMode = 0;
         int cameraEntityId = player.getId();
-        int rot = data.getInt(ROT_STAGE).orElse(0);
+        int rot = intOr(data, ROT_STAGE, 0);
         if (MODE_ROOTS.equals(mode)) {
             cameraMode = 1;
         } else if (MODE_APPLE.equals(mode)) {
@@ -797,10 +796,10 @@ public final class LockiSpiritSystem {
                 cameraMode = 4;
             }
         }
-        String previousMode = data.getString(SYNC_MODE).orElse("");
-        int previousTarget = data.getInt(SYNC_TARGET).orElse(Integer.MIN_VALUE);
-        int previousCamera = data.getInt(SYNC_CAMERA).orElse(Integer.MIN_VALUE);
-        int previousRot = data.getInt(SYNC_ROT).orElse(Integer.MIN_VALUE);
+        String previousMode = stringOr(data, SYNC_MODE, "");
+        int previousTarget = intOr(data, SYNC_TARGET, Integer.MIN_VALUE);
+        int previousCamera = intOr(data, SYNC_CAMERA, Integer.MIN_VALUE);
+        int previousRot = intOr(data, SYNC_ROT, Integer.MIN_VALUE);
         if (!mode.equals(previousMode) || cameraEntityId != previousTarget || cameraMode != previousCamera || rot != previousRot) {
             data.putString(SYNC_MODE, mode);
             data.putInt(SYNC_TARGET, cameraEntityId);
@@ -813,5 +812,25 @@ public final class LockiSpiritSystem {
 
     public static void clearNetwork(UUID id) {
         NETWORKS.remove(id);
+    }
+
+    private static String stringOr(CompoundTag tag, String key, String fallback) {
+        return tag.contains(key, net.minecraft.nbt.Tag.TAG_STRING) ? tag.getString(key) : fallback;
+    }
+
+    private static boolean booleanOr(CompoundTag tag, String key, boolean fallback) {
+        return tag.contains(key, net.minecraft.nbt.Tag.TAG_BYTE) ? tag.getBoolean(key) : fallback;
+    }
+
+    private static int intOr(CompoundTag tag, String key, int fallback) {
+        return tag.contains(key, net.minecraft.nbt.Tag.TAG_INT) ? tag.getInt(key) : fallback;
+    }
+
+    private static long longOr(CompoundTag tag, String key, long fallback) {
+        return tag.contains(key, net.minecraft.nbt.Tag.TAG_LONG) ? tag.getLong(key) : fallback;
+    }
+
+    private static double doubleOr(CompoundTag tag, String key, double fallback) {
+        return tag.contains(key, net.minecraft.nbt.Tag.TAG_DOUBLE) ? tag.getDouble(key) : fallback;
     }
 }
