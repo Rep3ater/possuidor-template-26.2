@@ -38,7 +38,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 100.0)
-            .add(Attributes.MOVEMENT_SPEED, 0.10)
+            .add(Attributes.MOVEMENT_SPEED, 0.18)
             .add(Attributes.ATTACK_DAMAGE, 20.0)
             .add(Attributes.FOLLOW_RANGE, 32.0);
     }
@@ -129,7 +129,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
         // Walk slowly when idle, but move at player-like walking speed while actively chasing.
         var speed = this.getAttribute(Attributes.MOVEMENT_SPEED);
         boolean chasing = !stunned && this.getTarget() != null && this.getTarget().isAlive();
-        if (speed != null) speed.setBaseValue(chasing ? 0.13D : 0.10D);
+        if (speed != null) speed.setBaseValue(chasing ? 0.42D : 0.18D);
 
         // Heavy, low-pitched footsteps ramp up during pursuit and taper off after the target is lost.
         int soundLevel = data.getInt(CHASE_SOUND_LEVEL).orElse(0);
