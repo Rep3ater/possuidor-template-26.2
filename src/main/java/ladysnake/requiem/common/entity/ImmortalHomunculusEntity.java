@@ -11,11 +11,21 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.util.Mth;
 
-/** Suffering-transmuted homunculus: dangerous, but still mortal. */
+/** Suffering-transmuted homunculus: immune to ordinary survival damage, but removable with /kill. */
 public class ImmortalHomunculusEntity extends PathfinderMob {
     private static final String STUN_UNTIL = "requiem:homunculus_stun_until";
     private static final String STUN_BASE_YAW = "requiem:immortal_stun_base_yaw";
@@ -28,8 +38,6 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
             .add(Attributes.MAX_HEALTH, 100.0)
-            // A deliberate walk speed. The hunt controller raises this to player walking speed
-            // only while a target is being chased.
             .add(Attributes.MOVEMENT_SPEED, 0.10)
             .add(Attributes.ATTACK_DAMAGE, 20.0)
             .add(Attributes.FOLLOW_RANGE, 32.0);
@@ -37,7 +45,18 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
 
     @Override
     protected void registerGoals() {
-        // Marbas or an injected soul installs the active behavior.
+        // These are native goals rather than a nearby-player-tick script, so it keeps hunting
+        // even when no Marbas player is looking at it and does not freeze after the first hit.
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, true));
+        this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.6D));
+        this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 12.0F));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Villager.class, true));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
     }
 
     @Override
@@ -62,12 +81,11 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
 
     @Override
     public void tick() {
+        // Reassert this for saved entities created before the immortality flag was added.
+        // The /kill command removes the entity directly; it does not rely on damage.
+        if (!this.level().isClientSide()) this.setInvulnerable(true);
         super.tick();
         if (this.level().isClientSide() || !(this.level() instanceof ServerLevel serverLevel)) return;
-
-        // Old saved copies may still carry the previous invulnerability flag. Clear it every tick;
-        // /kill and ordinary damage must work on this entity.
-        this.setInvulnerable(false);
 
         long now = serverLevel.getGameTime();
         var data = this.getPersistentData();
@@ -75,7 +93,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
         if (this.isInLava()) {
             if (now >= stunUntil) {
                 data.putFloat(STUN_BASE_YAW, this.getYRot());
-                // A small, subdued cry only when the lava stun begins; not every tick in lava.
+                // Play a subdued cry only when the lava stun starts, not continuously.
                 this.playSound(SoundEvents.ALLAY_HURT, 1.0F, 0.52F);
             }
             stunUntil = Math.max(stunUntil, now + 3_600L); // three minutes at 20 TPS
@@ -108,9 +126,12 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
             this.setXRot(0.0F);
         }
 
-        // A heavy, low-pitched footfall fades in during pursuit and fades out for several
-        // seconds afterwards. It is sparse enough not to become a constant looping noise.
+        // Walk slowly when idle, but move at player-like walking speed while actively chasing.
+        var speed = this.getAttribute(Attributes.MOVEMENT_SPEED);
         boolean chasing = !stunned && this.getTarget() != null && this.getTarget().isAlive();
+        if (speed != null) speed.setBaseValue(chasing ? 0.13D : 0.10D);
+
+        // Heavy, low-pitched footsteps ramp up during pursuit and taper off after the target is lost.
         int soundLevel = data.getInt(CHASE_SOUND_LEVEL).orElse(0);
         soundLevel = chasing ? Math.min(100, soundLevel + 3) : Math.max(0, soundLevel - 1);
         data.putInt(CHASE_SOUND_LEVEL, soundLevel);
