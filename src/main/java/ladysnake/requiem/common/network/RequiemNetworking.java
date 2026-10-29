@@ -56,7 +56,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
@@ -244,11 +244,11 @@ public final class RequiemNetworking {
     }
 
     public static void sendToServer(CustomPacketPayload payload) {
-        ClientPacketDistributor.sendToServer(payload);
+        PacketDistributor.sendToServer(payload);
     }
 
     public static void sendLockiPlantChoice(int choice) {
-        ClientPacketDistributor.sendToServer(new LockiPlantChoicePayload(choice));
+        PacketDistributor.sendToServer(new LockiPlantChoicePayload(choice));
     }
 
     public static void sendHomunculusBrainOpen(ServerPlayer player, int entityId, String program) {
@@ -256,7 +256,7 @@ public final class RequiemNetworking {
     }
 
     public static void sendHomunculusBrain(int entityId, String program) {
-        ClientPacketDistributor.sendToServer(new HomunculusBrainSavePayload(entityId, program == null ? "" : program));
+        PacketDistributor.sendToServer(new HomunculusBrainSavePayload(entityId, program == null ? "" : program));
     }
 
     public static void sendTo(ServerPlayer player, Packet<?> message) {
@@ -284,19 +284,19 @@ public final class RequiemNetworking {
     }
 
     public static void sendDialogueActionMessage(int choice) {
-        ClientPacketDistributor.sendToServer(new DialogueActionPayload(choice));
+        PacketDistributor.sendToServer(new DialogueActionPayload(choice));
     }
 
     public static void sendRiftUseMessage(ObeliskDescriptor target) {
-        ClientPacketDistributor.sendToServer(new UseRiftPayload(target));
+        PacketDistributor.sendToServer(new UseRiftPayload(target));
     }
 
     public static void sendIndirectAbilityUseMessage(AbilityType type) {
-        ClientPacketDistributor.sendToServer(new UseIndirectAbilityPayload(type));
+        PacketDistributor.sendToServer(new UseIndirectAbilityPayload(type));
     }
 
     public static void sendSupercrafterMessage() {
-        ClientPacketDistributor.sendToServer(new OpenCraftingPayload());
+        PacketDistributor.sendToServer(new OpenCraftingPayload());
     }
 
     public static void sendEtherealAnimationMessage(ServerPlayer player) {
