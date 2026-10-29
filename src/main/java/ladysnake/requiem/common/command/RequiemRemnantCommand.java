@@ -99,7 +99,7 @@ public final class RequiemRemnantCommand {
         if (source.getEntity() == player) {
             source.sendSuccess(() -> Component.translatable("requiem:commands.remnant.set.success.self", type.getName()), true);
         } else {
-            if (source.getLevel().getGameRules().get(GameRules.SEND_COMMAND_FEEDBACK)) {
+            if (source.getLevel().getGameRules().getBoolean(GameRules.RULE_SEND_COMMAND_FEEDBACK)) {
                 player.sendSystemMessage(Component.translatable("requiem:commands.remnant.set.target", type.getName()));
             }
 
