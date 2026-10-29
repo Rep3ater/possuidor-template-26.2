@@ -23,11 +23,11 @@ import java.util.Locale;
 public final class HomunculusBrainScreen extends Screen {
     private static final String[] PALETTE_LABELS = {
         "RETURN HOME", "WAIT", "GUARD", "FIND ITEM", "PICKUP", "TAKE ITEM",
-        "FIND ENTITY", "KILL", "GOTO XYZ", "STORE CHEST", "DROP ITEM", "LOOP"
+        "FIND ENTITY", "KILL", "GOTO XYZ", "STORE CHEST", "DROP ITEM", "KILL TARGET"
     };
     private static final String[] PALETTE_COMMANDS = {
         "return home", "wait", "guard", "find item:<id>", "pickup", "take item",
-        "find entity:<name>", "kill", "goto x y z", "store chest", "drop item", "loop"
+        "find entity:<name>", "kill", "goto x y z", "store chest", "drop item", "kill:<name>"
     };
 
     private final int entityId;
@@ -49,6 +49,7 @@ public final class HomunculusBrainScreen extends Screen {
         this.program = new EditBox(this.font, left, this.height / 2 - 109, 430, 20,
             Component.literal("Connected brain blocks"));
         this.program.setMaxLength(1024);
+        this.program.setResponder(value -> this.validation = validationMessage());
         this.program.setValue(this.currentProgram);
         this.addRenderableWidget(this.program);
         this.validation = validationMessage();
