@@ -25,7 +25,7 @@ public final class RequiemCommand {
     }
 
     public static Predicate<CommandSourceStack> permission(String name) {
-        return source -> source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+        return source -> source.hasPermission(2);
     }
 
     private static boolean checkPermissions(CommandSourceStack source) {
