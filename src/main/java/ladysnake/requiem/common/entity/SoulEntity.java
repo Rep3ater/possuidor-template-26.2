@@ -194,7 +194,7 @@ public class SoulEntity extends Entity {
         this.setTarget(newTarget);
 
         BlockPos targetPos = BlockPos.containing(newTarget);
-        if (this.level().getBlockState(targetPos).isSolidRender() && !this.level().getBlockState(targetPos).is(RequiemBlockTags.WANDERING_SOUL_TRAVERSABLE)) {
+        if (this.level().getBlockState(targetPos).isSolidRender(this.level(), targetPos) && !this.level().getBlockState(targetPos).is(RequiemBlockTags.WANDERING_SOUL_TRAVERSABLE)) {
             this.targetChangeCooldown = 0;
             return;
         }
@@ -216,7 +216,7 @@ public class SoulEntity extends Entity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
