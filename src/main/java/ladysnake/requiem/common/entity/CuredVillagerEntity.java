@@ -12,6 +12,6 @@ public class CuredVillagerEntity extends Villager {
 
     @Override
     protected Component getTypeName() {
-        return this.getVillagerData().profession().value().name();
+        return this.getVillagerData().getProfession().value().getName();
     }
 }
