@@ -25,7 +25,6 @@ import ladysnake.requiem.common.item.dispensing.RequiemDispenserBehaviors;
 import ladysnake.requiem.common.remnant.RemnantTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -46,10 +45,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class RequiemItems {
-    private static ResourceKey<Item> key(String name) {
-        return ResourceKey.create(Registries.ITEM, Requiem.id(name));
-    }
-
     public static final DebugItem DEBUG_ITEM = new DebugItem(new Item.Properties());
     public static final Item TOTEM_OF_SKELETONIZATION = new Item(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final EmptySoulVesselItem EMPTY_SOUL_VESSEL = new EmptySoulVesselItem(new Item.Properties().stacksTo(1));
@@ -76,7 +71,7 @@ public final class RequiemItems {
     public static final Item EMBRYO = new Item(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final Item VESSEL_SHARD = new Item(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final Item HOMUNCULUS = new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
-    public static final Item MORTICIAN_SPAWN_EGG = new SpawnEggItem(new Item.Properties().spawnEgg(RequiemEntities.MORTICIAN));
+    public static final Item MORTICIAN_SPAWN_EGG = new SpawnEggItem(RequiemEntities.MORTICIAN, new Item.Properties());
 
     public static final Map<MobEffect, IchorVesselItem> vesselsByEffect = new LinkedHashMap<>();
 
@@ -93,7 +88,7 @@ public final class RequiemItems {
     private static final Map<ResourceKey<CreativeModeTab>, List<ItemLike>> itemsByGroup = new LinkedHashMap<>();
 
     private static IchorVesselItem makeIchorVessel(String name, Holder<MobEffect> statusEffect) {
-        return new IchorVesselItem(new Item.Properties().setId(key(name)).stacksTo(1), new MobEffectInstance(statusEffect, ICHOR_DEFAULT_DURATION, 0, false, false, true));
+        return new IchorVesselItem(new Item.Properties().stacksTo(1), new MobEffectInstance(statusEffect, ICHOR_DEFAULT_DURATION, 0, false, false, true));
     }
 
     public static void register(RegisterEvent.RegisterHelper<Item> helper) {
