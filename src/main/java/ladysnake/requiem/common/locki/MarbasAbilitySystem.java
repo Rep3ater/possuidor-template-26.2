@@ -422,7 +422,8 @@ public final class MarbasAbilitySystem {
             String filter = "";
             if (command.startsWith("pickup:")) filter = command.substring("pickup:".length()).trim();
             else if (command.startsWith("pickup ") && !command.equals("pickup item")) filter = command.substring("pickup ".length()).trim();
-            if (!(targetItem instanceof ItemEntity item) || item.getItem().isEmpty()
+            ItemEntity item = targetItem instanceof ItemEntity found ? found : null;
+            if (item == null || item.getItem().isEmpty()
                     || (!filter.isBlank() && !matchesItemFilter(item.getItem(), filter))) {
                 item = level.getEntitiesOfClass(ItemEntity.class, mob.getBoundingBox().inflate(18.0), e ->
                     !e.getItem().isEmpty() && (filter.isBlank() || matchesItemFilter(e.getItem(), filter)))
@@ -478,7 +479,8 @@ public final class MarbasAbilitySystem {
         if (command.equals("kill entity") || command.equals("kill") || command.startsWith("kill:")) {
             Entity target = level.getEntity(mob.getPersistentData().getInt(TARGET_ID).orElse(-1));
             String filter = command.startsWith("kill:") ? command.substring("kill:".length()).trim() : "";
-            if (!(target instanceof LivingEntity living) || !living.isAlive() || living == mob
+            LivingEntity living = target instanceof LivingEntity found ? found : null;
+            if (living == null || !living.isAlive() || living == mob
                     || (!filter.isBlank() && !matchesEntityFilter(living, filter))) {
                 living = level.getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(24.0), e ->
                     e != mob && e.isAlive() && !(e instanceof Player p && (p.isCreative() || p.isSpectator()))
