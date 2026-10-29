@@ -134,7 +134,7 @@ public class CommonRecordKeeper implements GlobalRecordKeeper {
     }
 
     private DataResult<Map<RecordType<?>, Object>> deserializeRawData(CompoundTag nbtData) {
-        return nbtData.keySet().stream()
+        return nbtData.getAllKeys().stream()
             // Step 1: equivalent of nbtData.entrySet() (sadly such a method doesn't exist)
             .map(key -> Map.entry(key, Objects.requireNonNull(nbtData.get(key))))
             // Step 2: DataResult go brr

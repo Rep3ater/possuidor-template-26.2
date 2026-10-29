@@ -101,19 +101,19 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
                     this.inventory.setItem(i, inventory.removeItemNoUpdate(i));
                 }
             }
-            this.selectedSlot = inventory.getSelectedSlot();
+            this.selectedSlot = inventory.selected;
             this.onPossessed();
         } else {
             if (this.inventory != null) {
                 for (int i = 0; i < this.inventory.getContainerSize(); i++) {
                     ItemStack playerStack = inventory.removeItemNoUpdate(i);
                     if (!playerStack.isEmpty() && this.holder.level() instanceof ServerLevel serverLevel) {
-                        this.holder.spawnAtLocation(serverLevel, playerStack);
+                        this.holder.spawnAtLocation(playerStack);
                     }
                     inventory.setItem(i, this.inventory.removeItemNoUpdate(i));
                 }
                 this.inventory = null;
-                inventory.setSelectedSlot(this.selectedSlot);
+                inventory.selected = this.selectedSlot;
                 if (inventory.player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(inventory.getSelectedSlot()));
                 }
@@ -126,7 +126,7 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
     @Override
     public void dropItems() {
         if (this.inventory != null && this.holder.level() instanceof ServerLevel serverLevel) {
-            this.inventory.clearToList().forEach(stack -> this.holder.spawnAtLocation(serverLevel, stack));
+            this.inventory.clearToList().forEach(stack -> this.holder.spawnAtLocation(stack));
         }
     }
 
