@@ -616,7 +616,7 @@ public final class LockiSpiritSystem {
     public static void onAppleEaten(ItemStack stack, net.minecraft.world.entity.LivingEntity eater) {
         if (!(eater.level() instanceof ServerLevel eaterLevel)) return;
         String ownerId = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-            stringOr(.copyTag(), "locki:owner", "");
+            .copyTag().getString("locki:owner");
         UUID ownerUuid;
         try {
             ownerUuid = UUID.fromString(ownerId);
