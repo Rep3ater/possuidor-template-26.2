@@ -111,7 +111,7 @@ public record HealingItemOverride(
     public InteractionResult finishUsing(Player user, Mob possessedEntity, ItemStack heldStack, Level world, InteractionHand activeHand) {
         Item item = heldStack.getItem();
         InteractionResult ret = usage.consume(user, possessedEntity, heldStack, world, activeHand);
-        if (this.cooldown > 0) user.getCooldowns().addCooldown(heldStack, this.cooldown);
+        if (this.cooldown > 0) user.getCooldowns().addCooldown(item, this.cooldown);
         return ret;
     }
 
