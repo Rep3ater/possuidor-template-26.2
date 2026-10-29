@@ -17,8 +17,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
@@ -34,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumSet;
 import java.util.UUID;
 import java.util.Locale;
+import java.util.function.Predicate;
 
 public class SoulAiManager {
 
@@ -148,8 +147,8 @@ public class SoulAiManager {
         if (hostileSoul) {
             mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Player.class, true));
             if (targetsVillagers) {
-                mob.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(mob, Villager.class, true));
-                mob.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(mob, IronGolem.class, true));
+                mob.targetSelector.addGoal(3, new FocusedTargetGoal(mob,
+                    target -> hasEntityType(target, "villager", "iron_golem")));
             }
         }
     }
@@ -271,6 +270,12 @@ public class SoulAiManager {
             || type == EntityTypes.TURTLE;
     }
 
+    /** Check a living target by its registry path rather than a version-sensitive Java package. */
+    public static boolean hasEntityType(LivingEntity entity, String... typePaths) {
+        String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
+        return isOneOf(id, typePaths);
+    }
+
     private static boolean isOneOf(String id, String... typePaths) {
         for (String typePath : typePaths) {
             if (id.equals(typePath) || id.equals("minecraft:" + typePath)
@@ -284,6 +289,55 @@ public class SoulAiManager {
     private static double followRange(PathfinderMob mob) {
         var range = mob.getAttribute(Attributes.FOLLOW_RANGE);
         return range == null ? 16.0D : Math.max(1.0D, range.getValue());
+    }
+
+    /**
+     * Focuses on a predicate-selected class of entities (e.g. villagers and iron golems).
+     * A registry predicate keeps this reusable across Minecraft's package reorganizations.
+     */
+    public static final class FocusedTargetGoal extends TargetGoal {
+        private final PathfinderMob mob;
+        private final Predicate<LivingEntity> targetPredicate;
+        @Nullable private LivingEntity selected;
+
+        public FocusedTargetGoal(PathfinderMob mob, Predicate<LivingEntity> targetPredicate) {
+            super(mob, false);
+            this.mob = mob;
+            this.targetPredicate = targetPredicate;
+            this.setFlags(EnumSet.of(Goal.Flag.TARGET));
+        }
+
+        @Override
+        public boolean canUse() {
+            double range = followRange(this.mob);
+            AABB search = this.mob.getBoundingBox().inflate(range);
+            this.selected = this.mob.level().getEntitiesOfClass(LivingEntity.class, search, candidate ->
+                candidate != this.mob && candidate.isAlive() && this.targetPredicate.test(candidate)
+                    && this.canAttack(candidate, TargetingConditions.DEFAULT))
+                .stream().min((a, b) -> Double.compare(a.distanceToSqr(this.mob), b.distanceToSqr(this.mob)))
+                .orElse(null);
+            return this.selected != null;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            LivingEntity target = this.mob.getTarget();
+            return target != null && target.isAlive() && this.targetPredicate.test(target)
+                && this.mob.distanceToSqr(target) <= followRange(this.mob) * followRange(this.mob);
+        }
+
+        @Override
+        public void start() {
+            this.mob.setTarget(this.selected);
+            super.start();
+        }
+
+        @Override
+        public void stop() {
+            if (this.mob.getTarget() == this.selected) this.mob.setTarget(null);
+            this.selected = null;
+            super.stop();
+        }
     }
 
     public static class FollowSoulOwnerGoal extends Goal {
