@@ -162,7 +162,7 @@ public class RemnantChoiceScreen extends Screen {
                 return true;
             }
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -240,7 +240,7 @@ public class RemnantChoiceScreen extends Screen {
         int textLeft = boxLeft + 16;
         int textTop = boxTop + 16;
         int textWrapWidth = boxWidth - 32;
-        graphics.drawWordWrap(this.font, this.currentDialogueText, textLeft, textTop, textWrapWidth, 0xFFE0E0E0, true);
+        graphics.drawWordWrap(this.font, this.currentDialogueText, textLeft, textTop, textWrapWidth, 0xFFE0E0E0);
 
         // Choices section below
         int choiceY = boxTop + 65;

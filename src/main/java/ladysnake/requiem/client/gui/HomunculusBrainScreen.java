@@ -284,7 +284,7 @@ public final class HomunculusBrainScreen extends Screen {
             save();
             return true;
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
