@@ -33,7 +33,7 @@ public final class Blabber {
     }
 
     public static void registerAction(ResourceLocation actionId, DialogueAction action) {
-        registerAction(actionId, com.mojang.serialization.MapCodec.unit(action));
+        registerAction(actionId, com.mojang.serialization.MapCodec.unit(action).codec());
     }
 
     public static void registerAction(ResourceLocation actionId, Codec<? extends DialogueAction> codec) {
