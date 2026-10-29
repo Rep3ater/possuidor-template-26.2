@@ -29,7 +29,7 @@ public final class RequiemCommand {
     }
 
     private static boolean checkPermissions(CommandSourceStack source) {
-        return source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+        return source.hasPermission(2);
     }
 
     public static <T> int runOne(T element, Consumer<T> action) {
