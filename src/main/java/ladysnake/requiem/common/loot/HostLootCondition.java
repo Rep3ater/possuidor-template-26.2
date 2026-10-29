@@ -34,6 +34,11 @@ import java.util.Optional;
 import java.util.Set;
 
 public class HostLootCondition implements LootItemCondition {
+    @Override
+    public net.minecraft.world.level.storage.loot.predicates.LootItemConditionType getType() {
+        return checkedEntity == CheckedEntity.HOST ? RequiemLootTables.HOST_CONDITION : RequiemLootTables.POSSESSOR_CONDITION;
+    }
+
     public static final MapCodec<HostLootCondition> HOST_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(c -> c.entity),
         EntityPredicate.CODEC.optionalFieldOf("predicate").forGetter(c -> Optional.ofNullable(c.predicate))
@@ -56,18 +61,13 @@ public class HostLootCondition implements LootItemCondition {
     }
 
     @Override
-    public MapCodec<? extends LootItemCondition> codec() {
-        return checkedEntity == CheckedEntity.HOST ? HOST_CODEC : POSSESSOR_CODEC;
-    }
-
-    @Override
     public Set<LootContextParam<?>> getReferencedContextParams() {
-        return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.contextParam());
+        return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.getParam());
     }
 
     @Override
     public boolean test(LootContext lootContext) {
-        if (!(lootContext.getOptionalParameter(this.entity.contextParam()) instanceof LivingEntity e)) return false;
+        if (!(lootContext.getParamOrNull(this.entity.contextParam()) instanceof LivingEntity e)) return false;
         if (predicate == null) return true;
 
         LivingEntity target = switch (checkedEntity) {
