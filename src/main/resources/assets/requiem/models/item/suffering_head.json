@@ -1,1 +1,1 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"requiem:item/suffering_head"}}
+{"parent":"minecraft:item/template_skull","textures":{"particle":"requiem:item/suffering_head","texture":"requiem:item/suffering_head"}}

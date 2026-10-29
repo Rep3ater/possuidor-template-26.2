@@ -12,6 +12,10 @@ import ladysnake.requiem.client.particle.GenericRequiemParticle;
 import ladysnake.requiem.client.particle.GhostParticle;
 import ladysnake.requiem.client.render.entity.MorticianEntityRenderer;
 import ladysnake.requiem.client.render.entity.PlayerShellEntityRenderer;
+import ladysnake.requiem.client.render.entity.HomunculusEntityRenderer;
+import ladysnake.requiem.client.render.entity.ImmortalHomunculusEntityRenderer;
+import ladysnake.requiem.client.model.HomunculusModel;
+import ladysnake.requiem.client.model.ImmortalHomunculusModel;
 import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
@@ -106,6 +110,7 @@ public final class RequiemClient {
 
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(RequiemClient::onRegisterRenderers);
+        modEventBus.addListener(RequiemClient::onRegisterLayerDefinitions);
         modEventBus.addListener(RequiemClient::onRegisterKeyMappings);
         modEventBus.addListener(RequiemClient::onRegisterRenderStateModifiers);
         modEventBus.addListener(RequiemClient::onRegisterParticleProviders);
@@ -130,6 +135,13 @@ public final class RequiemClient {
         EntityType<? extends AbstractClientPlayer> shellType = (EntityType) RequiemEntities.PLAYER_SHELL;
         event.registerEntityRenderer(shellType, PlayerShellEntityRenderer::new);
         event.registerEntityRenderer(RequiemEntities.ROBOTIC_CONSTRUCT, ladysnake.requiem.client.render.entity.RoboticConstructRenderer::new);
+        event.registerEntityRenderer(RequiemEntities.HOMUNCULUS, HomunculusEntityRenderer::new);
+        event.registerEntityRenderer(RequiemEntities.IMMORTAL_HOMUNCULUS, ImmortalHomunculusEntityRenderer::new);
+    }
+
+    public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(HomunculusModel.LAYER_LOCATION, HomunculusModel::createBodyLayer);
+        event.registerLayerDefinition(ImmortalHomunculusModel.LAYER_LOCATION, ImmortalHomunculusModel::createBodyLayer);
     }
 
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {

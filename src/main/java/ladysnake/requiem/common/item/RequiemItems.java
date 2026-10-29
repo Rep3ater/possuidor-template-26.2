@@ -34,6 +34,9 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.StandingAndWallBlockItem;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -67,7 +70,9 @@ public final class RequiemItems {
     public static final DemonSoulVesselItem SEALED_REMNANT_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, ChatFormatting.RED, new Item.Properties().setId(key("sealed_remnant_vessel")).stacksTo(1), "requiem:remnant_vessel.curse");
     public static final Item PHENEX_SCROLL = new Item(new Item.Properties().setId(key("phenex_scroll")).stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final Item SOUL_LOCATOR = new Item(new Item.Properties().setId(key("soul_locator")).stacksTo(1).rarity(Rarity.RARE));
-    public static final Item SUFFERING_HEAD = new Item(new Item.Properties().setId(key("suffering_head")).stacksTo(1).rarity(Rarity.EPIC));
+    public static final Item SUFFERING_HEAD = new StandingAndWallBlockItem(
+        Blocks.WITHER_SKELETON_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, Direction.DOWN,
+        new Item.Properties().setId(key("suffering_head")).stacksTo(1).rarity(Rarity.EPIC));
     public static final Item SULFUR_CUBE = new Item(new Item.Properties().setId(key("sulfur_cube")).stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final Item EMBRYO = new Item(new Item.Properties().setId(key("embryo")).stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final Item VESSEL_SHARD = new Item(new Item.Properties().setId(key("vessel_shard")).stacksTo(16).rarity(Rarity.UNCOMMON));

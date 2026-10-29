@@ -91,6 +91,14 @@ public final class RequiemEntities {
         .updateInterval(2)
         .build(ResourceKey.create(Registries.ENTITY_TYPE, Requiem.id("robotic_construct")));
 
+    public static final EntityType<HomunculusEntity> HOMUNCULUS = EntityType.Builder.<HomunculusEntity>of(HomunculusEntity::new, MobCategory.CREATURE)
+        .sized(0.6f, 1.8f).clientTrackingRange(8).updateInterval(3)
+        .build(ResourceKey.create(Registries.ENTITY_TYPE, Requiem.id("homunculus")));
+
+    public static final EntityType<ImmortalHomunculusEntity> IMMORTAL_HOMUNCULUS = EntityType.Builder.<ImmortalHomunculusEntity>of(ImmortalHomunculusEntity::new, MobCategory.MONSTER)
+        .sized(0.7f, 2.05f).clientTrackingRange(8).updateInterval(2)
+        .build(ResourceKey.create(Registries.ENTITY_TYPE, Requiem.id("immortal_homunculus")));
+
     public static void register(RegisterEvent.RegisterHelper<EntityType<?>> helper) {
         helper.register(Requiem.id("player_shell"), PLAYER_SHELL);
         helper.register(Requiem.id("obelisk_soul"), OBELISK_SOUL);
@@ -100,6 +108,8 @@ public final class RequiemEntities {
         helper.register(Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);
         helper.register(Requiem.id("mortician"), MORTICIAN);
         helper.register(Requiem.id("robotic_construct"), ROBOTIC_CONSTRUCT);
+        helper.register(Requiem.id("homunculus"), HOMUNCULUS);
+        helper.register(Requiem.id("immortal_homunculus"), IMMORTAL_HOMUNCULUS);
     }
 
     public static void postRegister() {
