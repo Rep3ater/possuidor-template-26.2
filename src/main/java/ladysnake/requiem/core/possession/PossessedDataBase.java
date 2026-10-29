@@ -115,7 +115,7 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
                 this.inventory = null;
                 inventory.selected = this.selectedSlot;
                 if (inventory.player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(inventory.getSelectedSlot()));
+                    serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(inventory.selected));
                 }
             }
         }
@@ -158,19 +158,19 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
     @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("hunger_data")) {
-            this.hungerData = tag.getCompoundOrEmpty("hunger_data");
+            this.hungerData = tag.getCompound("hunger_data");
         }
 
         if (tag.contains("inventory_size")) {
-            ListTag items = tag.getListOrEmpty("inventory");
-            this.inventory = new OrderedInventory(tag.getIntOr("inventory_size", 0));
+            ListTag items = tag.getList("inventory", net.minecraft.nbt.Tag.TAG_COMPOUND);
+            this.inventory = new OrderedInventory(tag.getInt("inventory_size"));
             this.inventory.readNbtList(items);
         }
 
-        this.selectedSlot = tag.getIntOr("selected_slot", 0);
+        this.selectedSlot = tag.getInt("selected_slot");
 
         if (tag.contains("converted_under_possession")) {
-            this.convertedUnderPossession = tag.getBooleanOr("converted_under_possession", false);
+            this.convertedUnderPossession = tag.getBoolean("converted_under_possession");
         }
     }
 
