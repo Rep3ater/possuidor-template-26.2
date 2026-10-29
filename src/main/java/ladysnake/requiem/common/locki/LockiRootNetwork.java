@@ -75,7 +75,7 @@ public final class LockiRootNetwork {
     public static List<PlantNode> findPlants(Level level, BlockPos center, int radius) {
         Map<Long, PlantNode> found = new HashMap<>();
         int minY = Math.max(level.getMinBuildHeight(), center.getY() - 24);
-        int maxY = Math.min(level.getMaxY() - 1, center.getY() + 8);
+        int maxY = Math.min(level.getMaxBuildHeight() - 1, center.getY() + 8);
         for (int x = center.getX() - radius; x <= center.getX() + radius; x++) {
             for (int z = center.getZ() - radius; z <= center.getZ() + radius; z++) {
                 for (int y = minY; y <= maxY; y++) {
@@ -132,7 +132,7 @@ public final class LockiRootNetwork {
         if (level == null) return fallbackY;
         int blockX = (int) Math.floor(x);
         int blockZ = (int) Math.floor(z);
-        int referenceY = Math.max(level.getMinBuildHeight(), Math.min(level.getMaxY() - 1, (int) Math.floor(fallbackY)));
+        int referenceY = Math.max(level.getMinBuildHeight(), Math.min(level.getMaxBuildHeight() - 1, (int) Math.floor(fallbackY)));
         BlockPos probe = new BlockPos(blockX, referenceY, blockZ);
         if (!level.hasChunkAt(probe)) return fallbackY;
 
@@ -141,7 +141,7 @@ public final class LockiRootNetwork {
         // Scan down from just above the interpolated point, ignore vegetation and logs, then
         // anchor one block above the first sturdy terrain block. The same lookup powers both
         // traversal and rendering, so the visible roots and the walkable route agree.
-        int startY = Math.min(level.getMaxY() - 1, Math.max(referenceY + 3,
+        int startY = Math.min(level.getMaxBuildHeight() - 1, Math.max(referenceY + 3,
             level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, blockX, blockZ)));
         for (int y = startY; y >= Math.max(level.getMinBuildHeight(), referenceY - 32); y--) {
             BlockPos pos = new BlockPos(blockX, y, blockZ);
@@ -152,11 +152,11 @@ public final class LockiRootNetwork {
                 continue;
             }
             if (state.isFaceSturdy(level, pos, net.minecraft.core.Direction.UP)) {
-                return Math.max(level.getMinBuildHeight() + 0.05, Math.min(level.getMaxY() - 1.0, y + 1.035));
+                return Math.max(level.getMinBuildHeight() + 0.05, Math.min(level.getMaxBuildHeight() - 1.0, y + 1.035));
             }
         }
         // Safe fallback for liquids or void terrain where no sturdy surface was found.
-        return Math.max(level.getMinBuildHeight() + 0.05, Math.min(level.getMaxY() - 1.0, fallbackY));
+        return Math.max(level.getMinBuildHeight() + 0.05, Math.min(level.getMaxBuildHeight() - 1.0, fallbackY));
     }
 
     private static List<Segment> buildInternal(List<PlantNode> nodes, int radius, SurfaceLookup surface) {
