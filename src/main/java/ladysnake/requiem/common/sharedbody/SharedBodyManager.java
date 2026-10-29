@@ -125,7 +125,7 @@ public final class SharedBodyManager {
     @SubscribeEvent
     public static void onEntityJoin(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide() || !(event.getEntity() instanceof Mob mob)) return;
-        for (String tag : new ArrayList<>(mob.entityTags())) {
+        for (String tag : new ArrayList<>(mob.getTags())) {
             if (!tag.startsWith(TAG_PREFIX)) continue;
             UUID controller = parseController(tag);
             if (controller != null && mob.hasEffect(RequiemStatusEffects.SHARED_BODY)) {
@@ -221,7 +221,7 @@ public final class SharedBodyManager {
     }
 
     private static void clearTags(Mob mob) {
-        for (String tag : new ArrayList<>(mob.entityTags())) {
+        for (String tag : new ArrayList<>(mob.getTags())) {
             if (tag.startsWith(TAG_PREFIX)) mob.removeTag(tag);
         }
     }
