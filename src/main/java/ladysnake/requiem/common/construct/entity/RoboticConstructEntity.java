@@ -40,8 +40,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -381,27 +379,27 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
         }
 
         if (item.is(Items.TNT)) {
-            net.minecraft.world.entity.item.PrimedTnt tnt = new net.minecraft.world.entity.item.PrimedTnt(net.minecraft.world.entity.EntityTypes.TNT, serverLevel);
+            net.minecraft.world.entity.item.PrimedTnt tnt = new net.minecraft.world.entity.item.PrimedTnt(net.minecraft.world.entity.EntityType.TNT, serverLevel);
             tnt.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
             tnt.setDeltaMovement(look.scale(1.2).add(0, 0.2, 0));
             tnt.setFuse(45);
             serverLevel.addFreshEntity(tnt);
             serverLevel.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z, SoundEvents.DISPENSER_DISPENSE, SoundSource.PLAYERS, 1.2f, 0.9f);
         } else if (item.is(Items.ARROW) || item.is(Items.SPECTRAL_ARROW) || item.is(Items.TIPPED_ARROW)) {
-            net.minecraft.world.entity.projectile.arrow.Arrow arrow = new net.minecraft.world.entity.projectile.arrow.Arrow(serverLevel, this, item, null);
+            net.minecraft.world.entity.projectile.Arrow arrow = new net.minecraft.world.entity.projectile.Arrow(serverLevel, this, item, null);
             arrow.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
             arrow.shoot(look.x, look.y, look.z, 2.0f, 1.0f);
             serverLevel.addFreshEntity(arrow);
             serverLevel.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z, SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f, 1.0f);
         } else if (item.is(Items.FIRE_CHARGE)) {
-            net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball fireball = 
-                new net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball(serverLevel, this, look.scale(0.8));
+            net.minecraft.world.entity.projectile.SmallFireball fireball = 
+                new net.minecraft.world.entity.projectile.SmallFireball(serverLevel, this, look.scale(0.8));
             fireball.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
             serverLevel.addFreshEntity(fireball);
             serverLevel.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
         } else if (item.is(Items.SNOWBALL)) {
-            net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball snowball = 
-                new net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball(serverLevel, this.getX(), spawnPos.y, this.getZ(), item);
+            net.minecraft.world.entity.projectile.Snowball snowball = 
+                new net.minecraft.world.entity.projectile.Snowball(serverLevel, this.getX(), spawnPos.y, this.getZ(), item);
             snowball.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
             snowball.shoot(look.x, look.y, look.z, 1.5f, 1.0f);
             serverLevel.addFreshEntity(snowball);
@@ -418,7 +416,7 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
     private void igniteVoxelTnt(ServerLevel serverLevel, ConstructVoxel voxel) {
         Vec3 look = this.getLookAngle();
         Vec3 spawnPos = this.position().add(0, this.getEyeHeight() * 0.8, 0).add(look.scale(1.2));
-        net.minecraft.world.entity.item.PrimedTnt tnt = new net.minecraft.world.entity.item.PrimedTnt(net.minecraft.world.entity.EntityTypes.TNT, serverLevel);
+        net.minecraft.world.entity.item.PrimedTnt tnt = new net.minecraft.world.entity.item.PrimedTnt(net.minecraft.world.entity.EntityType.TNT, serverLevel);
         tnt.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
         tnt.setDeltaMovement(look.scale(1.1).add(0, 0.25, 0));
         tnt.setFuse(40);
@@ -521,17 +519,17 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
     }
 
     @Override
-    public void addAdditionalSaveData(ValueOutput output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
         if (this.voxelModel != null) {
-            output.store("ConstructVoxels", CompoundTag.CODEC, this.voxelModel.toNbt());
+            output.put("ConstructVoxels", this.voxelModel.toNbt());
         }
     }
 
     @Override
-    public void readAdditionalSaveData(ValueInput input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        input.read("ConstructVoxels", CompoundTag.CODEC).ifPresent(tag -> setVoxelModel(ConstructVoxelModel.fromNbt(tag)));
+        if (input.contains("ConstructVoxels")) setVoxelModel(ConstructVoxelModel.fromNbt(input.getCompound("ConstructVoxels")));
     }
 
     @Override
