@@ -41,6 +41,11 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
     }
 
     @Override
+    protected float getVoicePitch() {
+        return 0.52F;
+    }
+
+    @Override
     protected SoundEvent getAmbientSound() {
         return SoundEvents.HOGLIN_AMBIENT;
     }
