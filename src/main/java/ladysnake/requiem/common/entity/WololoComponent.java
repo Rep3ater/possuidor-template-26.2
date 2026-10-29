@@ -96,7 +96,7 @@ public class WololoComponent implements AutoSyncedComponent {
     @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("converted")) {
-            this.converted = tag.getBooleanOr("converted", false);
+            this.converted = tag.getBoolean("converted");
         }
     }
 
