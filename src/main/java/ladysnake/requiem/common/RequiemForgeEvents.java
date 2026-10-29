@@ -112,6 +112,13 @@ public final class RequiemForgeEvents {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
+        if (event.getSource().getEntity() instanceof ladysnake.requiem.common.entity.ImmortalHomunculusEntity attacker
+                && attacker.level() instanceof ServerLevel level) {
+            // Yellow energy bursts only when the suffering form actually gets a kill.
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.WAX_ON,
+                attacker.getX(), attacker.getY() + attacker.getBbHeight() * 0.55D, attacker.getZ(),
+                18, 0.45D, 0.5D, 0.45D, 0.035D);
+        }
         NucleusManager.onLivingDeath(event);
         if (event.getEntity() instanceof ServerPlayer player) {
             if (player.level().dimension() == ladysnake.requiem.common.construct.ConstructWorkshopManager.WORKSHOP_DIMENSION) {
@@ -242,6 +249,15 @@ public final class RequiemForgeEvents {
         Player player = event.getEntity();
         Entity target = event.getTarget();
         ItemStack held = event.getItemStack();
+
+        if (!event.getLevel().isClientSide()
+                && target instanceof ladysnake.requiem.common.entity.ImmortalHomunculusEntity) {
+            // The suffering form ignores ordinary right-clicks, including ability handlers that
+            // would otherwise emit capture/interaction messages.
+            event.setCancellationResult(InteractionResult.PASS);
+            event.setCanceled(true);
+            return;
+        }
 
         if (!event.getLevel().isClientSide() && MarbasAbilitySystem.onEntityInteract(player, target, held, player.isShiftKeyDown())) {
             event.setCancellationResult(InteractionResult.SUCCESS);
