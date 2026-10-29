@@ -111,14 +111,13 @@ public final class RequiemBlocks {
     private static RunestoneBlock makeRunic(String effectName, int maxLevel) {
         return make(p -> new RunestoneBlock(
             p,
-            Suppliers.memoize(() -> BuiltInRegistries.MOB_EFFECT.get(Requiem.id(effectName)).orElseThrow()),
+            Suppliers.memoize(() -> BuiltInRegistries.MOB_EFFECT.getHolder(Requiem.id(effectName)).orElseThrow()),
             maxLevel
         ), "tachylite/runic/" + effectName, CreativeModeTabs.FUNCTIONAL_BLOCKS, BlockBehaviour.Properties.ofFullCopy(TACHYLITE));
     }
 
     private static <B extends Block> B makeWithoutItem(Function<BlockBehaviour.Properties, B> factory, String name, BlockBehaviour.Properties properties) {
         ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Requiem.id(name));
-        properties.setId(key);
         B ret = factory.apply(properties);
         allBlocks.put(ret, new BlockRegistration(name, null));
         return ret;
@@ -126,7 +125,6 @@ public final class RequiemBlocks {
 
     private static <B extends Block> B make(Function<BlockBehaviour.Properties, B> factory, String name, ResourceKey<CreativeModeTab> itemGroup, BlockBehaviour.Properties properties) {
         ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Requiem.id(name));
-        properties.setId(key);
         B ret = factory.apply(properties);
         allBlocks.put(ret, new BlockRegistration(name, new BlockRegistration.BlockItemRegistration(itemGroup, BlockItem::new)));
         return ret;
@@ -146,7 +144,7 @@ public final class RequiemBlocks {
             BlockRegistration.BlockItemRegistration bir = reg.blockItemRegistration();
             if (bir != null) {
                 ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Requiem.id(reg.name()));
-                Item.Properties itemProps = new Item.Properties().setId(itemKey);
+                Item.Properties itemProps = new Item.Properties();
                 BlockItem item = bir.blockItemFactory().apply(block, itemProps);
                 item.registerBlocks(Item.BY_BLOCK, item);
                 helper.register(itemKey, item);
