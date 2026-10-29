@@ -199,8 +199,8 @@ public final class LockiSpiritSystem {
                 player.getAbilities().setFlyingSpeed(0.0075F);
                 player.onUpdateAbilities();
             }
-        } else if booleanOr((data, HAS_SAVED_FLYING_SPEED, false)) {
-            float original = doubleOr(data, SAVED_FLYING_SPEED, 0.05D).floatValue();
+        } else if (booleanOr(data, HAS_SAVED_FLYING_SPEED, false)) {
+            float original = (float) doubleOr(data, SAVED_FLYING_SPEED, 0.05D);
             player.getAbilities().setFlyingSpeed(original);
             player.onUpdateAbilities();
             data.remove(SAVED_FLYING_SPEED);
@@ -298,7 +298,7 @@ public final class LockiSpiritSystem {
     }
 
     public static void handlePlantChoice(ServerPlayer player, int choice) {
-        if (!player.getTags().contains(TAG) || !stringOr(MODE_CONVERSATION.equals(player.getPersistentData(), MODE, MODE_NONE))) return;
+        if (!player.getTags().contains(TAG) || !MODE_CONVERSATION.equals(stringOr(player.getPersistentData(), MODE, MODE_NONE))) return;
         if (choice != 1) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal("The plant closes its mind. You are expelled into the spirit realm."));
             setMode(player, MODE_SPIRIT);
@@ -308,7 +308,7 @@ public final class LockiSpiritSystem {
         }
 
         CompoundTag data = player.getPersistentData();
-        BlockPos plantPos = new intOr(BlockPos(data, TARGET_X, 0), intOr(data, TARGET_Y, 64), intOr(data, TARGET_Z, 0));
+        BlockPos plantPos = new BlockPos(intOr(data, TARGET_X, 0), intOr(data, TARGET_Y, 64), intOr(data, TARGET_Z, 0));
         boolean tree = booleanOr(data, TARGET_IS_TREE, false);
         if (!(player.level() instanceof ServerLevel level)
                 || (tree && !level.getBlockState(plantPos).is(net.minecraft.tags.BlockTags.LOGS))
@@ -442,7 +442,7 @@ public final class LockiSpiritSystem {
                 }
             } else if (target.itemEntity() != null) {
                 // A fruit that has already been picked up begins to fade if it is abandoned on the ground.
-                if booleanOr((data, APPLE_HAS_BEEN_CARRIED, false)) {
+                if (booleanOr(data, APPLE_HAS_BEEN_CARRIED, false)) {
                     long droppedAt = longOr(data, APPLE_DROPPED_AT, -1L);
                     if (droppedAt < 0L) {
                         droppedAt = player.level().getGameTime();
@@ -533,7 +533,7 @@ public final class LockiSpiritSystem {
     private static boolean isOwnedApple(ItemStack stack, UUID owner) {
         if (stack.isEmpty() || !(stack.getItem() instanceof LockiAppleItem)) return false;
         String id = stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-            stringOr(.copyTag(), "locki:owner", "");
+            .copyTag().getString("locki:owner");
         return owner.toString().equals(id);
     }
 
@@ -626,7 +626,7 @@ public final class LockiSpiritSystem {
         MinecraftServer server = eaterLevel.getServer();
         if (server == null) return;
         ServerPlayer owner = server.getPlayerList().getPlayer(ownerUuid);
-        if (owner == null || !stringOr(MODE_APPLE.equals(owner.getPersistentData(), MODE, MODE_NONE))) return;
+        if (owner == null || !MODE_APPLE.equals(stringOr(owner.getPersistentData(), MODE, MODE_NONE))) return;
 
         CompoundTag data = owner.getPersistentData();
         String destinationDimension = stringOr(data, APPLE_DROP_DIM, stringOr(data, APPLE_DIM, eaterLevel.dimension().location().toString()));
@@ -702,7 +702,7 @@ public final class LockiSpiritSystem {
     }
 
     public static void onDeath(ServerPlayer player) {
-        if stringOr((MODE_APPLE.equals(player.getPersistentData(), MODE, MODE_NONE))) {
+        if (MODE_APPLE.equals(stringOr(player.getPersistentData(), MODE, MODE_NONE))) {
             releaseApple(player, true, true);
             syncState(player);
         }
