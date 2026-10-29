@@ -103,7 +103,7 @@ public class ConstructWorkshopManager {
         double spawnX = center.getX() + 0.5;
         double spawnY = center.getY() + 1.0;
         double spawnZ = center.getZ() - 3.0;
-        player.teleportTo(workshopLevel, spawnX, spawnY, spawnZ, Set.of(), 0.0f, 0.0f, false);
+        player.teleportTo(workshopLevel, spawnX, spawnY, spawnZ, Set.of(), 0.0f, 0.0f);
         player.getAbilities().mayfly = true;
         player.getAbilities().flying = true;
         player.onUpdateAbilities();
@@ -152,7 +152,7 @@ public class ConstructWorkshopManager {
         double spawnY = retY;
         double spawnZ = retZ + 0.5;
 
-        player.teleportTo(returnLevel, spawnX, spawnY + 0.5, spawnZ - 1.5, Set.of(), 0.0f, 0.0f, false);
+        player.teleportTo(returnLevel, spawnX, spawnY + 0.5, spawnZ - 1.5, Set.of(), 0.0f, 0.0f);
         returnLevel.playSound(null, spawnX, spawnY, spawnZ, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0f, 1.0f);
 
         if (awaken && model != null && !model.isEmpty()) {
