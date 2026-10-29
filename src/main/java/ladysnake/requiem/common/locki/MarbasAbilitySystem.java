@@ -133,7 +133,6 @@ public final class MarbasAbilitySystem {
         }
 
         restored.setPos(placementPos.getX() + 0.5D, placementPos.getY(), placementPos.getZ() + 0.5D);
-        restored.setDeltaMovement(Vec3.ZERO);
         restored.setPersistenceRequired();
         if (!level.noCollision(restored)) {
             player.sendSystemMessage(Component.literal("There is not enough room to place the homunculus. The item was not consumed."));
@@ -201,7 +200,6 @@ public final class MarbasAbilitySystem {
                     return true;
                 }
                 restored.setPos(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5);
-                restored.setDeltaMovement(Vec3.ZERO);
                 restored.setPersistenceRequired();
                 if (!level.addFreshEntity(restored)) {
                     player.sendSystemMessage(Component.literal("The homunculus could not be placed. The item was not consumed."));
