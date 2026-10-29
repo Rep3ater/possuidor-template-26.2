@@ -59,13 +59,13 @@ public final class PhenexAbilitySystem {
 
     public static boolean isAbilityActive(Player player, String ability) {
         if (player == null || player.level().isClientSide()) return false;
-        long coughUntil = player.getPersistentData().getLong(COUGH_UNTIL).orElse(0L);
+        long coughUntil = player.getPersistentData().getLong(COUGH_UNTIL);
         if (player.level().getGameTime() < coughUntil) return false;
-        return ability.equals(player.getPersistentData().getString(ACTIVE_ABILITY).orElse(""));
+        return ability.equals(player.getPersistentData().getString(ACTIVE_ABILITY));
     }
 
     public static boolean isCoughing(Player player) {
-        return player != null && player.level().getGameTime() < player.getPersistentData().getLong(COUGH_UNTIL).orElse(0L);
+        return player != null && player.level().getGameTime() < player.getPersistentData().getLong(COUGH_UNTIL);
     }
 
     /** Power words and scroll recording share one parser so scrolls can replay the same phrases. */
@@ -74,7 +74,7 @@ public final class PhenexAbilitySystem {
         String message = event.getRawText().trim();
         CompoundTag data = player.getPersistentData();
 
-        if (isPhenex(player) && data.getBoolean(LOCATOR_PENDING).orElse(false)) {
+        if (isPhenex(player) && data.getBoolean(LOCATOR_PENDING)) {
             event.setCanceled(true);
             if (message.equalsIgnoreCase("cancel")) {
                 data.remove(LOCATOR_PENDING);
@@ -92,7 +92,7 @@ public final class PhenexAbilitySystem {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Soul Locator locked onto " + target.getName().getString() + ". It will guide you to their soul when it is present."));
             return;
         }
-        if (isPhenex(player) && data.getBoolean(SCROLL_RECORDING).orElse(false)) {
+        if (isPhenex(player) && data.getBoolean(SCROLL_RECORDING)) {
             event.setCanceled(true);
             if (message.equalsIgnoreCase("end scroll") || message.equalsIgnoreCase("finish scroll")) {
                 data.remove(SCROLL_RECORDING);
@@ -138,7 +138,7 @@ public final class PhenexAbilitySystem {
             return;
         }
 
-        String pending = data.getString(PENDING_TARGET).orElse("");
+        String pending = data.getString(PENDING_TARGET);
         if (!pending.isBlank()) {
             event.setCanceled(true);
             if (message.equalsIgnoreCase("cancel")) {
@@ -180,7 +180,7 @@ public final class PhenexAbilitySystem {
         CompoundTag data = player.getPersistentData();
         switch (phrase) {
             case "roubar!" -> {
-                String active = data.getString(ACTIVE_ABILITY).orElse("");
+                String active = data.getString(ACTIVE_ABILITY);
                 if ("roubar".equals(active)) {
                     data.remove(ACTIVE_ABILITY);
                     player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Soul stealing disabled."));
@@ -190,7 +190,7 @@ public final class PhenexAbilitySystem {
                 }
             }
             case "corromper" -> {
-                String active = data.getString(ACTIVE_ABILITY).orElse("");
+                String active = data.getString(ACTIVE_ABILITY);
                 if ("corromper".equals(active)) {
                     data.remove(ACTIVE_ABILITY);
                     player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Corruption disabled."));
@@ -250,12 +250,12 @@ public final class PhenexAbilitySystem {
         }
         if (stack.is(RequiemItems.SOUL_LOCATOR) && isPhenex(player)) {
             CompoundTag data = player.getPersistentData();
-            if (shiftDown || data.getString(LOCATOR_TARGET).orElse("").isBlank()) {
+            if (shiftDown || data.getString(LOCATOR_TARGET).isBlank()) {
                 data.putBoolean(LOCATOR_PENDING, true);
                 player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Soul Locator target: type an entity/player name or UUID in chat. Type `cancel` to abort."));
                 return true;
             }
-            boolean active = data.getBoolean(LOCATOR_ACTIVE).orElse(false);
+            boolean active = data.getBoolean(LOCATOR_ACTIVE);
             data.putBoolean(LOCATOR_ACTIVE, !active);
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal(!active
                 ? "Soul Locator activated. It is tracking your selected soul target; use it again to stop."
@@ -285,7 +285,7 @@ public final class PhenexAbilitySystem {
     }
 
     private static void executeScroll(ServerPlayer player, ItemStack scroll) {
-        String script = scroll.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(SCROLL_SCRIPT).orElse("");
+        String script = scroll.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(SCROLL_SCRIPT);
         if (script.isBlank()) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal("This scroll has no recorded phrases. Shift-right-click to record it."));
             return;
@@ -319,13 +319,13 @@ public final class PhenexAbilitySystem {
 
     private static void appendScrollLine(ItemStack scroll, String line) {
         CustomData.update(DataComponents.CUSTOM_DATA, scroll, tag -> {
-            String old = tag.getString(SCROLL_SCRIPT).orElse("");
+            String old = tag.getString(SCROLL_SCRIPT);
             tag.putString(SCROLL_SCRIPT, old.isBlank() ? line : old + "\n" + line);
         });
     }
 
     private static int scrollLineCount(ItemStack scroll) {
-        String script = scroll.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(SCROLL_SCRIPT).orElse("");
+        String script = scroll.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(SCROLL_SCRIPT);
         return script.isBlank() ? 0 : script.split("\\R").length;
     }
 
@@ -455,14 +455,14 @@ public final class PhenexAbilitySystem {
     private static void applyAtLocation(ServerPlayer player, BlockPos requested, boolean extinguish) {
         ServerLevel level = (ServerLevel) player.level();
         if (!level.getWorldBorder().isWithinBounds(requested.getX() + 0.5, requested.getZ() + 0.5)
-                || requested.getY() < level.getMinY() || requested.getY() >= level.getMaxY()) {
+                || requested.getY() < level.getMinBuildHeight() || requested.getY() >= level.getMaxBuildHeight()) {
             player.sendSystemMessage(net.minecraft.network.chat.Component.literal("That location is outside the world limits."));
             return;
         }
         BlockPos pos = requested;
         if (!extinguish) {
             if (!level.getBlockState(pos).isAir()) pos = pos.above();
-            if (pos.getY() >= level.getMaxY() || !level.getBlockState(pos).isAir()
+            if (pos.getY() >= level.getMaxBuildHeight() || !level.getBlockState(pos).isAir()
                     || !level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)) {
                 player.sendSystemMessage(net.minecraft.network.chat.Component.literal("There is no safe surface for fire at that location."));
                 return;
@@ -494,7 +494,7 @@ public final class PhenexAbilitySystem {
         } else {
             player.removeEffect(ladysnake.requiem.common.entity.effect.RequiemStatusEffects.ASH_LUNG);
         }
-        if (player.getPersistentData().getBoolean(LOCATOR_ACTIVE).orElse(false) && time % 10 == 0) {
+        if (player.getPersistentData().getBoolean(LOCATOR_ACTIVE) && time % 10 == 0) {
             guideToSoul(player);
         }
     }
@@ -516,7 +516,7 @@ public final class PhenexAbilitySystem {
         player.getPersistentData().putLong(COUGH_UNTIL, until);
         player.hurt(player.damageSources().magic(), 1.0F + corruption * 0.15F);
         player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 50, corruption >= 7 ? 1 : 0, false, true, true));
-        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 70, 0, false, true, false));
+        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 70, 0, false, true, false));
         if (player.level() instanceof ServerLevel level) {
             level.sendParticles(ParticleTypes.ASH, player.getX() - player.getLookAngle().x * 0.25, player.getY() + 1.48,
                 player.getZ() - player.getLookAngle().z * 0.25, 7, 0.035, 0.035, 0.035, 0.01);
@@ -527,7 +527,7 @@ public final class PhenexAbilitySystem {
     private static void guideToSoul(ServerPlayer player) {
         MinecraftServer server = player.level().getServer();
         if (server == null) return;
-        String targetId = player.getPersistentData().getString(LOCATOR_TARGET).orElse("");
+        String targetId = player.getPersistentData().getString(LOCATOR_TARGET);
         Entity target = null;
         try {
             UUID targetUuid = UUID.fromString(targetId);
@@ -559,7 +559,7 @@ public final class PhenexAbilitySystem {
 
     /** Current Phenex corruption stacks from 0–10. */
     public static int getCorruption(Player player) {
-        return Math.max(0, Math.min(10, player.getPersistentData().getInt(CORRUPTION).orElse(0)));
+        return Math.max(0, Math.min(10, player.getPersistentData().getInt(CORRUPTION)));
     }
     public static int addCorruption(Player player, int amount) {
         int next = Math.max(0, Math.min(10, getCorruption(player) + amount));
