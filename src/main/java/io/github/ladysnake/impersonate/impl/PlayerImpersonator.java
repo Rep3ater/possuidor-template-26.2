@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -160,14 +161,17 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
     @Override
     public void readFromNbt(CompoundTag tag) {
         this.stackedImpersonations.clear();
-        ListTag list = tag.getListOrEmpty("impersonations");
+        ListTag list = tag.getList("impersonations", Tag.TAG_COMPOUND);
         for (Tag elem : list) {
             if (elem instanceof CompoundTag entry) {
-                ResourceLocation key = ResourceLocation.tryParse(entry.getStringOr("impersonation_key", ""));
+                ResourceLocation key = ResourceLocation.tryParse(entry.getString("impersonation_key"));
                 if (key != null) {
-                    entry.read(ExtraCodecs.STORED_GAME_PROFILE).ifPresent(profile ->
-                        this.stackedImpersonations.put(key, profile)
-                    );
+                    Tag profileTag = entry.get("profile");
+                    if (profileTag != null) {
+                        ExtraCodecs.GAME_PROFILE.parse(NbtOps.INSTANCE, profileTag).result().ifPresent(profile ->
+                            this.stackedImpersonations.put(key, profile)
+                        );
+                    }
                 }
             }
         }
@@ -188,7 +192,8 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
         for (Map.Entry<ResourceLocation, GameProfile> entry : this.stackedImpersonations.entrySet()) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putString("impersonation_key", entry.getKey().toString());
-            entryTag.store(ExtraCodecs.STORED_GAME_PROFILE, entry.getValue());
+            ExtraCodecs.GAME_PROFILE.encodeStart(NbtOps.INSTANCE, entry.getValue()).result()
+                .ifPresent(profileTag -> entryTag.put("profile", profileTag));
             list.add(entryTag);
         }
         tag.put("impersonations", list);
