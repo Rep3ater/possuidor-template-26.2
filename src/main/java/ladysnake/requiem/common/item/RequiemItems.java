@@ -34,7 +34,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SpawnEggItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -71,7 +71,7 @@ public final class RequiemItems {
     public static final Item EMBRYO = new Item(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final Item VESSEL_SHARD = new Item(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final Item HOMUNCULUS = new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
-    public static final Item MORTICIAN_SPAWN_EGG = new SpawnEggItem(RequiemEntities.MORTICIAN, new Item.Properties());
+    public static final Item MORTICIAN_SPAWN_EGG = new DeferredSpawnEggItem(() -> RequiemEntities.MORTICIAN, 0x4B3323, 0xC7B59D, new Item.Properties());
 
     public static final Map<MobEffect, IchorVesselItem> vesselsByEffect = new LinkedHashMap<>();
 
