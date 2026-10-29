@@ -133,14 +133,14 @@ public class DemonSoulVesselItem extends Item {
                     player.awardStat(Stats.ITEM_USED.get(this));
                     ItemStack result = new ItemStack(RequiemItems.EMPTY_SOUL_VESSEL);
                     player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, result));
-                    return InteractionResult.SUCCESS;
+                    return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
                 }
             }
 
             return InteractionResult.SUCCESS;
         }
 
-        return InteractionResult.FAIL;
+        return InteractionResultHolder.fail(player.getItemInHand(hand));
     }
 
     @Override
