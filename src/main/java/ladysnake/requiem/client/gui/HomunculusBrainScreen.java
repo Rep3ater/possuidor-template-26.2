@@ -225,7 +225,7 @@ public final class HomunculusBrainScreen extends Screen {
             return;
         }
         RequiemNetworking.sendHomunculusBrain(this.entityId, String.join("; ", nodes()));
-        Minecraft.getInstance().setScreenAndShow(null);
+        Minecraft.getInstance().setScreen(null);
     }
 
     @Override
