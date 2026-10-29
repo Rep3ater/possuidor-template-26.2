@@ -31,6 +31,8 @@ import ladysnake.requiem.common.entity.ai.brain.PlayerShellBrain;
 import ladysnake.requiem.common.remnant.PlayerSplitter;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,8 +41,6 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.Brain;
@@ -208,8 +208,8 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    protected Brain<?> makeBrain(Brain.Packed packedBrain) {
-        return PlayerShellBrain.create(Brain.provider(MEMORY_MODULE_TYPES, SENSOR_TYPES, body -> ImmutableList.of()).makeBrain(this, packedBrain));
+    protected Brain<?> makeBrain(Dynamic<?> dynamic) {
+        return PlayerShellBrain.create(Brain.provider(MEMORY_MODULE_TYPES, SENSOR_TYPES).makeBrain(dynamic));
     }
 
     @Override
@@ -327,15 +327,15 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(ValueInput input) {
+    public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        input.read("PlayerProfile", ExtraCodecs.AUTHLIB_GAME_PROFILE).ifPresent(this::setDisplayProfile);
+        ExtraCodecs.AUTHLIB_GAME_PROFILE.parse(NbtOps.INSTANCE, input.get("PlayerProfile")).result().ifPresent(this::setDisplayProfile);
     }
 
     @Override
-    public void addAdditionalSaveData(ValueOutput output) {
+    public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
-        output.storeNullable("PlayerProfile", ExtraCodecs.AUTHLIB_GAME_PROFILE, this.getDisplayProfile());
+        if (this.getDisplayProfile() != null) ExtraCodecs.AUTHLIB_GAME_PROFILE.encodeStart(NbtOps.INSTANCE, this.getDisplayProfile()).result().ifPresent(tag -> output.put("PlayerProfile", tag));
     }
 
     public void playSound(SoundEvent soundEvent) {

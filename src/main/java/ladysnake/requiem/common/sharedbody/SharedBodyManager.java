@@ -29,7 +29,6 @@ import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.LargeFireball;
@@ -81,6 +80,25 @@ public final class SharedBodyManager {
     private static final Map<UUID, List<Integer>> LAST_SYNCED = new HashMap<>();
 
     private SharedBodyManager() {}
+
+    /**
+     * 1.21.1 does not expose the newer server-side last-client-input record. Approximate directional
+     * intent from the controller's replicated movement vector while preserving sneak, sprint and jump.
+     */
+    private record PilotInput(boolean forward, boolean backward, boolean left, boolean right,
+                              boolean jump, boolean shift, boolean sprint) {
+        private static PilotInput from(ServerPlayer player) {
+            Vec3 velocity = player.getDeltaMovement();
+            double yaw = Math.toRadians(player.getYRot());
+            double fx = -Math.sin(yaw), fz = Math.cos(yaw);
+            double rx = Math.cos(yaw), rz = Math.sin(yaw);
+            double forwardAmount = velocity.x * fx + velocity.z * fz;
+            double sidewaysAmount = velocity.x * rx + velocity.z * rz;
+            return new PilotInput(forwardAmount > 0.002, forwardAmount < -0.002,
+                sidewaysAmount < -0.002, sidewaysAmount > 0.002,
+                !player.onGround() && velocity.y > 0.08, player.isShiftKeyDown(), player.isSprinting());
+        }
+    }
 
     public static void init() {
         NeoForge.EVENT_BUS.register(SharedBodyManager.class);
@@ -240,7 +258,7 @@ public final class SharedBodyManager {
             mob.setTarget(null);
         }
 
-        Input input = controller.getLastClientInput();
+        PilotInput input = PilotInput.from(controller);
         HeldKeys keys = HELD_KEYS.getOrDefault(controller.getUUID(), HeldKeys.NONE);
 
         // Look
@@ -293,7 +311,7 @@ public final class SharedBodyManager {
             || mob instanceof Phantom || mob instanceof Bat;
     }
 
-    private static void flyerMovement(Mob mob, Input input, float forward, float strafe) {
+    private static void flyerMovement(Mob mob, PilotInput input, float forward, float strafe) {
         float vertical = (input.jump() ? 1 : 0) - (input.shift() ? 1 : 0);
         Vec3 motion = mob.getDeltaMovement();
         if (!mob.isNoGravity()) {
