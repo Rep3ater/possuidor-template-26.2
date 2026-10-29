@@ -114,14 +114,12 @@ public final class RequiemForgeEvents {
     public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ladysnake.requiem.common.entity.ImmortalHomunculusEntity attacker
                 && attacker.level() instanceof ServerLevel level) {
-            // A two-color burst: warm yellow wax sparks mixed with green happy particles,
-            // matching the mutated homunculus' yellow-to-green skin.
-            level.sendParticles(net.minecraft.core.particles.ParticleTypes.WAX_ON,
+            // Match the infected homunculus' olive-yellow dust: /particle dust{color:[0.59,0.57,0.11],scale:1}.
+            net.minecraft.core.particles.DustParticleOptions infectedDust =
+                new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.59F, 0.57F, 0.11F), 1.0F);
+            level.sendParticles(infectedDust,
                 attacker.getX(), attacker.getY() + attacker.getBbHeight() * 0.55D, attacker.getZ(),
-                12, 0.45D, 0.5D, 0.45D, 0.035D);
-            level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER,
-                attacker.getX(), attacker.getY() + attacker.getBbHeight() * 0.6D, attacker.getZ(),
-                10, 0.4D, 0.5D, 0.4D, 0.025D);
+                24, 0.45D, 0.5D, 0.45D, 0.035D);
         }
         NucleusManager.onLivingDeath(event);
         if (event.getEntity() instanceof ServerPlayer player) {
