@@ -73,13 +73,19 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
         return active;
     }
 
+    private static GameProfile copyWithActualId(GameProfile actual, GameProfile impersonated) {
+        GameProfile copy = new GameProfile(actual.getId(), impersonated.getName());
+        copy.getProperties().putAll(impersonated.getProperties());
+        return copy;
+    }
+
     private void setImpersonatedProfile(@Nullable GameProfile profile) {
         if (!Objects.equals(this.impersonatedProfile, profile)) {
             this.impersonatedProfile = profile;
             GameProfile actual = this.getActualProfile();
             this.editedProfile = profile == null
                 ? null
-                : new GameProfile(actual.getId(), profile.getName(), profile.getProperties());
+                : copyWithActualId(actual, profile);
 
             if (this.player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.refreshDisplayName();
