@@ -49,6 +49,7 @@ public final class NucleusManager {
     private static final String BOSS_OWNER = "requiem:nucleus_boss_owner";
     private static final String PENDING_INVITE = "requiem:nucleus_pending_invite";
     private static final String SESSION_OWNER = "requiem:nucleus_session_owner";
+    private static final String SESSION_DEV = "requiem:nucleus_session_developer";
     private static final String RETURN_X = "requiem:nucleus_return_x";
     private static final String RETURN_Y = "requiem:nucleus_return_y";
     private static final String RETURN_Z = "requiem:nucleus_return_z";
@@ -165,10 +166,17 @@ public final class NucleusManager {
             developer.sendSystemMessage(Component.literal("Only a tagged developer can accept this Nucleus role."));
             return;
         }
+        String assignedDeveloper = phoenix.getPersistentData().getString(SESSION_DEV).orElse("");
+        if (!assignedDeveloper.isBlank() && !assignedDeveloper.equals(developer.getUUID().toString())) {
+            developer.getPersistentData().remove(PENDING_INVITE);
+            developer.sendSystemMessage(Component.literal("Another developer has already accepted this Nucleus encounter."));
+            return;
+        }
         if (!developer.getPersistentData().getString(SESSION_OWNER).orElse("").isBlank()) {
             developer.sendSystemMessage(Component.literal("You already have an active Nucleus session."));
             return;
         }
+        phoenix.getPersistentData().putString(SESSION_DEV, developer.getUUID().toString());
         saveReturn(developer, ownerString);
         ServerLevel nucleus = server.getLevel(NUCLEUS_DIMENSION);
         if (nucleus == null) return;
@@ -273,6 +281,7 @@ public final class NucleusManager {
             float pitch = data.getFloat(RETURN_PITCH).orElse(0.0F);
             player.teleportTo(target, x, y, z, Set.of(), yaw, pitch, false);
             data.remove(SESSION_OWNER);
+            data.remove(SESSION_DEV);
             data.remove(RETURN_DIM);
             data.remove(RETURN_X);
             data.remove(RETURN_Y);
