@@ -6,20 +6,20 @@ import net.minecraft.advancements.predicates.ContextAwarePredicate;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
 public class UsedRequiemTotemCriterion extends SimpleCriterionTrigger<UsedRequiemTotemCriterion.Conditions> {
-    private final Identifier id;
+    private final ResourceLocation id;
 
-    public UsedRequiemTotemCriterion(Identifier id) {
+    public UsedRequiemTotemCriterion(ResourceLocation id) {
         this.id = id;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 

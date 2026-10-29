@@ -125,7 +125,7 @@ public class ConstructWorkshopManager {
 
         ResourceKey<Level> returnDim = ResourceKey.create(
             Registries.DIMENSION,
-            net.minecraft.resources.Identifier.parse(dimStr)
+            net.minecraft.resources.ResourceLocation.parse(dimStr)
         );
 
         ServerLevel returnLevel = server.getLevel(returnDim);
