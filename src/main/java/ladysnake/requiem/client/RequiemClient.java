@@ -148,7 +148,7 @@ public final class RequiemClient {
             "key.requiem.construct_action",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_R,
-            KeyMapping.Category.GAMEPLAY
+            "key.categories.gameplay"
         );
         event.register(CONSTRUCT_ACTION_KEY);
 

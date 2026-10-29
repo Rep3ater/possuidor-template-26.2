@@ -85,6 +85,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.trading.ItemCost;
@@ -222,14 +223,23 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
         return world.getBlockState(pos.below()).is(BlockTags.SOUL_SPEED_BLOCKS) ? 4 : super.getWalkTargetValue(pos, world);
     }
 
-    @Override
     public long getPersistentAngerEndTime() {
         return this.entityData.get(DATA_ANGER_END_TIME);
     }
 
-    @Override
     public void setPersistentAngerEndTime(long endTime) {
         this.entityData.set(DATA_ANGER_END_TIME, endTime);
+    }
+
+    @Override
+    public int getRemainingPersistentAngerTime() {
+        long remaining = this.getPersistentAngerEndTime() - this.level().getGameTime();
+        return (int) Math.max(0L, Math.min(Integer.MAX_VALUE, remaining));
+    }
+
+    @Override
+    public void setRemainingPersistentAngerTime(int remainingTicks) {
+        this.setPersistentAngerEndTime(this.level().getGameTime() + Math.max(0, remainingTicks));
     }
 
     @Override

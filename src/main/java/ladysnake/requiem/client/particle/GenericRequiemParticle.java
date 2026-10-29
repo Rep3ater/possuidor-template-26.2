@@ -46,7 +46,7 @@ public class GenericRequiemParticle extends SingleQuadParticle {
 
     /** Emissive: ignore world lighting so soul/wisp effects glow in the dark. */
     @Override
-    protected int getLightCoords(float partialTick) {
+    protected int getLightColor(float partialTick) {
         return 0xF000F0;
     }
 
@@ -65,7 +65,7 @@ public class GenericRequiemParticle extends SingleQuadParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double vx, double vy, double vz, net.minecraft.util.RandomSource random) {
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double vx, double vy, double vz) {
             return new GenericRequiemParticle(level, x, y, z, vx, vy, vz, this.sprites);
         }
     }
@@ -78,7 +78,7 @@ public class GenericRequiemParticle extends SingleQuadParticle {
         }
 
         @Override
-        public Particle createParticle(WispTrailParticleEffect type, ClientLevel level, double x, double y, double z, double vx, double vy, double vz, net.minecraft.util.RandomSource random) {
+        public Particle createParticle(WispTrailParticleEffect type, ClientLevel level, double x, double y, double z, double vx, double vy, double vz) {
             GenericRequiemParticle p = new GenericRequiemParticle(level, x, y, z, vx, vy, vz, this.sprites);
             p.setColor(type.red(), type.green(), type.blue());
             return p;
@@ -93,7 +93,7 @@ public class GenericRequiemParticle extends SingleQuadParticle {
         }
 
         @Override
-        public Particle createParticle(RequiemEntityParticleEffect type, ClientLevel level, double x, double y, double z, double vx, double vy, double vz, net.minecraft.util.RandomSource random) {
+        public Particle createParticle(RequiemEntityParticleEffect type, ClientLevel level, double x, double y, double z, double vx, double vy, double vz) {
             return new GenericRequiemParticle(level, x, y, z, vx, vy, vz, this.sprites);
         }
     }
