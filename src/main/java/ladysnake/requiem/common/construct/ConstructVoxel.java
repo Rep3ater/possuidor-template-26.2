@@ -162,7 +162,7 @@ public class ConstructVoxel {
                     }
                 }
             }
-        });
+        }
         return voxel;
     }
 
