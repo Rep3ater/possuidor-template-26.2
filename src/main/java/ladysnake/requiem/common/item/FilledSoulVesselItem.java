@@ -117,7 +117,7 @@ public class FilledSoulVesselItem extends Item {
                 user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, this.getEmptiedStack()));
             }
             user.playSound(RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, 2.0f, 1.0f);
-            return InteractionResultHolder.sidedSuccess(user.getItemInHand(hand), world.isClientSide());
+            return InteractionResult.SUCCESS;
         }
         return super.interactLivingEntity(stack, user, target, hand);
     }
