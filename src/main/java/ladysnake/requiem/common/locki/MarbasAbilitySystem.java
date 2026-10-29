@@ -124,14 +124,14 @@ public final class MarbasAbilitySystem {
         CompoundTag savedEntity = (itemData.contains(STORED_ENTITY_NBT) ? itemData.getCompound(STORED_ENTITY_NBT) : null);
         if (savedEntity == null) return false;
 
-        Entity created = RequiemEntities.HOMUNCULUS.create(level, MobSpawnType.TRIGGERED);
+        Entity created = RequiemEntities.HOMUNCULUS.create(level);
         if (!(created instanceof Mob restored)) {
             player.sendSystemMessage(Component.literal("The stored homunculus body could not be reconstructed."));
             return true;
         }
 
         try {
-            restored.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), savedEntity.copy()));
+            restored.load(savedEntity.copy());
         } catch (RuntimeException invalidSnapshot) {
             player.sendSystemMessage(Component.literal("The stored homunculus data could not be read. The item was not consumed."));
             return true;
@@ -174,7 +174,7 @@ public final class MarbasAbilitySystem {
             marker.setUnlimitedLifetime();
             marker.getPersistentData().putBoolean(EMBRYO_MARKER, true);
             // Day time advances when players sleep, unlike gameTime (which counts server ticks).
-            marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getOverworldClockTime());
+            marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getDayTime());
             marker.getPersistentData().putBoolean(EMBRYO_CLOCK_DAY_TIME, true);
             marker.getPersistentData().putString(OWNER, (readItemData(stack).getString(OWNER).isEmpty() ? player.getUUID().toString() : readItemData(stack).getString(OWNER)));
             if (!level.addFreshEntity(marker)) {
@@ -193,13 +193,13 @@ public final class MarbasAbilitySystem {
             CompoundTag itemData = readItemData(stack);
             CompoundTag savedEntity = (itemData.contains(STORED_ENTITY_NBT) ? itemData.getCompound(STORED_ENTITY_NBT) : null);
             if (savedEntity != null) {
-                Entity created = RequiemEntities.HOMUNCULUS.create(level, MobSpawnType.TRIGGERED);
+                Entity created = RequiemEntities.HOMUNCULUS.create(level);
                 if (!(created instanceof Mob restored)) {
                     player.sendSystemMessage(Component.literal("The stored homunculus body could not be reconstructed."));
                     return true;
                 }
                 try {
-                    restored.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), savedEntity.copy()));
+                    restored.load(savedEntity.copy());
                 } catch (RuntimeException invalidSnapshot) {
                     player.sendSystemMessage(Component.literal("The stored homunculus data could not be read. The item was not consumed."));
                     return true;
@@ -248,11 +248,11 @@ public final class MarbasAbilitySystem {
                     // and therefore ignored most of the day skipped when players slept.
                     long legacyStarted = (incubationData.contains(EMBRYO_STARTED_AT) ? incubationData.getLong(EMBRYO_STARTED_AT) : level.getGameTime());
                     long legacyElapsed = Math.max(0L, level.getGameTime() - legacyStarted);
-                    incubationData.putLong(EMBRYO_STARTED_AT, level.getOverworldClockTime() - legacyElapsed);
+                    incubationData.putLong(EMBRYO_STARTED_AT, level.getDayTime() - legacyElapsed);
                     incubationData.putBoolean(EMBRYO_CLOCK_DAY_TIME, true);
                 }
-                long started = (incubationData.contains(EMBRYO_STARTED_AT) ? incubationData.getLong(EMBRYO_STARTED_AT) : level.getOverworldClockTime());
-                long elapsed = Math.max(0L, level.getOverworldClockTime() - started);
+                long started = (incubationData.contains(EMBRYO_STARTED_AT) ? incubationData.getLong(EMBRYO_STARTED_AT) : level.getDayTime());
+                long elapsed = Math.max(0L, level.getDayTime() - started);
                 if (elapsed < EMBRYO_GESTATION_TICKS) {
                     long remainingDays = (EMBRYO_GESTATION_TICKS - elapsed + 23_999L) / 24_000L;
                     player.sendSystemMessage(Component.literal("The embryo is still developing. Wait " + remainingDays + " more in-game day(s) before adding sulfur."));
@@ -335,7 +335,7 @@ public final class MarbasAbilitySystem {
         // Both bodies are registered Requiem entities, not vanilla Husk/Wolf entities.
         boolean immortal = traits != null && traits.toLowerCase(Locale.ROOT).contains("suffering");
         Entity created = (immortal ? RequiemEntities.IMMORTAL_HOMUNCULUS : RequiemEntities.HOMUNCULUS)
-            .create(level, MobSpawnType.TRIGGERED);
+            .create(level);
         if (!(created instanceof Mob mob)) return null;
         mob.setPos(cauldron.getX() + 0.5, cauldron.getY() + 1.0, cauldron.getZ() + 0.5);
         if (immortal) {
@@ -378,7 +378,7 @@ public final class MarbasAbilitySystem {
     /** Replace the normal entity with the immortal type, keeping its origin and program metadata. */
     private static Mob transmuteToImmortal(ServerLevel level, Mob original) {
         if (original instanceof ImmortalHomunculusEntity) return original;
-        Entity created = RequiemEntities.IMMORTAL_HOMUNCULUS.create(level, MobSpawnType.TRIGGERED);
+        Entity created = RequiemEntities.IMMORTAL_HOMUNCULUS.create(level);
         if (!(created instanceof Mob immortal)) return null;
         immortal.setPos(original.getX(), original.getY(), original.getZ());
         immortal.setYRot(original.getYRot());
@@ -433,7 +433,7 @@ public final class MarbasAbilitySystem {
                 case 3 -> new ItemStack(Items.SOUL_SAND, 1 + serverPlayer.getRandom().nextInt(3));
                 default -> new ItemStack(Items.IRON_NUGGET, 3 + serverPlayer.getRandom().nextInt(6));
             };
-            homunculus.spawnAtLocation(level, trade);
+            homunculus.spawnAtLocation(trade);
             serverPlayer.sendSystemMessage(Component.literal("The homunculus barters for gold."));
             return true;
         }
@@ -581,8 +581,8 @@ public final class MarbasAbilitySystem {
 
     public static void tick(ServerLevel level, BlockPos center) {
         long now = level.getGameTime();
-        AABB activeArea = new AABB(center.getX() - 128.0, level.getMinY(), center.getZ() - 128.0,
-            center.getX() + 128.0, level.getMaxY(), center.getZ() + 128.0);
+        AABB activeArea = new AABB(center.getX() - 128.0, level.getMinBuildHeight(), center.getZ() - 128.0,
+            center.getX() + 128.0, level.getMaxBuildHeight(), center.getZ() + 128.0);
         for (Mob mob : level.getEntitiesOfClass(Mob.class, activeArea, MarbasAbilitySystem::hasProgrammableBrain)) {
             try {
                 if ((mob.getPersistentData().contains("requiem:homunculus_last_tick") ? mob.getPersistentData().getLong("requiem:homunculus_last_tick") : Long.MIN_VALUE) == now) continue;
@@ -738,7 +738,7 @@ public final class MarbasAbilitySystem {
             }
             if (mob.distanceToSqr(item) >= 2.25) { mob.getNavigation().moveTo(item, 1.0); return; }
             ItemStack held = mob.getItemBySlot(EquipmentSlot.MAINHAND);
-            if (!held.isEmpty()) mob.spawnAtLocation(level, held.copy());
+            if (!held.isEmpty()) mob.spawnAtLocation(held.copy());
             mob.setItemSlot(EquipmentSlot.MAINHAND, item.getItem().copy());
             item.discard();
             mob.getNavigation().stop();
@@ -748,7 +748,7 @@ public final class MarbasAbilitySystem {
         if (command.equals("drop item") || command.equals("drop")) {
             ItemStack held = mob.getItemBySlot(EquipmentSlot.MAINHAND);
             if (!held.isEmpty()) {
-                mob.spawnAtLocation(level, held.copy());
+                mob.spawnAtLocation(held.copy());
                 mob.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
             }
             nextNode(mob, nodes.length);
