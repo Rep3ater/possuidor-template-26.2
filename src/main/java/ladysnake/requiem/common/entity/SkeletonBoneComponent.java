@@ -113,7 +113,7 @@ public final class SkeletonBoneComponent implements Component {
     @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("replaced_bones")) {
-            this.replacedBones = tag.getIntOr("replaced_bones", 0);
+            this.replacedBones = tag.getInt("replaced_bones");
         }
     }
 
