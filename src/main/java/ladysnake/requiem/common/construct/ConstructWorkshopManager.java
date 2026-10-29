@@ -56,7 +56,7 @@ public class ConstructWorkshopManager {
         double spawnX = center.getX() + 0.5;
         double spawnY = center.getY() + 1.0;
         double spawnZ = center.getZ() - 3.0;
-        player.teleportTo(workshopLevel, spawnX, spawnY, spawnZ, Set.of(), 0.0f, 0.0f, false);
+        player.teleportTo(workshopLevel, spawnX, spawnY, spawnZ, Set.of(), 0.0f, 0.0f);
         player.getAbilities().mayfly = true;
         player.getAbilities().flying = true;
         player.onUpdateAbilities();
@@ -117,11 +117,11 @@ public class ConstructWorkshopManager {
         MinecraftServer server = currentLevel.getServer();
         if (server == null) return;
 
-        int retX = player.getPersistentData().getInt("requiem:construct_ret_x").orElse(0);
-        int retY = player.getPersistentData().getInt("requiem:construct_ret_y").orElse(64);
-        int retZ = player.getPersistentData().getInt("requiem:construct_ret_z").orElse(0);
-        String dimStr = player.getPersistentData().getString("requiem:construct_ret_dim").orElse("minecraft:overworld");
-        boolean isMini = player.getPersistentData().getBoolean("requiem:construct_is_mini").orElse(false);
+        int retX = player.getPersistentData().getInt("requiem:construct_ret_x");
+        int retY = (player.getPersistentData().contains("requiem:construct_ret_y", net.minecraft.nbt.Tag.TAG_INT) ? player.getPersistentData().getInt("requiem:construct_ret_y") : 64);
+        int retZ = player.getPersistentData().getInt("requiem:construct_ret_z");
+        String dimStr = (player.getPersistentData().contains("requiem:construct_ret_dim", net.minecraft.nbt.Tag.TAG_STRING) ? player.getPersistentData().getString("requiem:construct_ret_dim") : "minecraft:overworld");
+        boolean isMini = player.getPersistentData().getBoolean("requiem:construct_is_mini");
 
         ResourceKey<Level> returnDim = ResourceKey.create(
             Registries.DIMENSION,
