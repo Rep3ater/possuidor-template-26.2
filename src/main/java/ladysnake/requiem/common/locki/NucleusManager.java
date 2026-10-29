@@ -82,41 +82,18 @@ public final class NucleusManager {
     private static void ensureArena(ServerLevel level, ServerPlayer phoenix) {
         buildFireArenaIfNeeded(level);
         BlockPos phoenixMarker = new BlockPos(0, 79, 0);
-        BlockPos bossMarker = new BlockPos(100, 79, 0);
+        BlockPos devMarker = new BlockPos(100, 79, 0);
         level.setBlock(phoenixMarker, Blocks.CONCRETE.pick(DyeColor.MAGENTA).defaultBlockState(), 3);
-        level.setBlock(bossMarker, Blocks.CONCRETE.pick(DyeColor.YELLOW).defaultBlockState(), 3);
+        level.setBlock(devMarker, Blocks.CONCRETE.pick(DyeColor.YELLOW).defaultBlockState(), 3);
 
-        AABB bossArea = new AABB(94, 80, -6, 106, 88, 6);
-        if (!level.getEntitiesOfClass(ladysnake.requiem.common.entity.NucleusSovereignEntity.class, bossArea,
-                entity -> entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)).isEmpty()) {
-            return;
+        // The sovereign is played by a consenting developer, not by a mob entity.
+        // Clean up the Warden placeholder left behind by older versions.
+        AABB oldBossArea = new AABB(94, 80, -6, 106, 88, 6);
+        for (Mob oldBoss : level.getEntitiesOfClass(Mob.class, oldBossArea,
+                entity -> entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)
+                    || entity.getTags().contains("requiem_nucleus_boss"))) {
+            oldBoss.discard();
         }
-
-        // Upgrade old worlds in place: discard the previous Warden placeholder instead of leaving it behind.
-        String bossOwner = phoenix.getUUID().toString();
-        for (Mob previous : level.getEntitiesOfClass(Mob.class, bossArea,
-                entity -> entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false))) {
-            String previousOwner = previous.getPersistentData().getString(BOSS_OWNER).orElse("");
-            if (!previousOwner.isBlank()) bossOwner = previousOwner;
-            previous.discard();
-        }
-
-        Mob boss = RequiemEntities.NUCLEUS_SOVEREIGN.create(level, EntitySpawnReason.TRIGGERED);
-        if (boss == null) return;
-        boss.getPersistentData().putBoolean(BOSS_KEY, true);
-        boss.getPersistentData().putString(BOSS_OWNER, bossOwner);
-        boss.addTag("requiem_nucleus_boss");
-        boss.setCustomName(null);
-        boss.setCustomNameVisible(false);
-        boss.setPos(100.5, 80.0, 0.5);
-        var health = boss.getAttribute(Attributes.MAX_HEALTH);
-        if (health != null) health.setBaseValue(500.0);
-        var attack = boss.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attack != null) attack.setBaseValue(20.0);
-        var speed = boss.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null) speed.setBaseValue(0.30);
-        boss.setHealth(boss.getMaxHealth());
-        level.addFreshEntity(boss);
     }
 
     /** Builds a small one-time blackstone/magma arena when the void dimension is first entered. */
@@ -183,14 +160,27 @@ public final class NucleusManager {
             developer.sendSystemMessage(Component.literal("That Nucleus encounter is no longer active."));
             return;
         }
+        if (!isDeveloper(developer)) {
+            developer.getPersistentData().remove(PENDING_INVITE);
+            developer.sendSystemMessage(Component.literal("Only a tagged developer can accept this Nucleus role."));
+            return;
+        }
+        if (!developer.getPersistentData().getString(SESSION_OWNER).orElse("").isBlank()) {
+            developer.sendSystemMessage(Component.literal("You already have an active Nucleus session."));
+            return;
+        }
         saveReturn(developer, ownerString);
         ServerLevel nucleus = server.getLevel(NUCLEUS_DIMENSION);
         if (nucleus == null) return;
         developer.getPersistentData().remove(PENDING_INVITE);
-        // The yellow marker is the fixed opposing spawn, 100 blocks ahead of Phoenix.
+        // Consent turns the developer's own player into the encounter's sovereign.
+        // No Warden, husk or other boss entity is spawned at this marker.
+        developer.getPersistentData().putBoolean(BOSS_KEY, true);
+        developer.getPersistentData().putString(BOSS_OWNER, ownerString);
+        developer.addTag("requiem_nucleus_player_boss");
         developer.teleportTo(nucleus, 100.5, 80.0, 4.5, Set.of(), 90.0F, 0.0F, false);
-        developer.sendSystemMessage(Component.literal("You joined the Nucleus arena. Your inventory is preserved; you will be returned when the Suffering Head is claimed."));
-        phoenix.sendSystemMessage(Component.literal(developer.getGameProfile().name() + " accepted the arena invitation."));
+        developer.sendSystemMessage(Component.literal("You accepted the Nucleus sovereign role. You are the boss player; your inventory is preserved. Claim your opponent's Suffering Head by defeating Phenex."));
+        phoenix.sendSystemMessage(Component.literal(developer.getGameProfile().name() + " accepted the Nucleus sovereign role."));
     }
 
     private static void saveReturn(ServerPlayer player, String owner) {
@@ -209,10 +199,32 @@ public final class NucleusManager {
         if (!entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)) return;
         Entity killer = event.getSource().getEntity();
         String owner = entity.getPersistentData().getString(BOSS_OWNER).orElse("");
-        if (killer instanceof ServerPlayer player && PhenexAbilitySystem.isPhenex(player) && player.getUUID().toString().equals(owner)) {
-            PhenexAbilitySystem.addCorruption(player, 1);
-            player.sendSystemMessage(Component.literal("§7The Nucleus sovereign falls. Ash settles in your lungs. Claim the Suffering Head to leave."));
+        if (!(killer instanceof ServerPlayer phenex) || !PhenexAbilitySystem.isPhenex(phenex)
+                || !phenex.getUUID().toString().equals(owner)) {
+            return;
         }
+
+        PhenexAbilitySystem.addCorruption(phenex, 1);
+        phenex.sendSystemMessage(Component.literal("§7The Nucleus sovereign falls. Ash settles in your lungs. Claim the Suffering Head to leave."));
+
+        // The developer is the boss player. Reward the victorious Phenex without replacing the
+        // developer's own inventory drops or treating the player as a disposable mob entity.
+        if (entity instanceof ServerPlayer developer && entity.level() instanceof ServerLevel level) {
+            ItemEntity drop = new ItemEntity(level, developer.getX(), developer.getY() + 0.3, developer.getZ(),
+                makeOwnedSufferingHead(owner));
+            drop.setDefaultPickUpDelay();
+            level.addFreshEntity(drop);
+            developer.getPersistentData().remove(BOSS_KEY);
+            developer.getPersistentData().remove(BOSS_OWNER);
+            developer.removeTag("requiem_nucleus_player_boss");
+            developer.sendSystemMessage(Component.literal("You were defeated in the Nucleus encounter. Your opponent's Suffering Head has dropped; normal player drops remain unchanged."));
+        }
+    }
+
+    private static ItemStack makeOwnedSufferingHead(String owner) {
+        ItemStack head = new ItemStack(RequiemItems.SUFFERING_HEAD);
+        CustomData.update(DataComponents.CUSTOM_DATA, head, tag -> tag.putString(HEAD_OWNER, owner));
+        return head;
     }
 
     public static void onLivingExperienceDrop(LivingExperienceDropEvent event) {
@@ -224,11 +236,11 @@ public final class NucleusManager {
     public static void onLivingDrops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
         if (!entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)) return;
+        // Player-boss rewards are created by onLivingDeath; never clear a developer's inventory drops.
+        if (entity instanceof ServerPlayer) return;
         event.getDrops().clear();
-        ItemStack head = new ItemStack(RequiemItems.SUFFERING_HEAD);
         String owner = entity.getPersistentData().getString(BOSS_OWNER).orElse("");
-        CustomData.update(DataComponents.CUSTOM_DATA, head, tag -> tag.putString(HEAD_OWNER, owner));
-        event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), head));
+        event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), makeOwnedSufferingHead(owner)));
     }
 
     /** Captures the owner before the pickup empties the ItemEntity, then returns the whole encounter. */
