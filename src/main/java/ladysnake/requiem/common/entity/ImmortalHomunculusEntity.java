@@ -41,7 +41,7 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
     }
 
     @Override
-    protected float getVoicePitch() {
+    public float getVoicePitch() {
         return 0.52F;
     }
 
