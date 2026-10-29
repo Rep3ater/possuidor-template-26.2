@@ -45,7 +45,7 @@ import ladysnake.requiem.core.util.serde.TriStateTypeAdapter;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
@@ -64,8 +64,8 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
         .registerTypeAdapter(new TypeToken<EntityType<?>>() {}.getType(), new EntityTypeAdapter())
         .registerTypeAdapter(TriState.class, new TriStateTypeAdapter())
         .create();
-    public static final Identifier LOCATION = RequiemCore.id("entity_mobility.json");
-    public static final Identifier LISTENER_ID = RequiemCore.id("movement_alterer");
+    public static final ResourceLocation LOCATION = RequiemCore.id("entity_mobility.json");
+    public static final ResourceLocation LISTENER_ID = RequiemCore.id("movement_alterer");
 
     private final Map<EntityType<?>, SerializableMovementConfig> entityMovementConfigs = new HashMap<>();
 
@@ -89,7 +89,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
         Map<EntityType<?>, SerializableMovementConfig> ret = new HashMap<>();
         int nbConfigs = buf.readVarInt();
         for (int i = 0; i < nbConfigs; i++) {
-            Identifier id = buf.readIdentifier();
+            ResourceLocation id = buf.readIdentifier();
             SerializableMovementConfig conf = new SerializableMovementConfig();
             conf.fromPacket(buf);
             BuiltInRegistries.ENTITY_TYPE.getOptional(id).ifPresent(type -> ret.put(type, conf));
@@ -106,7 +106,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
                     try (InputStreamReader in = new InputStreamReader(resource.open())) {
                         JsonObject map = GsonHelper.parse(in);
                         for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
-                            Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(entry.getKey()));
+                            Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(entry.getKey()));
                             if (type.isPresent()) {
                                 ret.put(type.get(), GSON.fromJson(entry.getValue(), SerializableMovementConfig.class));
                             } else if (GsonHelper.getAsBoolean(entry.getValue().getAsJsonObject(), "required", true)) {
@@ -125,7 +125,7 @@ public final class MovementAltererManager implements SubDataManager<Map<EntityTy
     }
 
     @Override
-    public Identifier getFabricId() {
+    public ResourceLocation getFabricId() {
         return LISTENER_ID;
     }
 

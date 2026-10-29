@@ -46,7 +46,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -153,7 +153,7 @@ public class CommonRecordKeeper implements GlobalRecordKeeper {
             key = "requiem:entity_ref";
         }
 
-        Identifier typeId = Identifier.tryParse(key);
+        ResourceLocation typeId = ResourceLocation.tryParse(key);
         RecordType<?> type = typeId == null ? null : RecordType.REGISTRY.getValue(typeId);
         if (type == null) {
             String unknown = key;

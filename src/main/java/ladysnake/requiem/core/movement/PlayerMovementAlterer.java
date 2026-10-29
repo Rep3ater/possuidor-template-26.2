@@ -55,7 +55,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.FluidTags;
@@ -88,8 +88,8 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     public static final byte DEFAULT_SYNC = 0;
     public static final byte SYNC_NO_CLIP = 1;
     public static final byte SYNC_PHASING_PARTICLES = 2;
-    public static final Identifier SPEED_MODIFIER_ID = RequiemCore.id("altered_movement_speed");
-    public static final Identifier WATER_SPEED_MODIFIER_ID = RequiemCore.id("water_speed_modifier");
+    public static final ResourceLocation SPEED_MODIFIER_ID = RequiemCore.id("altered_movement_speed");
+    public static final ResourceLocation WATER_SPEED_MODIFIER_ID = RequiemCore.id("water_speed_modifier");
     public static final UUID SPEED_MODIFIER_UUID = UUID.fromString("3708adba-b37f-413f-8b66-62e05330c7da");
     public static final UUID WATER_SPEED_MODIFIER_UUID = UUID.fromString("0e602dd1-2672-4179-852e-2a26d1579df4");
     public static final int TICKS_BEFORE_PHASING = 30;
@@ -130,7 +130,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
         }
     }
 
-    private void updateSpeedModifier(LivingEntity currentBody, Identifier speedModifierId, ToDoubleFunction<MovementConfig> property, boolean shouldApplyModifier) {
+    private void updateSpeedModifier(LivingEntity currentBody, ResourceLocation speedModifierId, ToDoubleFunction<MovementConfig> property, boolean shouldApplyModifier) {
         AttributeInstance speedAttribute = currentBody.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speedAttribute != null) {
             speedAttribute.removeModifier(speedModifierId);

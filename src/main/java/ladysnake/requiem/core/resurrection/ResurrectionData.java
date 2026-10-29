@@ -50,7 +50,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
@@ -189,7 +189,7 @@ public record ResurrectionData(
 
         JsonObject entityData = GsonHelper.getAsJsonObject(json, "entity");
         String typeId = GsonHelper.getAsString(entityData, "type");
-        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(typeId)).orElseThrow(() -> new JsonParseException("Invalid entity id " + typeId));
+        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(typeId)).orElseThrow(() -> new JsonParseException("Invalid entity id " + typeId));
         @Nullable CompoundTag nbt;
         if (entityData.has("nbt")) {
             try {

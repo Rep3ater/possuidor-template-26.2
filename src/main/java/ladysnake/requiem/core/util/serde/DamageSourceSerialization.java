@@ -37,7 +37,7 @@ package ladysnake.requiem.core.util.serde;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -68,7 +68,7 @@ public final class DamageSourceSerialization {
             return null;
         }
         String typeId = tag.getStringOr("type", "minecraft:generic");
-        ResourceKey<DamageType> key = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.parse(typeId));
+        ResourceKey<DamageType> key = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.parse(typeId));
         Holder<DamageType> holder = world.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).get(key).orElseGet(() -> world.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.GENERIC));
 
         Entity source = tag.getString("sourceUuid").map(s -> {
