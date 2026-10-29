@@ -137,7 +137,7 @@ public class DemonSoulVesselItem extends Item {
                 }
             }
 
-            return InteractionResult.SUCCESS;
+            return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
         }
 
         return InteractionResultHolder.fail(player.getItemInHand(hand));
