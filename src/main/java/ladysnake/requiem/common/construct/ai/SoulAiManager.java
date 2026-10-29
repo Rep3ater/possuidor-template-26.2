@@ -6,24 +6,26 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.Locale;
 
 public class SoulAiManager {
 
@@ -66,47 +68,175 @@ public class SoulAiManager {
     public static void applyInjectedGoals(PathfinderMob mob, String soulTypeStr, @Nullable UUID ownerUuid) {
         mob.goalSelector.removeAllGoals(g -> true);
         mob.targetSelector.removeAllGoals(g -> true);
+        mob.setTarget(null);
+        mob.getNavigation().stop();
 
-        // Ensure mob can deal at least base damage
-        if (mob.getAttribute(Attributes.ATTACK_DAMAGE) != null && mob.getAttributeBaseValue(Attributes.ATTACK_DAMAGE) <= 0.0) {
-            mob.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(1.5);
+        // A soul changes decisions only. Never copy attack, speed, health, armor, or other
+        // attributes from the source creature onto this body's existing attribute set.
+        String lower = soulTypeStr == null ? "" : soulTypeStr.toLowerCase(Locale.ROOT);
+        boolean foxSoul = lower.equals("fox") || lower.equals("minecraft:fox") || lower.endsWith(":fox");
+
+        if (foxSoul) {
+            // Fox prey behavior: hunt small animals and fish, never players.
+            mob.goalSelector.addGoal(1, new FloatGoal(mob));
+            mob.goalSelector.addGoal(2, new SoulMeleeAttackGoal(mob, 1.0D));
+            mob.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(mob, 1.0D));
+            mob.goalSelector.addGoal(4, new LookAtPlayerGoal(mob, Player.class, 8.0F));
+            mob.goalSelector.addGoal(5, new RandomLookAroundGoal(mob));
+            mob.targetSelector.addGoal(1, new FoxPreyTargetGoal(mob));
+            return;
         }
 
-        String lower = soulTypeStr.toLowerCase();
-
         if (lower.contains("wolf") && ownerUuid != null) {
-            // Tamed Wolf Companion AI! Follows player, attacks player targets, defends player
+            // Wolf-like companion AI: follow its owner and defend the owner.
             mob.goalSelector.addGoal(1, new FloatGoal(mob));
-            mob.goalSelector.addGoal(2, new FollowSoulOwnerGoal(mob, ownerUuid, 1.25D, 10.0F, 2.5F));
-            mob.goalSelector.addGoal(3, new MeleeAttackGoal(mob, 1.3D, true));
-            mob.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(mob, 0.8D));
+            mob.goalSelector.addGoal(2, new FollowSoulOwnerGoal(mob, ownerUuid, 1.0D, 10.0F, 2.5F));
+            mob.goalSelector.addGoal(3, new SoulMeleeAttackGoal(mob, 1.0D));
+            mob.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(mob, 1.0D));
             mob.goalSelector.addGoal(5, new LookAtPlayerGoal(mob, Player.class, 8.0F));
             mob.goalSelector.addGoal(6, new RandomLookAroundGoal(mob));
-
             mob.targetSelector.addGoal(1, new OwnerHurtByTargetSoulGoal(mob, ownerUuid));
             mob.targetSelector.addGoal(2, new OwnerHurtTargetSoulGoal(mob, ownerUuid));
             mob.targetSelector.addGoal(3, new HurtByTargetGoal(mob));
         } else if (lower.contains("zombie") || lower.contains("drowned") || lower.contains("husk") || lower.contains("piglin")) {
-            // Hostile Zombie AI! Chases players with fiery rage
+            // Hostile soul types intentionally acquire players as targets.
             mob.goalSelector.addGoal(1, new FloatGoal(mob));
-            mob.goalSelector.addGoal(2, new MeleeAttackGoal(mob, 1.25D, false));
+            mob.goalSelector.addGoal(2, new SoulMeleeAttackGoal(mob, 1.0D));
             mob.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(mob, 1.0D));
             mob.goalSelector.addGoal(4, new LookAtPlayerGoal(mob, Player.class, 8.0F));
             mob.goalSelector.addGoal(5, new RandomLookAroundGoal(mob));
-
             mob.targetSelector.addGoal(1, new HurtByTargetGoal(mob));
             mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Player.class, true));
         } else {
-            // Standard / Generic AI
+            // Neutral/passive soul types do not seek out players. They only retaliate.
             mob.goalSelector.addGoal(1, new FloatGoal(mob));
-            mob.goalSelector.addGoal(2, new MeleeAttackGoal(mob, 1.15D, true));
+            mob.goalSelector.addGoal(2, new SoulMeleeAttackGoal(mob, 1.0D));
             mob.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(mob, 1.0D));
             mob.goalSelector.addGoal(4, new LookAtPlayerGoal(mob, Player.class, 8.0F));
             mob.goalSelector.addGoal(5, new RandomLookAroundGoal(mob));
-
             mob.targetSelector.addGoal(1, new HurtByTargetGoal(mob));
-            mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Player.class, true));
         }
+    }
+
+    /** Safe melee for body types (like chickens/rabbits) that normally do not attack in melee. */
+    private static final class SoulMeleeAttackGoal extends Goal {
+        private final PathfinderMob mob;
+        private final double speedModifier;
+        private int attackCooldown;
+
+        private SoulMeleeAttackGoal(PathfinderMob mob, double speedModifier) {
+            this.mob = mob;
+            this.speedModifier = speedModifier;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            LivingEntity target = this.mob.getTarget();
+            return target != null && target != this.mob && target.isAlive();
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            LivingEntity target = this.mob.getTarget();
+            return target != null && target != this.mob && target.isAlive()
+                && this.mob.distanceToSqr(target) <= followRange(this.mob) * followRange(this.mob);
+        }
+
+        @Override
+        public void start() {
+            this.attackCooldown = 0;
+        }
+
+        @Override
+        public void stop() {
+            this.mob.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            LivingEntity target = this.mob.getTarget();
+            if (target == null || !target.isAlive()) return;
+            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            double reach = this.mob.getBbWidth() * 2.0D + target.getBbWidth();
+            if (this.mob.distanceToSqr(target) <= reach * reach) {
+                this.mob.getNavigation().stop();
+                if (this.attackCooldown > 0) this.attackCooldown--;
+                if (this.attackCooldown == 0 && this.mob.level() instanceof ServerLevel serverLevel) {
+                    this.attackCooldown = 20;
+                    var attack = this.mob.getAttribute(Attributes.ATTACK_DAMAGE);
+                    // Read physical damage from the body. Only bodies with no attack attribute
+                    // use a small fallback so transferred aggressive AI remains functional.
+                    float damage = attack == null ? 1.0F : (float) Math.max(0.0D, attack.getValue());
+                    if (damage > 0.0F) {
+                        target.hurtServer(serverLevel, serverLevel.damageSources().mobAttack(this.mob), damage);
+                    }
+                }
+            } else {
+                if (this.attackCooldown > 0) this.attackCooldown--;
+                this.mob.getNavigation().moveTo(target, this.speedModifier);
+            }
+        }
+    }
+
+    /** Target only entities a vanilla fox preys on. Players are deliberately excluded. */
+    private static final class FoxPreyTargetGoal extends TargetGoal {
+        private final PathfinderMob fox;
+        @Nullable private LivingEntity selected;
+
+        private FoxPreyTargetGoal(PathfinderMob fox) {
+            super(fox, false);
+            this.fox = fox;
+            this.setFlags(EnumSet.of(Goal.Flag.TARGET));
+        }
+
+        @Override
+        public boolean canUse() {
+            double range = followRange(this.fox);
+            AABB search = this.fox.getBoundingBox().inflate(range);
+            this.selected = this.fox.level().getEntitiesOfClass(LivingEntity.class, search, prey ->
+                prey != this.fox && prey.isAlive() && isFoxPrey(prey)
+                    && this.canAttack(prey, TargetingConditions.DEFAULT))
+                .stream().min((a, b) -> Double.compare(a.distanceToSqr(this.fox), b.distanceToSqr(this.fox)))
+                .orElse(null);
+            return this.selected != null;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            LivingEntity target = this.fox.getTarget();
+            return target != null && target.isAlive() && isFoxPrey(target)
+                && this.fox.distanceToSqr(target) <= followRange(this.fox) * followRange(this.fox);
+        }
+
+        @Override
+        public void start() {
+            this.fox.setTarget(this.selected);
+            super.start();
+        }
+
+        @Override
+        public void stop() {
+            if (this.fox.getTarget() == this.selected) this.fox.setTarget(null);
+            this.selected = null;
+            super.stop();
+        }
+    }
+
+    private static boolean isFoxPrey(LivingEntity entity) {
+        var type = entity.getType();
+        return type == EntityTypes.CHICKEN
+            || type == EntityTypes.RABBIT
+            || type == EntityTypes.COD
+            || type == EntityTypes.SALMON
+            || type == EntityTypes.TROPICAL_FISH
+            || type == EntityTypes.PUFFERFISH
+            || type == EntityTypes.TURTLE;
+    }
+
+    private static double followRange(PathfinderMob mob) {
+        var range = mob.getAttribute(Attributes.FOLLOW_RANGE);
+        return range == null ? 16.0D : Math.max(1.0D, range.getValue());
     }
 
     public static class FollowSoulOwnerGoal extends Goal {
