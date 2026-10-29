@@ -1,23 +1,15 @@
 package dev.onyxstudios.cca.internal.neoforge;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import dev.onyxstudios.cca.internal.base.AbstractComponentContainer;
-import java.util.Objects;
-import javax.annotation.Nullable;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
+
+import javax.annotation.Nullable;
+import java.util.Objects;
 
 public final class CcaScoreboardSavedData extends SavedData {
-    public static final SavedDataType<CcaScoreboardSavedData> TYPE = new SavedDataType<>(
-        ResourceLocation.fromNamespaceAndPath("requiem", "cca_scoreboard"),
-        CcaScoreboardSavedData::new,
-        CcaScoreboardSavedData::makeCodec
-    );
-
     private final ServerLevel level;
     private final AbstractComponentContainer container;
 
@@ -26,27 +18,32 @@ public final class CcaScoreboardSavedData extends SavedData {
         this.container = CcaNeoForgeEngine.createScoreboardContainer(level.getScoreboard(), level.getServer());
     }
 
+    public static CcaScoreboardSavedData get(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent(
+            tag -> load(level, tag),
+            () -> new CcaScoreboardSavedData(level),
+            "requiem_cca_scoreboard"
+        );
+    }
+
+    private static CcaScoreboardSavedData load(ServerLevel level, CompoundTag tag) {
+        CcaScoreboardSavedData data = new CcaScoreboardSavedData(level);
+        data.container.fromTag(tag, level.registryAccess());
+        return data;
+    }
+
     public AbstractComponentContainer getContainer() {
         return this.container;
     }
 
     @Override
-    public boolean isDirty() {
-        return true;
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        this.container.toTag(tag, this.level.registryAccess());
+        return tag;
     }
 
-    private static Codec<CcaScoreboardSavedData> makeCodec(@Nullable ServerLevel level) {
-        return CompoundTag.CODEC.flatXmap(
-            tag -> {
-                CcaScoreboardSavedData data = new CcaScoreboardSavedData(level);
-                data.container.fromTag(tag, data.level.registryAccess());
-                return DataResult.success(data);
-            },
-            data -> {
-                CompoundTag tag = new CompoundTag();
-                data.container.toTag(tag, data.level.registryAccess());
-                return DataResult.success(tag);
-            }
-        );
+    @Override
+    public boolean isDirty() {
+        return true;
     }
 }

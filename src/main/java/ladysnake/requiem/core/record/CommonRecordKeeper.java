@@ -154,7 +154,7 @@ public class CommonRecordKeeper implements GlobalRecordKeeper {
         }
 
         ResourceLocation typeId = ResourceLocation.tryParse(key);
-        RecordType<?> type = typeId == null ? null : RecordType.REGISTRY.getValue(typeId);
+        RecordType<?> type = typeId == null ? null : RecordType.REGISTRY.getOptional(typeId).orElse(null);
         if (type == null) {
             String unknown = key;
             return DataResult.error(() -> "Unknown record type %s".formatted(unknown));

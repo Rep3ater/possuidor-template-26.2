@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -43,8 +44,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.scores.Scoreboard;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -239,7 +238,7 @@ public final class CcaNeoForgeEngine {
     public static AbstractComponentContainer getServerScoreboardContainer(MinecraftServer server) {
         ServerLevel overworld = server.overworld();
         if (overworld != null) {
-            return overworld.getDataStorage().computeIfAbsent(CcaScoreboardSavedData.TYPE).getContainer();
+            return CcaScoreboardSavedData.get(overworld).getContainer();
         }
         return CLIENT_SCOREBOARD_CONTAINERS.computeIfAbsent(server.getScoreboard(), sc -> createScoreboardContainer(sc, server));
     }
@@ -601,30 +600,31 @@ public final class CcaNeoForgeEngine {
         result.add(key);
     }
 
-    private static final class EntityAttachmentSerializer implements IAttachmentSerializer<AbstractComponentContainer> {
+    private static final class EntityAttachmentSerializer implements IAttachmentSerializer<CompoundTag, AbstractComponentContainer> {
         @Override
-        public AbstractComponentContainer read(IAttachmentHolder holder, ValueInput input) {
+        public AbstractComponentContainer read(IAttachmentHolder holder, CompoundTag input, HolderLookup.Provider registries) {
             AbstractComponentContainer container = createEntityContainerForHolder(holder);
-            var lookup = holder instanceof Entity entity ? entity.registryAccess() : null;
-            input.read(AbstractComponentContainer.NBT_KEY, CompoundTag.CODEC)
-                .ifPresent(componentsTag -> container.fromComponentsTag(componentsTag, lookup));
+            var lookup = holder instanceof Entity entity ? entity.registryAccess() : registries;
+            if (input.contains(AbstractComponentContainer.NBT_KEY, CompoundTag.TAG_COMPOUND)) {
+                container.fromComponentsTag(input.getCompound(AbstractComponentContainer.NBT_KEY), lookup);
+            }
             return container;
         }
 
         @Override
-        public boolean write(AbstractComponentContainer attachment, ValueOutput output) {
+        public @Nullable CompoundTag write(AbstractComponentContainer attachment, HolderLookup.Provider registries) {
             if (!attachment.hasComponents()) {
-                return false;
+                return null;
             }
             // Note: ValueOutput carries registry context internally, while Component#writeToNbt takes lookup if available
-            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            var lookup = server != null ? server.registryAccess() : null;
+            var lookup = registries;
             CompoundTag componentsTag = attachment.toComponentsTag(lookup);
             if (componentsTag.isEmpty()) {
-                return false;
+                return null;
             }
-            output.store(AbstractComponentContainer.NBT_KEY, CompoundTag.CODEC, componentsTag);
-            return true;
+            CompoundTag result = new CompoundTag();
+            result.put(AbstractComponentContainer.NBT_KEY, componentsTag);
+            return result;
         }
     }
 

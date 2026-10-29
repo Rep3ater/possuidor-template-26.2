@@ -112,6 +112,7 @@ public final class Requiem {
         modEventBus.addListener(io.github.ladysnake.blabber.impl.common.BlabberDynamicMetaregistry::onNewDatapackRegistry);
 
         modEventBus.addListener(this::onRegister);
+        RequiemGamerules.init();
         modEventBus.addListener(this::onCommonSetup);
         modEventBus.addListener(this::onEntityAttributeCreation);
         modEventBus.addListener(this::onEntityAttributeModification);
@@ -138,7 +139,6 @@ public final class Requiem {
         event.register(Registries.ATTRIBUTE, RequiemEntityAttributes::register);
         event.register(Registries.MOB_EFFECT, RequiemStatusEffects::register);
         event.register(Registries.POTION, RequiemPotions::register);
-        event.register(Registries.GAME_RULE, RequiemGamerules::register);
         event.register(Registries.BLOCK, RequiemBlocks::registerBlocks);
         event.register(Registries.ITEM, helper -> {
             RequiemBlocks.registerBlockItems(helper);
@@ -148,7 +148,7 @@ public final class Requiem {
         event.register(Registries.BLOCK_ENTITY_TYPE, RequiemBlockEntities::register);
         event.register(Registries.PARTICLE_TYPE, RequiemParticleTypes::register);
         event.register(Registries.MENU, RequiemScreenHandlers::register);
-        event.register(Registries.LOOT_CONDITION_TYPE, RequiemLootTables::register);
+        event.register(Registries.LOOT_CONDITION_TYPE, helper -> RequiemLootTables.register(helper));
         event.register(Registries.STRUCTURE_TYPE, RequiemStructures::register);
         event.register(Registries.CUSTOM_STAT, RequiemStats::register);
         event.register(Registries.MEMORY_MODULE_TYPE, PandemoniumMemoryModules::register);
@@ -202,7 +202,7 @@ public final class Requiem {
     }
 
     private void onAddReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(id("resurrection_data"), ResurrectionDataLoader.INSTANCE);
+        event.addListener(ResurrectionDataLoader.INSTANCE);
     }
 
     private void registerPlugin(RequiemPlugin plugin) {
