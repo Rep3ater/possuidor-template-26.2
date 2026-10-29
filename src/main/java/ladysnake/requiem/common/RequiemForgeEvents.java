@@ -114,10 +114,14 @@ public final class RequiemForgeEvents {
     public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ladysnake.requiem.common.entity.ImmortalHomunculusEntity attacker
                 && attacker.level() instanceof ServerLevel level) {
-            // Yellow energy bursts only when the suffering form actually gets a kill.
+            // A two-color burst: warm yellow wax sparks mixed with green happy particles,
+            // matching the mutated homunculus' yellow-to-green skin.
             level.sendParticles(net.minecraft.core.particles.ParticleTypes.WAX_ON,
                 attacker.getX(), attacker.getY() + attacker.getBbHeight() * 0.55D, attacker.getZ(),
-                18, 0.45D, 0.5D, 0.45D, 0.035D);
+                12, 0.45D, 0.5D, 0.45D, 0.035D);
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.HAPPY_VILLAGER,
+                attacker.getX(), attacker.getY() + attacker.getBbHeight() * 0.6D, attacker.getZ(),
+                10, 0.4D, 0.5D, 0.4D, 0.025D);
         }
         NucleusManager.onLivingDeath(event);
         if (event.getEntity() instanceof ServerPlayer player) {
