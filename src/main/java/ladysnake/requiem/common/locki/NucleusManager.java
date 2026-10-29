@@ -2,6 +2,7 @@ package ladysnake.requiem.common.locki;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
