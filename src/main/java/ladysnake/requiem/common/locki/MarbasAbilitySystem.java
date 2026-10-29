@@ -49,6 +49,7 @@ public final class MarbasAbilitySystem {
     private static final String TRAITS = "requiem:homunculus_traits";
     private static final String EMBRYO_MARKER = "requiem:homunculus_embryo_marker";
     private static final String EMBRYO_STARTED_AT = "requiem:homunculus_embryo_started_at";
+    private static final String EMBRYO_CLOCK_DAY_TIME = "requiem:homunculus_embryo_uses_day_time";
     private static final long EMBRYO_GESTATION_TICKS = 3L * 24_000L;
 
     private MarbasAbilitySystem() {}
@@ -110,6 +111,7 @@ public final class MarbasAbilitySystem {
             marker.getPersistentData().putBoolean(EMBRYO_MARKER, true);
             // Day time advances when players sleep, unlike gameTime (which counts server ticks).
             marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getDayTime());
+            marker.getPersistentData().putBoolean(EMBRYO_CLOCK_DAY_TIME, true);
             marker.getPersistentData().putString(OWNER, readItemData(stack).getString(OWNER).orElse(player.getUUID().toString()));
             if (!level.addFreshEntity(marker)) {
                 player.sendSystemMessage(Component.literal("The embryo could not be placed in the cauldron."));
@@ -144,7 +146,16 @@ public final class MarbasAbilitySystem {
         if (isSulfurIngredient(stack)) {
             ItemEntity embryoMarker = findEmbryoMarker(level, pos);
             if (embryoMarker != null) {
-                long started = embryoMarker.getPersistentData().getLong(EMBRYO_STARTED_AT).orElse(level.getDayTime());
+                CompoundTag incubationData = embryoMarker.getPersistentData();
+                if (!incubationData.getBoolean(EMBRYO_CLOCK_DAY_TIME).orElse(false)) {
+                    // Migrate embryos created by the prior build, which measured only server ticks
+                    // and therefore ignored most of the day skipped when players slept.
+                    long legacyStarted = incubationData.getLong(EMBRYO_STARTED_AT).orElse(level.getGameTime());
+                    long legacyElapsed = Math.max(0L, level.getGameTime() - legacyStarted);
+                    incubationData.putLong(EMBRYO_STARTED_AT, level.getDayTime() - legacyElapsed);
+                    incubationData.putBoolean(EMBRYO_CLOCK_DAY_TIME, true);
+                }
+                long started = incubationData.getLong(EMBRYO_STARTED_AT).orElse(level.getDayTime());
                 long elapsed = Math.max(0L, level.getDayTime() - started);
                 if (elapsed < EMBRYO_GESTATION_TICKS) {
                     long remainingDays = (EMBRYO_GESTATION_TICKS - elapsed + 23_999L) / 24_000L;
@@ -340,6 +351,12 @@ public final class MarbasAbilitySystem {
     /** Counts completed nights of actual sleep, rather than merely clicking a bed. */
     public static void onPlayerTick(ServerPlayer player) {
         CompoundTag data = player.getPersistentData();
+        // Older builds could store more than two nights; normalize that data on login/tick.
+        int storedSleepCount = data.getInt("requiem:marbas_sleep_count").orElse(0);
+        int normalizedSleepCount = Math.max(0, Math.min(2, storedSleepCount));
+        if (normalizedSleepCount != storedSleepCount) {
+            data.putInt("requiem:marbas_sleep_count", normalizedSleepCount);
+        }
         long now = player.level().getGameTime();
         boolean wasSleeping = data.getBoolean("requiem:marbas_was_sleeping").orElse(false);
         if (player.isSleeping()) {
