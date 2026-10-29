@@ -110,7 +110,7 @@ public final class MarbasAbilitySystem {
             marker.setUnlimitedLifetime();
             marker.getPersistentData().putBoolean(EMBRYO_MARKER, true);
             // Day time advances when players sleep, unlike gameTime (which counts server ticks).
-            marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getDayTime());
+            marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getOverworldClockTime());
             marker.getPersistentData().putBoolean(EMBRYO_CLOCK_DAY_TIME, true);
             marker.getPersistentData().putString(OWNER, readItemData(stack).getString(OWNER).orElse(player.getUUID().toString()));
             if (!level.addFreshEntity(marker)) {
@@ -152,11 +152,11 @@ public final class MarbasAbilitySystem {
                     // and therefore ignored most of the day skipped when players slept.
                     long legacyStarted = incubationData.getLong(EMBRYO_STARTED_AT).orElse(level.getGameTime());
                     long legacyElapsed = Math.max(0L, level.getGameTime() - legacyStarted);
-                    incubationData.putLong(EMBRYO_STARTED_AT, level.getDayTime() - legacyElapsed);
+                    incubationData.putLong(EMBRYO_STARTED_AT, level.getOverworldClockTime() - legacyElapsed);
                     incubationData.putBoolean(EMBRYO_CLOCK_DAY_TIME, true);
                 }
-                long started = incubationData.getLong(EMBRYO_STARTED_AT).orElse(level.getDayTime());
-                long elapsed = Math.max(0L, level.getDayTime() - started);
+                long started = incubationData.getLong(EMBRYO_STARTED_AT).orElse(level.getOverworldClockTime());
+                long elapsed = Math.max(0L, level.getOverworldClockTime() - started);
                 if (elapsed < EMBRYO_GESTATION_TICKS) {
                     long remainingDays = (EMBRYO_GESTATION_TICKS - elapsed + 23_999L) / 24_000L;
                     player.sendSystemMessage(Component.literal("The embryo is still developing. Wait " + remainingDays + " more in-game day(s) before adding sulfur."));
