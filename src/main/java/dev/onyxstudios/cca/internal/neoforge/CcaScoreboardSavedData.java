@@ -20,8 +20,10 @@ public final class CcaScoreboardSavedData extends SavedData {
 
     public static CcaScoreboardSavedData get(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
-            tag -> load(level, tag),
-            () -> new CcaScoreboardSavedData(level),
+            new SavedData.Factory<>(
+                () -> new CcaScoreboardSavedData(level),
+                (tag, registries) -> load(level, tag)
+            ),
             "requiem_cca_scoreboard"
         );
     }
