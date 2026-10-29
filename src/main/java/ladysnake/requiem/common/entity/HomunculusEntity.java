@@ -30,6 +30,11 @@ public class HomunculusEntity extends PathfinderMob {
     }
 
     @Override
+    protected float getVoicePitch() {
+        return 0.92F;
+    }
+
+    @Override
     protected SoundEvent getAmbientSound() {
         return SoundEvents.VILLAGER_AMBIENT;
     }
