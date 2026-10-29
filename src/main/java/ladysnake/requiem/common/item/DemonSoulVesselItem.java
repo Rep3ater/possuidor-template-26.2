@@ -82,7 +82,7 @@ public class DemonSoulVesselItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
 
         if (world.isClientSide()) {
-            return InteractionResultHolder.sidedSuccess(stack, world.isClientSide());
+            return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
         }
 
         if (player instanceof ServerPlayer serverPlayer && stack.getItem() == this) {
