@@ -327,7 +327,7 @@ public class ConstructVoxelModel {
                 for (int i = 0; i < list.size(); i++) {
                     model.addVoxel(ConstructVoxel.fromNbt(list.getCompound(i)));
                 }
-            });
+            }
         }
         return model;
     }
