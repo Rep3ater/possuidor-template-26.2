@@ -135,27 +135,28 @@ public class ConstructVoxel {
     }
 
     public static ConstructVoxel fromNbt(CompoundTag tag) {
-        int rx = tag.getInt("rx").orElse(0);
-        int ry = tag.getInt("ry").orElse(0);
-        int rz = tag.getInt("rz").orElse(0);
+        int rx = tag.getInt("rx");
+        int ry = tag.getInt("ry");
+        int rz = tag.getInt("rz");
         BlockPos pos = new BlockPos(rx, ry, rz);
-        BlockState state = Block.stateById(tag.getInt("stateId").orElse(0));
+        BlockState state = Block.stateById(tag.getInt("stateId"));
         if (state.isAir()) {
             state = Blocks.IRON_BLOCK.defaultBlockState();
         }
-        ConstructPart part = ConstructPart.fromOrdinal(tag.getByte("part").orElse((byte) 0));
-        ActuatorType actuator = ActuatorType.fromOrdinal(tag.getByte("actuator").orElse((byte) 0));
-        Direction facing = Direction.from3DDataValue(tag.getByte("facing").orElse((byte) 2));
-        float hp = tag.getFloat("hp").orElse(2.0f);
-        float maxHp = tag.getFloat("maxHp").orElse(Math.max(hp, 2.0f));
+        ConstructPart part = ConstructPart.fromOrdinal(tag.getByte("part"));
+        ActuatorType actuator = ActuatorType.fromOrdinal(tag.getByte("actuator"));
+        Direction facing = Direction.from3DDataValue(tag.getByte("facing"));
+        float hp = tag.getFloat("hp");
+        float maxHp = tag.getFloat("maxHp");
 
         ConstructVoxel voxel = new ConstructVoxel(pos, state, part, actuator, facing, hp, maxHp);
-        tag.getList("inv").ifPresent(listTag -> {
+        ListTag listTag = tag.getList("inv", net.minecraft.nbt.Tag.TAG_COMPOUND);
+        {
             for (int i = 0; i < listTag.size(); i++) {
                 if (listTag.get(i) instanceof CompoundTag itemTag) {
-                    String id = itemTag.getString("id").orElse("");
-                    int count = itemTag.getInt("count").orElse(1);
-                    Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(id)).map(net.minecraft.core.Holder::value).orElse(Items.AIR);
+                    String id = itemTag.getString("id");
+                    int count = itemTag.getInt("count");
+                    Item item = BuiltInRegistries.ITEM.getOptional(ResourceLocation.tryParse(id)).orElse(Items.AIR);
                     if (item != Items.AIR) {
                         voxel.inventory.add(new ItemStack(item, count));
                     }
