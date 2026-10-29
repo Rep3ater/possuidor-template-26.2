@@ -1,6 +1,1 @@
-{
-  "model": {
-    "type": "minecraft:model",
-    "model": "minecraft:item/yellow_concrete"
-  }
-}
+{"model":{"type":"minecraft:model","model":"requiem:item/sulfur_cube"}}

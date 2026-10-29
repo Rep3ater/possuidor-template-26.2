@@ -1,6 +1,1 @@
-{
-  "model": {
-    "type": "minecraft:model",
-    "model": "minecraft:item/prismarine_crystals"
-  }
-}
+{"model":{"type":"minecraft:model","model":"requiem:item/vessel_shard"}}
