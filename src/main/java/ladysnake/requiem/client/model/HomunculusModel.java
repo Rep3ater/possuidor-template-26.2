@@ -1,4 +1,5 @@
 package ladysnake.requiem.client.model;
+
 import ladysnake.requiem.Requiem;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -10,20 +11,111 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-/** Editable geometry template; edit this Java model and its 64x64 entity texture independently. */
-public class HomunculusModel extends EntityModel<LivingEntityRenderState> {
-    public static final ModelLayerLocation LAYER_LOCATION=new ModelLayerLocation(Requiem.id("homunculus"),"main");
-    private final ModelPart rightArm,leftArm,rightLeg,leftLeg;
-    public HomunculusModel(ModelPart root){super(root);rightArm=root.getChild("right_arm");leftArm=root.getChild("left_arm");rightLeg=root.getChild("right_leg");leftLeg=root.getChild("left_leg");}
-    public static LayerDefinition createBodyLayer(){
-        MeshDefinition mesh=new MeshDefinition();PartDefinition root=mesh.getRoot();CubeDeformation d=new CubeDeformation(0.0F);
-        root.addOrReplaceChild("head",CubeListBuilder.create().texOffs(0,0).addBox(-4,-8,-4,8,8,8,d),PartPose.offset(0,0,0));
-        root.addOrReplaceChild("body",CubeListBuilder.create().texOffs(16,16).addBox(-4,0,-2,8,12,4,d),PartPose.offset(0,0,0));
-        root.addOrReplaceChild("right_arm",CubeListBuilder.create().texOffs(40,16).addBox(-3,-2,-2,4,12,4,d),PartPose.offset(-5,2,0));
-        root.addOrReplaceChild("left_arm",CubeListBuilder.create().texOffs(40,16).mirror().addBox(-1,-2,-2,4,12,4,d),PartPose.offset(5,2,0));
-        root.addOrReplaceChild("right_leg",CubeListBuilder.create().texOffs(0,16).addBox(-2,0,-2,4,12,4,d),PartPose.offset(-2,12,0));
-        root.addOrReplaceChild("left_leg",CubeListBuilder.create().texOffs(0,16).mirror().addBox(-2,0,-2,4,12,4,d),PartPose.offset(2,12,0));
-        return LayerDefinition.create(mesh,64,64);
+
+/** Blockbench model port with the supplied 128x128 texture and animated limbs. */
+public final class HomunculusModel extends EntityModel<LivingEntityRenderState> {
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Requiem.id("homunculus"), "main");
+    private final ModelPart homunculus, head, body, leftArm, rightArm, leftLeg, rightLeg;
+
+    public HomunculusModel(ModelPart root) {
+        super(root);
+        this.homunculus = root.getChild("homunculus");
+        this.head = this.homunculus.getChild("head");
+        this.body = this.homunculus.getChild("body");
+        this.leftArm = this.homunculus.getChild("leftArm");
+        this.rightArm = this.homunculus.getChild("rightArm");
+        this.leftLeg = this.homunculus.getChild("leftLeg");
+        this.rightLeg = this.homunculus.getChild("rightLeg");
     }
-    @Override public void setupAnim(LivingEntityRenderState state){rightArm.xRot=0;leftArm.xRot=0;rightLeg.xRot=0;leftLeg.xRot=0;}
+
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+PartDefinition homunculus = partdefinition.addOrReplaceChild("homunculus", CubeListBuilder.create(), PartPose.offset(0.0F, 17.0F, 0.0F));
+
+		PartDefinition head = homunculus.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 0).addBox(-3.0F, -4.0F, -2.0F, 5.0F, 5.0F, 3.0F, new CubeDeformation(0.0F))
+		.texOffs(24, 54).addBox(-2.0F, -5.0F, -1.0F, 3.0F, 1.0F, 2.0F, new CubeDeformation(0.0F))
+		.texOffs(32, 24).addBox(-2.0F, -0.5F, -6.0F, 3.0F, 1.0F, 4.0F, new CubeDeformation(0.0F))
+		.texOffs(52, 74).addBox(1.0F, -3.0F, -3.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.5F))
+		.texOffs(60, 74).addBox(-3.0F, -3.0F, -3.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.7F)), PartPose.offset(1.0F, -6.0F, 0.0F));
+
+		PartDefinition cube_r1 = head.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(0, 44).addBox(-2.0F, -1.0F, -1.0F, 3.0F, 1.0F, 4.0F, new CubeDeformation(-0.3F)), PartPose.offsetAndRotation(0.0F, 2.0F, -5.0F, 0.6545F, 0.0F, 0.0F));
+
+		PartDefinition cube_r2 = head.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(36, 38).addBox(-1.0F, -2.0F, -1.0F, 3.0F, 1.0F, 2.0F, new CubeDeformation(0.3F)), PartPose.offsetAndRotation(-1.0F, 2.5F, -2.0F, 0.6545F, 0.0F, 0.0F));
+
+		PartDefinition cube_r3 = head.addOrReplaceChild("cube_r3", CubeListBuilder.create().texOffs(68, 50).addBox(-1.5F, -2.0F, -1.0F, 2.0F, 1.0F, 1.0F, new CubeDeformation(0.2F)), PartPose.offsetAndRotation(0.0F, 0.0F, -4.0F, -0.3491F, 0.0F, 0.0F));
+
+		PartDefinition cube_r4 = head.addOrReplaceChild("cube_r4", CubeListBuilder.create().texOffs(44, 54).addBox(0.0F, -2.0F, -2.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(0.3F)), PartPose.offsetAndRotation(-1.0F, 0.5F, -2.0F, -0.1309F, 0.0F, 0.0F));
+
+		PartDefinition body = homunculus.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 16).addBox(-2.0F, -1.0F, -2.0F, 5.0F, 4.0F, 3.0F, new CubeDeformation(0.5F))
+		.texOffs(0, 30).addBox(-2.0F, 3.0F, -2.0F, 5.0F, 4.0F, 3.0F, new CubeDeformation(-0.5F)), PartPose.offset(0.0F, -4.0F, 2.0F));
+
+		PartDefinition leftArm = homunculus.addOrReplaceChild("leftArm", CubeListBuilder.create().texOffs(60, 4).addBox(2.0F, 2.0F, -6.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(0.3F))
+		.texOffs(20, 74).addBox(3.0F, 3.0F, -3.0F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.2F)), PartPose.offset(3.0F, -4.0F, 2.0F));
+
+		PartDefinition cube_r5 = leftArm.addOrReplaceChild("cube_r5", CubeListBuilder.create().texOffs(60, 0).addBox(-1.0F, -1.0F, -1.0F, 4.0F, 1.0F, 1.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(2.5F, 4.0F, -3.0F, -3.1416F, -1.0472F, -2.3126F));
+
+		PartDefinition cube_r6 = leftArm.addOrReplaceChild("cube_r6", CubeListBuilder.create().texOffs(60, 20).addBox(0.0F, -3.0F, -2.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(3.5F, 7.0F, -1.0F, 0.829F, 0.0F, 0.0F));
+
+		PartDefinition cube_r7 = leftArm.addOrReplaceChild("cube_r7", CubeListBuilder.create().texOffs(20, 60).addBox(0.0F, -3.0F, -2.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(3.5F, 7.0F, -2.0F, 0.6545F, 0.0F, 0.0F));
+
+		PartDefinition cube_r8 = leftArm.addOrReplaceChild("cube_r8", CubeListBuilder.create().texOffs(60, 12).addBox(0.0F, -3.0F, -2.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(3.5F, 6.0F, -2.0F, 0.5236F, 0.0F, 0.0F));
+
+		PartDefinition cube_r9 = leftArm.addOrReplaceChild("cube_r9", CubeListBuilder.create().texOffs(16, 68).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(1.8F, 8.4F, -5.0F, 1.5708F, -1.3963F, -1.5708F));
+
+		PartDefinition cube_r10 = leftArm.addOrReplaceChild("cube_r10", CubeListBuilder.create().texOffs(36, 66).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(1.3F, 9.0F, -4.0F, 1.5708F, -1.3963F, -1.5708F));
+
+		PartDefinition cube_r11 = leftArm.addOrReplaceChild("cube_r11", CubeListBuilder.create().texOffs(64, 62).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(1.8F, 7.3F, -5.0F, 1.5708F, -1.3963F, -1.5708F));
+
+		PartDefinition cube_r12 = leftArm.addOrReplaceChild("cube_r12", CubeListBuilder.create().texOffs(52, 62).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(-0.1F)), PartPose.offsetAndRotation(1.5F, 6.5F, -6.0F, 1.5708F, -1.3963F, -1.5708F));
+
+		PartDefinition cube_r13 = leftArm.addOrReplaceChild("cube_r13", CubeListBuilder.create().texOffs(28, 44).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(3.5F, 6.0F, -3.0F, 0.1745F, 0.0F, 0.0F));
+
+		PartDefinition cube_r14 = leftArm.addOrReplaceChild("cube_r14", CubeListBuilder.create().texOffs(0, 58).addBox(-1.0F, -1.0F, -1.0F, 4.0F, 1.0F, 1.0F, new CubeDeformation(0.3F)), PartPose.offsetAndRotation(0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.829F));
+
+		PartDefinition rightArm = homunculus.addOrReplaceChild("rightArm", CubeListBuilder.create().texOffs(44, 74).addBox(-3.0F, 2.0F, -2.0F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.2F))
+		.texOffs(60, 28).addBox(-2.5F, 1.0F, -5.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(0.3F)), PartPose.offset(-2.0F, -3.0F, 1.0F));
+
+		PartDefinition cube_r15 = rightArm.addOrReplaceChild("cube_r15", CubeListBuilder.create().texOffs(0, 70).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(-4.7F, 8.0F, -3.0F, 1.5708F, -1.3963F, -1.5708F));
+
+		PartDefinition cube_r16 = rightArm.addOrReplaceChild("cube_r16", CubeListBuilder.create().texOffs(36, 62).addBox(-1.0F, -1.0F, -1.0F, 3.0F, 1.0F, 1.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(-3.5F, 3.0F, -0.3F, 1.6468F, -0.9586F, -0.804F));
+
+		PartDefinition cube_r17 = rightArm.addOrReplaceChild("cube_r17", CubeListBuilder.create().texOffs(0, 54).addBox(-1.0F, -1.0F, -1.0F, 5.0F, 1.0F, 1.0F, new CubeDeformation(0.3F)), PartPose.offsetAndRotation(0.0F, -1.0F, 1.0F, 0.0F, 0.0F, 2.1817F));
+
+		PartDefinition cube_r18 = rightArm.addOrReplaceChild("cube_r18", CubeListBuilder.create().texOffs(0, 62).addBox(0.0F, -3.0F, -2.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(-3.5F, 6.0F, 0.0F, 0.829F, 0.0F, 0.0F));
+
+		PartDefinition cube_r19 = rightArm.addOrReplaceChild("cube_r19", CubeListBuilder.create().texOffs(48, 44).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-3.5F, 5.0F, -2.0F, 0.1745F, 0.0F, 0.0F));
+
+		PartDefinition cube_r20 = rightArm.addOrReplaceChild("cube_r20", CubeListBuilder.create().texOffs(60, 68).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(-4.2F, 7.4F, -4.0F, 1.5708F, -1.3963F, -1.5708F));
+
+		PartDefinition cube_r21 = rightArm.addOrReplaceChild("cube_r21", CubeListBuilder.create().texOffs(48, 68).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(-4.2F, 6.3F, -4.0F, 1.5708F, -1.3963F, -1.5708F));
+
+		PartDefinition cube_r22 = rightArm.addOrReplaceChild("cube_r22", CubeListBuilder.create().texOffs(60, 36).addBox(0.0F, -3.0F, -2.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(-3.5F, 5.0F, -1.0F, 0.5236F, 0.0F, 0.0F));
+
+		PartDefinition cube_r23 = rightArm.addOrReplaceChild("cube_r23", CubeListBuilder.create().texOffs(68, 44).addBox(0.0F, -3.0F, -3.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(-0.1F)), PartPose.offsetAndRotation(-4.5F, 5.5F, -5.0F, 1.5708F, -1.3963F, -1.5708F));
+
+		PartDefinition cube_r24 = rightArm.addOrReplaceChild("cube_r24", CubeListBuilder.create().texOffs(60, 54).addBox(0.0F, -3.0F, -2.0F, 1.0F, 1.0F, 3.0F, new CubeDeformation(-0.2F)), PartPose.offsetAndRotation(-3.5F, 6.0F, -1.0F, 0.6545F, 0.0F, 0.0F));
+
+		PartDefinition leftLeg = homunculus.addOrReplaceChild("leftLeg", CubeListBuilder.create().texOffs(28, 68).addBox(0.0F, 0.0F, -1.0F, 1.0F, 3.0F, 1.0F, new CubeDeformation(0.0F))
+		.texOffs(36, 72).addBox(0.0F, 2.0F, -1.0F, 1.0F, 3.0F, 1.0F, new CubeDeformation(-0.2F))
+		.texOffs(32, 12).addBox(-0.5F, 4.0F, -5.0F, 2.0F, 1.0F, 5.0F, new CubeDeformation(0.3F)), PartPose.offset(-1.0F, 2.0F, 2.0F));
+
+		PartDefinition rightLeg = homunculus.addOrReplaceChild("rightLeg", CubeListBuilder.create().texOffs(72, 68).addBox(-1.0F, 2.0F, -1.0F, 1.0F, 3.0F, 1.0F, new CubeDeformation(-0.2F))
+		.texOffs(12, 74).addBox(-1.0F, 0.0F, -1.0F, 1.0F, 3.0F, 1.0F, new CubeDeformation(0.0F))
+		.texOffs(32, 0).addBox(-1.5F, 4.0F, -5.0F, 2.0F, 1.0F, 5.0F, new CubeDeformation(0.3F)), PartPose.offset(2.0F, 2.0F, 2.0F));
+        return LayerDefinition.create(meshdefinition, 128, 128);
+    }
+
+    @Override
+    public void setupAnim(LivingEntityRenderState state) {
+        float radians = (float) Math.PI / 180.0F;
+        this.head.yRot = state.yRot * radians;
+        this.head.xRot = state.xRot * radians;
+        float phase = state.walkAnimationPos * 0.6662F;
+        float swing = 1.4F * state.walkAnimationSpeed;
+        this.leftLeg.xRot = net.minecraft.util.Mth.cos(phase) * swing;
+        this.rightLeg.xRot = net.minecraft.util.Mth.cos(phase + (float) Math.PI) * swing;
+        this.leftArm.xRot = net.minecraft.util.Mth.cos(phase + (float) Math.PI) * swing * 0.7F;
+        this.rightArm.xRot = net.minecraft.util.Mth.cos(phase) * swing * 0.7F;
+    }
 }
