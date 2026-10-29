@@ -256,10 +256,10 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public void readFromNbt(CompoundTag compoundTag) {
-        RemnantType remnantType = RemnantTypes.get(ResourceLocation.parse(compoundTag.getStringOr("id", RemnantState.NULL_STATE_ID)));
-        this.chosen = compoundTag.getBooleanOr("chosen", false);
+        RemnantType remnantType = RemnantTypes.get(ResourceLocation.parse((compoundTag.contains("id", net.minecraft.nbt.Tag.TAG_STRING) ? compoundTag.getString("id") : RemnantState.NULL_STATE_ID)));
+        this.chosen = compoundTag.getBoolean("chosen");
         this.become(remnantType);
-        this.setVagrant(compoundTag.getBooleanOr(ETHEREAL_TAG, false));
+        this.setVagrant(compoundTag.getBoolean(ETHEREAL_TAG));
     }
 
     @Override
