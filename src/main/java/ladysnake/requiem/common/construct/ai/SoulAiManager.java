@@ -31,6 +31,8 @@ public class SoulAiManager {
 
     public static void injectSoul(PathfinderMob mob, String soulTypeStr, @Nullable Player owner) {
         mob.getPersistentData().putString("requiem:injected_soul", soulTypeStr);
+        // An explicitly injected soul replaces any previously transplanted homunculus brain.
+        mob.getPersistentData().remove("requiem:homunculus_souled");
         if (owner != null) {
             NbtCompat.putUuid(mob.getPersistentData(), "requiem:soul_owner", owner.getUUID());
         }
