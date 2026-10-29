@@ -79,20 +79,33 @@ public final class NucleusManager {
     }
 
     private static void ensureArena(ServerLevel level, ServerPlayer phoenix) {
+        buildFireArenaIfNeeded(level);
         BlockPos phoenixMarker = new BlockPos(0, 79, 0);
         BlockPos bossMarker = new BlockPos(100, 79, 0);
         level.setBlock(phoenixMarker, Blocks.CONCRETE.pick(DyeColor.MAGENTA).defaultBlockState(), 3);
         level.setBlock(bossMarker, Blocks.CONCRETE.pick(DyeColor.YELLOW).defaultBlockState(), 3);
-        // Keep the two spawn points deterministic. The user can build the arena around these markers.
-        boolean bossExists = !level.getEntitiesOfClass(Mob.class, new AABB(94, 80, -6, 106, 88, 6),
-            e -> e.getPersistentData().getBoolean(BOSS_KEY).orElse(false)).isEmpty();
-        if (bossExists) return;
-        Entity raw = EntityTypes.WARDEN.create(level, EntitySpawnReason.TRIGGERED);
-        if (!(raw instanceof Mob boss)) return;
+
+        AABB bossArea = new AABB(94, 80, -6, 106, 88, 6);
+        if (!level.getEntitiesOfClass(ladysnake.requiem.common.entity.NucleusSovereignEntity.class, bossArea,
+                entity -> entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)).isEmpty()) {
+            return;
+        }
+
+        // Upgrade old worlds in place: discard the previous Warden placeholder instead of leaving it behind.
+        String bossOwner = phoenix.getUUID().toString();
+        for (Mob previous : level.getEntitiesOfClass(Mob.class, bossArea,
+                entity -> entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false))) {
+            String previousOwner = previous.getPersistentData().getString(BOSS_OWNER).orElse("");
+            if (!previousOwner.isBlank()) bossOwner = previousOwner;
+            previous.discard();
+        }
+
+        Mob boss = RequiemEntities.NUCLEUS_SOVEREIGN.create(level, EntitySpawnReason.TRIGGERED);
+        if (boss == null) return;
         boss.getPersistentData().putBoolean(BOSS_KEY, true);
-        boss.getPersistentData().putString(BOSS_OWNER, phoenix.getUUID().toString());
+        boss.getPersistentData().putString(BOSS_OWNER, bossOwner);
         boss.addTag("requiem_nucleus_boss");
-        boss.setCustomName(null); // intentionally unnamed; a later supplied model can replace this placeholder
+        boss.setCustomName(null);
         boss.setCustomNameVisible(false);
         boss.setPos(100.5, 80.0, 0.5);
         var health = boss.getAttribute(Attributes.MAX_HEALTH);
@@ -103,6 +116,31 @@ public final class NucleusManager {
         if (speed != null) speed.setBaseValue(0.30);
         boss.setHealth(boss.getMaxHealth());
         level.addFreshEntity(boss);
+    }
+
+    /** Builds a small one-time blackstone/magma arena when the void dimension is first entered. */
+    private static void buildFireArenaIfNeeded(ServerLevel level) {
+        BlockPos marker = new BlockPos(-16, 79, -16);
+        if (!level.getBlockState(marker).isAir()) return;
+
+        for (int x = -16; x <= 116; x++) {
+            for (int z = -16; z <= 16; z++) {
+                BlockPos pos = new BlockPos(x, 79, z);
+                boolean lavaChannel = (x == 26 || x == 52 || x == 78)
+                    && Math.abs(z) < 15 && Math.floorMod(z, 7) != 0;
+                net.minecraft.world.level.block.state.BlockState floor;
+                if (lavaChannel) {
+                    floor = Blocks.LAVA.defaultBlockState();
+                } else if (x == -16 || x == 116 || Math.abs(z) == 16) {
+                    floor = Blocks.BASALT.defaultBlockState();
+                } else if (Math.floorMod(x * 31 + z * 17, 13) == 0) {
+                    floor = Blocks.MAGMA_BLOCK.defaultBlockState();
+                } else {
+                    floor = Blocks.BLACKSTONE.defaultBlockState();
+                }
+                level.setBlock(pos, floor, 3);
+            }
+        }
     }
 
     private static void inviteDevelopers(MinecraftServer server, ServerPlayer phoenix) {
