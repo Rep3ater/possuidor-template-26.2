@@ -111,6 +111,17 @@ PartDefinition homunculus = partdefinition.addOrReplaceChild("homunculus", CubeL
         float radians = (float) Math.PI / 180.0F;
         this.head.yRot = state.yRot * radians;
         this.head.xRot = state.xRot * radians;
+        if (state.isVisuallySwimming) {
+            // A compact, exaggerated dog-paddle so the small model visibly swims like a player.
+            float phase = state.ageInTicks * 0.18F;
+            this.body.xRot = 1.1F;
+            this.leftArm.xRot = -1.25F + net.minecraft.util.Mth.cos(phase) * 0.65F;
+            this.rightArm.xRot = -1.25F + net.minecraft.util.Mth.cos(phase + (float) Math.PI) * 0.65F;
+            this.leftLeg.xRot = net.minecraft.util.Mth.cos(phase + (float) Math.PI) * 0.7F;
+            this.rightLeg.xRot = net.minecraft.util.Mth.cos(phase) * 0.7F;
+            return;
+        }
+        this.body.xRot = 0.0F;
         float phase = state.walkAnimationPos * 0.6662F;
         float swing = 1.4F * state.walkAnimationSpeed;
         this.leftLeg.xRot = net.minecraft.util.Mth.cos(phase) * swing;
