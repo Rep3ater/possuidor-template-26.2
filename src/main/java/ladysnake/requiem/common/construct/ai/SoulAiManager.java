@@ -87,8 +87,10 @@ public class SoulAiManager {
             : BuiltInRegistries.ENTITY_TYPE.getOptional(parsedType).orElse(null);
         boolean foxSoul = lower.equals("fox") || lower.equals("minecraft:fox") || lower.endsWith(":fox");
         boolean wolfSoul = lower.endsWith(":wolf") || lower.equals("wolf");
+        boolean homunculusSoul = lower.equals("requiem:homunculus") || lower.equals("homunculus");
+        boolean sufferingSoul = lower.equals("requiem:immortal_homunculus") || lower.equals("immortal_homunculus");
         boolean hostileByName = lower.matches(".*:(zombie|drowned|husk|zombified_piglin|piglin|piglin_brute|pillager|vindicator|evoker|illusioner|ravager|vex|witch|skeleton|stray|bogged|creeper|spider|cave_spider|enderman|blaze|ghast|guardian|elder_guardian|silverfish|endermite|slime|magma_cube|phantom|warden|breeze|hoglin|zoglin|shulker|wither|ender_dragon)$");
-        boolean hostileSoul = hostileByName || (sourceType != null && sourceType.getCategory() == MobCategory.MONSTER);
+        boolean hostileSoul = hostileByName || sufferingSoul || (sourceType != null && sourceType.getCategory() == MobCategory.MONSTER);
 
         if (foxSoul) {
             // Foxes hunt small prey and fish but never choose players.
@@ -101,8 +103,8 @@ public class SoulAiManager {
             return;
         }
 
-        if (wolfSoul && ownerUuid != null) {
-            // Wolves remain companions: follow the player who injected the soul and defend them.
+        if ((wolfSoul || homunculusSoul) && ownerUuid != null) {
+            // Wolf and programmable-homunculus souls act as companions and protect their injector.
             mob.goalSelector.addGoal(1, new FloatGoal(mob));
             mob.goalSelector.addGoal(2, new FollowSoulOwnerGoal(mob, ownerUuid, 1.0D, 10.0F, 2.5F));
             mob.goalSelector.addGoal(3, new SoulMeleeAttackGoal(mob, 1.0D));
@@ -179,7 +181,8 @@ public class SoulAiManager {
                     var attack = this.mob.getAttribute(Attributes.ATTACK_DAMAGE);
                     // Read physical damage from the body. Only bodies with no attack attribute
                     // use a small fallback so transferred aggressive AI remains functional.
-                    float damage = attack == null ? 1.0F : (float) Math.max(0.0D, attack.getValue());
+                    float damage = attack == null || attack.getValue() <= 0.0D
+                        ? 1.0F : (float) Math.max(0.0D, attack.getValue());
                     if (damage > 0.0F) {
                         target.hurtServer(serverLevel, serverLevel.damageSources().mobAttack(this.mob), damage);
                     }
