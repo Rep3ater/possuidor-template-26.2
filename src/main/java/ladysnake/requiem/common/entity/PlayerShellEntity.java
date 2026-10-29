@@ -234,8 +234,8 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public net.minecraft.network.chat.Component getName() {
         com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
-        if (profile != null && profile.getName() != null && !profile.name().isEmpty() && !profile.name().startsWith("[") && !profile.name().equals("Mortal Shell")) {
-            return net.minecraft.network.chat.Component.literal(profile.name() + "'s Shell");
+        if (profile != null && profile.getName() != null && !profile.getName().isEmpty() && !profile.getName().startsWith("[") && !profile.getName().equals("Mortal Shell")) {
+            return net.minecraft.network.chat.Component.literal(profile.getName() + "'s Shell");
         }
         return net.minecraft.network.chat.Component.translatable("entity.requiem.player_shell");
     }
@@ -254,7 +254,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand, Vec3 vec) {
+    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         if (ladysnake.requiem.api.v1.remnant.RemnantComponent.isVagrant(player)) {
             if (!this.level().isClientSide()) {
                 ladysnake.requiem.api.v1.remnant.RemnantComponent.get(player).merge(this);
@@ -329,13 +329,13 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        ExtraCodecs.AUTHLIB_GAME_PROFILE.parse(NbtOps.INSTANCE, input.get("PlayerProfile")).result().ifPresent(this::setDisplayProfile);
+        if (input.contains("PlayerProfile", net.minecraft.nbt.Tag.TAG_COMPOUND)) this.setDisplayProfile(net.minecraft.nbt.NbtUtils.readGameProfile(input.getCompound("PlayerProfile")));
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
-        if (this.getDisplayProfile() != null) ExtraCodecs.AUTHLIB_GAME_PROFILE.encodeStart(NbtOps.INSTANCE, this.getDisplayProfile()).result().ifPresent(tag -> output.put("PlayerProfile", tag));
+        if (this.getDisplayProfile() != null) output.put("PlayerProfile", net.minecraft.nbt.NbtUtils.writeGameProfile(new CompoundTag(), this.getDisplayProfile()));
     }
 
     public void playSound(SoundEvent soundEvent) {
