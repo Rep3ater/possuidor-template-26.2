@@ -19,7 +19,7 @@ package ladysnake.requiem.common.possession.jump;
 
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 
 public class DummyHorseJumpingMount extends DummyJumpingMount {
     public DummyHorseJumpingMount(AbstractHorse mob, SoundEvent stepSound) {

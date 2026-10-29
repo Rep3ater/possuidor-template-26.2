@@ -31,7 +31,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -56,7 +56,7 @@ public class GoatRamAbility<O extends PathfinderMob> extends DirectAbilityBase<O
         Function<? super O, SoundEvent> impactRamSound = o -> o instanceof Goat g && g.isScreamingGoat() ? SoundEvents.GOAT_SCREAMING_RAM_IMPACT : SoundEvents.GOAT_RAM_IMPACT;
         ToIntFunction<? super O> cooldown = o -> o instanceof Goat g && g.isScreamingGoat() ? 100 : 600;
         ToDoubleFunction<? super O> strengthMultiplier = o -> o instanceof Goat g && g.isScreamingGoat() ? 2.0 : 1.0;
-        TargetingConditions targeting = TargetingConditions.forCombat().selector((target, level) -> !target.getType().equals(EntityTypes.GOAT) && target.level().getWorldBorder().isWithinBounds(target.getBoundingBox()));
+        TargetingConditions targeting = TargetingConditions.forCombat().selector((target, level) -> !target.getType().equals(EntityType.GOAT) && target.level().getWorldBorder().isWithinBounds(target.getBoundingBox()));
 
         return new GoatRamAbility<>(
             owner,

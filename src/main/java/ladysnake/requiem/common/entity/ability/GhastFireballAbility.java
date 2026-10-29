@@ -20,7 +20,7 @@ package ladysnake.requiem.common.entity.ability;
 import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Ghast;
-import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
+import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.phys.Vec3;
 
 public class GhastFireballAbility extends IndirectAbilityBase<LivingEntity> {

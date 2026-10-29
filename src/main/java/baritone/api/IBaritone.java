@@ -7,10 +7,10 @@ import baritone.api.utils.IEntityContext;
 import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public interface IBaritone extends Component {
-    ComponentKey<IBaritone> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("automatone", "baritone"), IBaritone.class);
+    ComponentKey<IBaritone> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("automatone", "baritone"), IBaritone.class);
 
     IPathingControlManager getPathingControlManager();
     IEventBus getGameEventHandler();
