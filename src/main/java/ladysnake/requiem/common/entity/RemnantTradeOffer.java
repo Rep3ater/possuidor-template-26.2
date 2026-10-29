@@ -33,12 +33,12 @@ public class RemnantTradeOffer extends MerchantOffer {
     boolean demonCustomer;
 
     public static RemnantTradeOffer fromNbt(HolderLookup.Provider registries, CompoundTag compound) {
-        MerchantOffer vanillaOffer = MerchantOffer.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), compound.getCompound("vanilla_offer").orElseGet(CompoundTag::new)).getOrThrow();
-        MerchantOffer demonOffer = MerchantOffer.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), compound.getCompound("demon_offer").orElseGet(CompoundTag::new)).getOrThrow();
-        boolean exorcism = compound.getBooleanOr("exorcism", false);
+        MerchantOffer vanillaOffer = MerchantOffer.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), (compound.contains("vanilla_offer", net.minecraft.nbt.Tag.TAG_COMPOUND) ? compound.getCompound("vanilla_offer") : new CompoundTag())).getOrThrow();
+        MerchantOffer demonOffer = MerchantOffer.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), (compound.contains("demon_offer", net.minecraft.nbt.Tag.TAG_COMPOUND) ? compound.getCompound("demon_offer") : new CompoundTag())).getOrThrow();
+        boolean exorcism = compound.getBoolean("exorcism");
         RemnantTradeOffer offer = new RemnantTradeOffer(vanillaOffer, demonOffer, exorcism);
-        if (compound.getBooleanOr("demon_customer", false)) offer.demonCustomer = true;
-        if (compound.getBooleanOr("temp_disabled", false)) offer.tempDisabled = true;
+        if (compound.getBoolean("demon_customer")) offer.demonCustomer = true;
+        if (compound.getBoolean("temp_disabled")) offer.tempDisabled = true;
         return offer;
     }
 
