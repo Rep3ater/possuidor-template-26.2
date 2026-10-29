@@ -111,7 +111,7 @@ PartDefinition homunculus = partdefinition.addOrReplaceChild("homunculus", CubeL
         float radians = (float) Math.PI / 180.0F;
         this.head.yRot = state.yRot * radians;
         this.head.xRot = state.xRot * radians;
-        if (state.pose == net.minecraft.world.entity.EntityPose.SWIMMING) {
+        if (state.isInWater) {
             // A compact, exaggerated dog-paddle so the small model visibly swims like a player.
             float phase = state.ageInTicks * 0.18F;
             this.body.xRot = 1.1F;
