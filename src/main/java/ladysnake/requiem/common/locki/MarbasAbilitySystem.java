@@ -105,6 +105,51 @@ public final class MarbasAbilitySystem {
         return ItemStack.EMPTY;
     }
 
+    /**
+     * Re-place a harvested homunculus on the clicked block face. The item snapshot is consumed
+     * only after the entity has been successfully restored and added to the world.
+     */
+    public static boolean tryPlaceStoredHomunculus(ServerPlayer player, ItemStack stack, BlockPos placementPos) {
+        if (!isMarbas(player) || !(player.level() instanceof ServerLevel level)
+                || !stack.is(RequiemItems.HOMUNCULUS)) {
+            return false;
+        }
+
+        CompoundTag itemData = readItemData(stack);
+        CompoundTag savedEntity = itemData.getCompound(STORED_ENTITY_NBT).orElse(null);
+        if (savedEntity == null) return false;
+
+        Entity created = RequiemEntities.HOMUNCULUS.create(level, EntitySpawnReason.TRIGGERED);
+        if (!(created instanceof Mob restored)) {
+            player.sendSystemMessage(Component.literal("The stored homunculus body could not be reconstructed."));
+            return true;
+        }
+
+        try {
+            restored.load(TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), savedEntity.copy()));
+        } catch (RuntimeException invalidSnapshot) {
+            player.sendSystemMessage(Component.literal("The stored homunculus data could not be read. The item was not consumed."));
+            return true;
+        }
+
+        restored.setPos(placementPos.getX() + 0.5D, placementPos.getY(), placementPos.getZ() + 0.5D);
+        restored.setDeltaMovement(Vec3.ZERO);
+        restored.setPersistenceRequired();
+        if (!level.noCollision(restored)) {
+            player.sendSystemMessage(Component.literal("There is not enough room to place the homunculus. The item was not consumed."));
+            return true;
+        }
+        if (!level.addFreshEntity(restored)) {
+            player.sendSystemMessage(Component.literal("The homunculus could not be placed. The item was not consumed."));
+            return true;
+        }
+
+        if (!player.getAbilities().instabuild) stack.shrink(1);
+        playSoulTransferEffect(level, restored, true);
+        player.sendSystemMessage(Component.literal("The homunculus has been placed with its previous body data and brain progress intact."));
+        return true;
+    }
+
     /** Called from the right-click-block event before ordinary incorporeal restrictions. */
     public static boolean onUseBlock(ServerPlayer player, ItemStack stack, BlockPos pos, boolean shift) {
         if (!isMarbas(player) || !(player.level() instanceof ServerLevel level)) return false;
