@@ -88,7 +88,7 @@ public class SimpleAttritionFocus implements AttritionFocus {
                 int[] arr = playerLevel.getIntArray("player_uuid");
                 if (arr.length == 4) this.attritionLevels.put(UUIDUtil.uuidFromIntArray(arr), level);
             }
-        });
+        }
     }
 
     @Override
