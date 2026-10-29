@@ -169,7 +169,7 @@ public record OldPossessionItemOverride(
             InteractionResult result = this.getAction().interact(player, possessedEntity, stack, world, hand);
             if (result.consumesAction()) {
                 if (this.getCooldown() > 0) {
-                    player.getCooldowns().addCooldown(stack, this.getCooldown());
+                    player.getCooldowns().addCooldown(item, this.getCooldown());
                 }
             }
             return result;
