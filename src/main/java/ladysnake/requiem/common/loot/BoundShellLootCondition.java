@@ -33,6 +33,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public class BoundShellLootCondition implements LootItemCondition {
+    @Override
+    public net.minecraft.world.level.storage.loot.predicates.LootItemConditionType getType() {
+        return RequiemLootTables.BOUND_SHELL_CONDITION;
+    }
+
     public static final MapCodec<BoundShellLootCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         LootContext.EntityTarget.CODEC.fieldOf("entity").forGetter(c -> c.entity),
         EntityRefPredicate.CODEC.optionalFieldOf("predicate", EntityRefPredicate.ANY).forGetter(c -> c.predicate)
@@ -47,18 +52,13 @@ public class BoundShellLootCondition implements LootItemCondition {
     }
 
     @Override
-    public MapCodec<? extends LootItemCondition> codec() {
-        return CODEC;
-    }
-
-    @Override
     public Set<LootContextParam<?>> getReferencedContextParams() {
-        return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.contextParam());
+        return ImmutableSet.of(LootContextParams.ORIGIN, this.entity.getParam());
     }
 
     @Override
     public boolean test(LootContext lootContext) {
-        if (!(lootContext.getOptionalParameter(this.entity.contextParam()) instanceof ServerPlayer player)) return false;
+        if (!(lootContext.getParamOrNull(this.entity.contextParam()) instanceof ServerPlayer player)) return false;
 
         @Nullable EntityPointer shellPointer = PlayerBodyTracker.get(player)
             .getAnchor()
