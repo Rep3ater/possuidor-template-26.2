@@ -14,10 +14,10 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.world.entity.LivingEntity;
+import ladysnake.requiem.common.entity.ImmortalHomunculusEntity;
 
 /** Blockbench suffering-form model port. Its supplied skin uses 64x64 UV coordinates. */
-public final class ImmortalHomunculusModel extends EntityModel<LivingEntity> {
+public final class ImmortalHomunculusModel extends EntityModel<ImmortalHomunculusEntity> {
     private final ModelPart root;
     public static final ModelLayerLocation LAYER_LOCATION =
         new ModelLayerLocation(Requiem.id("immortal_homunculus"), "main");
@@ -67,7 +67,7 @@ PartDefinition waist = partdefinition.addOrReplaceChild("waist", CubeListBuilder
     }
 
     @Override
-    public void setupAnim(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(ImmortalHomunculusEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         float radians = (float) Math.PI / 180.0F;
         this.head.yRot = entity.getYRot() * radians;
         this.head.xRot = entity.getXRot() * radians;

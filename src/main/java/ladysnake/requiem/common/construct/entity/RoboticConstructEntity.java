@@ -443,7 +443,7 @@ public class RoboticConstructEntity extends PathfinderMob implements Possessable
         if (hit && this.voxelModel.hasArmActuator(ActuatorType.PISTON_THRUST)) {
             Vec3 look = this.getLookAngle();
             target.push(look.x * 1.2, 0.35, look.z * 1.2);
-            level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ANVIL_LAND, SoundSource.HOSTILE, 0.5f, 1.8f);
+            if (this.level() instanceof ServerLevel serverLevel) serverLevel.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ANVIL_LAND, SoundSource.HOSTILE, 0.5f, 1.8f);
         }
         return hit;
     }

@@ -14,10 +14,10 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.world.entity.LivingEntity;
+import ladysnake.requiem.common.entity.HomunculusEntity;
 
 /** Blockbench model port with the supplied 128x128 texture and animated limbs. */
-public final class HomunculusModel extends EntityModel<LivingEntity> {
+public final class HomunculusModel extends EntityModel<HomunculusEntity> {
     private final ModelPart root;
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Requiem.id("homunculus"), "main");
     private final ModelPart homunculus, head, body, leftArm, rightArm, leftLeg, rightLeg;
@@ -118,7 +118,7 @@ PartDefinition homunculus = partdefinition.addOrReplaceChild("homunculus", CubeL
     }
 
     @Override
-    public void setupAnim(LivingEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(HomunculusEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         float radians = (float) Math.PI / 180.0F;
         this.head.yRot = entity.getYRot() * radians;
         this.head.xRot = entity.getXRot() * radians;
