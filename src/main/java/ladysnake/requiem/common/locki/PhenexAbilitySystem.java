@@ -114,6 +114,30 @@ public final class PhenexAbilitySystem {
         }
         if (!isPhenex(player)) return;
 
+        // Accept target-bearing commands in one chat line as well as the two-step prompt.
+        String lowerMessage = message.toLowerCase(Locale.ROOT);
+        String directAction = null;
+        String directTarget = null;
+        if (lowerMessage.startsWith("fire! ")) {
+            directAction = "fire";
+            directTarget = message.substring("fire! ".length()).trim();
+        } else if (lowerMessage.startsWith("seize ")) {
+            directAction = "seize";
+            directTarget = message.substring("seize ".length()).trim();
+        }
+        if (directAction != null) {
+            event.setCanceled(true);
+            if (directTarget.matches("-?\\d+\\s+-?\\d+\\s+-?\\d+")) {
+                directTarget = "location " + directTarget;
+            }
+            if (directTarget.isBlank()) {
+                beginTargetSelection(player, directAction);
+            } else {
+                resolvePendingTarget(player, directAction, directTarget);
+            }
+            return;
+        }
+
         String pending = data.getString(PENDING_TARGET).orElse("");
         if (!pending.isBlank()) {
             event.setCanceled(true);
