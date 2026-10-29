@@ -60,7 +60,7 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -75,7 +75,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class PlayerSplitter {
-    public static final Identifier BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
+    public static final ResourceLocation BODY_IMPERSONATION = RequiemCore.id("body_impersonation");
 
     /**
      * @see RemnantComponent#splitPlayer(boolean)

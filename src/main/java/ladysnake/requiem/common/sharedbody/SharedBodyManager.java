@@ -6,7 +6,7 @@ import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.core.entity.EntityAiToggle;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -69,7 +69,7 @@ import java.util.UUID;
  */
 public final class SharedBodyManager {
     private static final String TAG_PREFIX = "requiem_shared_body:";
-    private static final Identifier AI_INHIBITOR = Requiem.id("shared_body");
+    private static final ResourceLocation AI_INHIBITOR = Requiem.id("shared_body");
 
     private static final double REACH = 3.5;
     private static final int ATTACK_COOLDOWN = 12;

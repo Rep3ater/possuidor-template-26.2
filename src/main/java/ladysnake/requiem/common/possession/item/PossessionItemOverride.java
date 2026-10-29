@@ -37,7 +37,7 @@ package ladysnake.requiem.common.possession.item;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -45,7 +45,7 @@ public interface PossessionItemOverride {
 
     void initNow();
 
-    Identifier getType();
+    ResourceLocation getType();
 
     Optional<InstancedItemOverride> test(Player player, Mob possessed, ItemStack stack);
 }
