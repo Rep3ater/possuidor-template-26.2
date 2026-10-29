@@ -19,7 +19,7 @@ package ladysnake.requiem.api.v1.block;
 
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.apiguardian.api.API;
 
 /**
@@ -35,7 +35,7 @@ import org.apiguardian.api.API;
  */
 @API(status = API.Status.EXPERIMENTAL)
 public interface ObeliskRune {
-    BlockApiLookup<ObeliskRune, Void> LOOKUP = BlockApiLookup.get(Identifier.fromNamespaceAndPath("requiem", "obelisk_rune"), ObeliskRune.class, Void.class);
+    BlockApiLookup<ObeliskRune, Void> LOOKUP = BlockApiLookup.get(ResourceLocation.fromNamespaceAndPath("requiem", "obelisk_rune"), ObeliskRune.class, Void.class);
 
     /**
      * @return the maximum amount of levels of runes of this type that can be active on a single obelisk
