@@ -130,8 +130,8 @@ public final class NucleusManager {
     }
 
     public static boolean isDeveloper(Player player) {
-        return player.entityTags().contains("dev") || player.entityTags().contains("DEV")
-            || player.entityTags().contains("Developer") || player.entityTags().contains("tagDeveloper");
+        return player.getTags().contains("dev") || player.getTags().contains("DEV")
+            || player.getTags().contains("Developer") || player.getTags().contains("tagDeveloper");
     }
 
     public static void onChat(ServerChatEvent event) {
