@@ -76,7 +76,7 @@ public class DemonRemnantState extends MutableRemnantState {
         body.remove(Entity.RemovalReason.DISCARDED);
         player.removeEffect(RequiemStatusEffects.ATTRITION);
         player.setHealth(body.getHealth());
-        player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
+        player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
         player.level().levelEvent(null, LevelEvent.SOUND_ZOMBIE_CONVERTED, player.blockPosition(), 0);
     }
 
