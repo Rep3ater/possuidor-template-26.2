@@ -29,6 +29,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -152,7 +153,7 @@ public class IchorVesselItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         return ItemUtils.startUsingInstantly(world, user, hand);
     }
 }
