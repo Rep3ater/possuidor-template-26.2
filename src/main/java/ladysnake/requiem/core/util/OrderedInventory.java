@@ -36,7 +36,6 @@ public class OrderedInventory extends SimpleContainer {
             ItemStack stack = this.getItem(slot);
             if (stack.isEmpty()) continue;
             final int slotIndex = slot;
-            final int slotIndex = slot;
             ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).result().ifPresent(encoded -> {
                 if (encoded instanceof CompoundTag itemTag) {
                     itemTag.putInt("Slot", slotIndex);
