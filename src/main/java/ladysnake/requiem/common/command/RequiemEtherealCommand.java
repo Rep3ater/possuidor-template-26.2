@@ -109,7 +109,7 @@ public final class RequiemEtherealCommand {
         if (source.getEntity() == player) {
             source.sendSuccess(() -> Component.translatable("requiem:commands.ethereal.set.success.self", name), true);
         } else {
-            if (source.getLevel().getGameRules().getBoolean(GameRules.RULE_SEND_COMMAND_FEEDBACK)) {
+            if (source.getLevel().getGameRules().getBoolean(GameRules.RULE_SENDCOMMANDFEEDBACK)) {
                 player.sendSystemMessage(Component.translatable("requiem:commands.ethereal.set.target", name));
             }
 
