@@ -79,14 +79,14 @@ public class SimpleAttritionFocus implements AttritionFocus {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        tag.getList("attrition_levels").ifPresent(levels -> {
+        net.minecraft.nbt.ListTag levels = tag.getList("attrition_levels", net.minecraft.nbt.Tag.TAG_COMPOUND);
+        {
             this.attritionLevels.clear();
             for (int i = 0; i < levels.size(); i++) {
-                CompoundTag playerLevel = levels.getCompoundOrEmpty(i);
-                int level = playerLevel.getIntOr("level", 0);
-                playerLevel.getIntArray("player_uuid").ifPresent(arr -> {
-                    this.attritionLevels.put(UUIDUtil.uuidFromIntArray(arr), level);
-                });
+                CompoundTag playerLevel = levels.getCompound(i);
+                int level = playerLevel.getInt("level");
+                int[] arr = playerLevel.getIntArray("player_uuid");
+                if (arr.length == 4) this.attritionLevels.put(UUIDUtil.uuidFromIntArray(arr), level);
             }
         });
     }
