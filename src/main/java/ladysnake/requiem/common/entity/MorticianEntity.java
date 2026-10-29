@@ -83,6 +83,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.trading.ItemCost;
@@ -119,8 +121,8 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
             try {
                 var enchReg = entity.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
                 var humanity = enchReg.getOrThrow(RequiemEnchantments.HUMANITY);
-                bookIn = EnchantmentHelper.createBook(new EnchantmentInstance(humanity, 1));
-                bookOut = EnchantmentHelper.createBook(new EnchantmentInstance(humanity, 2));
+                bookIn = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(humanity, 1));
+                bookOut = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(humanity, 2));
             } catch (Exception ignored) {}
             return new MerchantOffer(new ItemCost(Items.ENCHANTED_BOOK.builtInRegistryHolder(), 1, DataComponentPredicate.allOf(bookIn.getComponents())), Optional.of(new ItemCost(Items.GOLD_INGOT, 20)), bookOut, 5, 1, 0.05F);
         },

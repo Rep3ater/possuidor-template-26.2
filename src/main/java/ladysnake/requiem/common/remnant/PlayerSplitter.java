@@ -209,21 +209,24 @@ public final class PlayerSplitter {
     }
 
     public static ServerPlayer performRespawn(ServerPlayer player) {
-        //Setup location for dummy
         GameRules rules = player.level().getGameRules();
-        boolean keepInv = rules.get(GameRules.KEEP_INVENTORY);
-        ServerPlayer.RespawnConfig config = player.getRespawnConfig();
-        player.setRespawnPosition(null, false);
+        boolean keepInv = rules.get(GameRules.RULE_KEEPINVENTORY);
+        ResourceKey<Level> respawnDimension = player.getRespawnDimension();
+        BlockPos respawnPosition = player.getRespawnPosition();
+        float respawnAngle = player.getRespawnAngle();
+        boolean respawnForced = player.isRespawnForced();
 
+        player.setRespawnPosition(null, null, 0.0F, false, false);
         try {
-            rules.set(GameRules.KEEP_INVENTORY, false, player.level().getServer());
-            ServerPlayer clone = player.level().getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.DISCARDED);
+            rules.set(GameRules.RULE_KEEPINVENTORY, false, player.level().getServer());
+            ServerPlayer clone = player.level().getServer().getPlayerList()
+                .respawn(player, false, Entity.RemovalReason.DISCARDED);
             clone.setRespawnPosition(respawnDimension, respawnPosition, respawnAngle, respawnForced, false);
             player.connection.player = clone;
             return clone;
         } finally {
             player.setRespawnPosition(respawnDimension, respawnPosition, respawnAngle, respawnForced, false);
-            rules.set(GameRules.KEEP_INVENTORY, keepInv, player.level().getServer());
+            rules.set(GameRules.RULE_KEEPINVENTORY, keepInv, player.level().getServer());
         }
     }
 
