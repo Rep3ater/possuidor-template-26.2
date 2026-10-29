@@ -10,7 +10,7 @@ iconFile="assets/requiem/skull_logo.png"
 credits="Ladysnake Team"
 authors="Pyrofab, doctor4t, sekoia, UpcraftLP, SciRave"
 description='''
-Death revamped and ethereal powers — ported to NeoForge 26.2.
+Death revamped and ethereal powers — ported to NeoForge 1.21.1.
 '''
 
 [[mixins]]
