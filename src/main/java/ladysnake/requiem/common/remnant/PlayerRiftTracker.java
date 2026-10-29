@@ -97,11 +97,23 @@ public class PlayerRiftTracker implements RiftTracker {
     @Override
     public void readFromNbt(CompoundTag tag) {
         this.riftRecordUuids.clear();
-        tag.read("rift_records", UUIDUtil.CODEC_SET).ifPresent(this.riftRecordUuids::addAll);
+        net.minecraft.nbt.ListTag records = tag.getList("rift_records", net.minecraft.nbt.Tag.TAG_INT_ARRAY);
+        for (int i = 0; i < records.size(); i++) {
+            int[] uuid = records.getIntArray(i);
+            if (uuid.length == 4) this.riftRecordUuids.add(UUIDUtil.uuidFromIntArray(uuid));
+        }
     }
 
     @Override
     public void writeToNbt(CompoundTag tag) {
-        tag.store("rift_records", UUIDUtil.CODEC_SET, this.riftRecordUuids);
+        net.minecraft.nbt.ListTag records = new net.minecraft.nbt.ListTag();
+        for (java.util.UUID uuid : this.riftRecordUuids) {
+            long most = uuid.getMostSignificantBits();
+            long least = uuid.getLeastSignificantBits();
+            records.add(new net.minecraft.nbt.IntArrayTag(new int[] {
+                (int) (most >> 32), (int) most, (int) (least >> 32), (int) least
+            }));
+        }
+        tag.put("rift_records", records);
     }
 }
