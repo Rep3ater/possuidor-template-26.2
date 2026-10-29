@@ -23,8 +23,8 @@ import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.mixin.common.possession.gameplay.ability.EvokerEntityAccessor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.sheep.Sheep;
-import net.minecraft.world.entity.monster.illager.Evoker;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.monster.Evoker;
 import org.jetbrains.annotations.Nullable;
 
 public class EvokerWololoAbility extends DirectAbilityBase<Evoker, Entity> {

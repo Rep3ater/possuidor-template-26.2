@@ -55,7 +55,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.FluidTags;
@@ -65,13 +65,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.fish.AbstractFish;
+import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.entity.animal.fish.WaterAnimal;
-import net.minecraft.world.entity.monster.cubemob.Slime;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -88,8 +88,8 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     public static final byte DEFAULT_SYNC = 0;
     public static final byte SYNC_NO_CLIP = 1;
     public static final byte SYNC_PHASING_PARTICLES = 2;
-    public static final Identifier SPEED_MODIFIER_ID = RequiemCore.id("altered_movement_speed");
-    public static final Identifier WATER_SPEED_MODIFIER_ID = RequiemCore.id("water_speed_modifier");
+    public static final ResourceLocation SPEED_MODIFIER_ID = RequiemCore.id("altered_movement_speed");
+    public static final ResourceLocation WATER_SPEED_MODIFIER_ID = RequiemCore.id("water_speed_modifier");
     public static final UUID SPEED_MODIFIER_UUID = UUID.fromString("3708adba-b37f-413f-8b66-62e05330c7da");
     public static final UUID WATER_SPEED_MODIFIER_UUID = UUID.fromString("0e602dd1-2672-4179-852e-2a26d1579df4");
     public static final int TICKS_BEFORE_PHASING = 30;
@@ -130,7 +130,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
         }
     }
 
-    private void updateSpeedModifier(LivingEntity currentBody, Identifier speedModifierId, ToDoubleFunction<MovementConfig> property, boolean shouldApplyModifier) {
+    private void updateSpeedModifier(LivingEntity currentBody, ResourceLocation speedModifierId, ToDoubleFunction<MovementConfig> property, boolean shouldApplyModifier) {
         AttributeInstance speedAttribute = currentBody.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speedAttribute != null) {
             speedAttribute.removeModifier(speedModifierId);
@@ -400,7 +400,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     private Vec3 applyFallSpeedModifier(Vec3 velocity, float fallSpeedModifier) {
         LivingEntity body = getCurrentBody(player);
         if (body != null) {
-            boolean slowFalling = body.getType() == net.minecraft.world.entity.EntityTypes.CHICKEN
+            boolean slowFalling = body.getType() == net.minecraft.world.entity.EntityType.CHICKEN
                 || body.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.FALL_DAMAGE_IMMUNE)
                 || body.isNoGravity()
                 || (body.getAttributes().hasAttribute(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER) && body.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER) <= 0.0);

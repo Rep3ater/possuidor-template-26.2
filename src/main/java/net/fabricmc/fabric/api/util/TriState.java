@@ -40,19 +40,4 @@ public enum TriState {
         return this == DEFAULT ? Objects.requireNonNull(supplier, "supplier").getAsBoolean() : this.get();
     }
 
-    public net.minecraft.util.TriState toVanilla() {
-        return switch (this) {
-            case TRUE -> net.minecraft.util.TriState.TRUE;
-            case FALSE -> net.minecraft.util.TriState.FALSE;
-            case DEFAULT -> net.minecraft.util.TriState.DEFAULT;
-        };
-    }
-
-    public static TriState fromVanilla(net.minecraft.util.TriState vanilla) {
-        return switch (Objects.requireNonNull(vanilla, "vanilla")) {
-            case TRUE -> TRUE;
-            case FALSE -> FALSE;
-            case DEFAULT -> DEFAULT;
-        };
-    }
 }

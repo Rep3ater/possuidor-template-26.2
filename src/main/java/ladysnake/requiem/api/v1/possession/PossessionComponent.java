@@ -27,7 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
  * A {@link PossessionComponent} handles a player's possession status.
  */
 public interface PossessionComponent extends AutoSyncedComponent, ServerTickingComponent {
-    ComponentKey<PossessionComponent> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "possessor"), PossessionComponent.class);
+    ComponentKey<PossessionComponent> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "possessor"), PossessionComponent.class);
 
     /**
      * Return a player's {@link PossessionComponent}. The possession component is

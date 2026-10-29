@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.core;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,9 +44,9 @@ import java.util.UUID;
 public final class RequiemCore {
     public static final String MOD_ID = "requiem";
     public static final Logger LOGGER = LogManager.getLogger("requiem-core");
-    public static final Identifier POSSESSION_MECHANISM_ID = id("possession");
+    public static final ResourceLocation POSSESSION_MECHANISM_ID = id("possession");
     public static final UUID INHERENT_MOB_SLOWNESS_UUID = UUID.fromString("a2ebbb6b-fd10-4a30-a0c7-dadb9700732e");
-    public static final Identifier INHERENT_MOB_SLOWNESS_ID = id("inherent_mob_slowness");
+    public static final ResourceLocation INHERENT_MOB_SLOWNESS_ID = id("inherent_mob_slowness");
     /**
      * Mobs do not use 100% of their movement speed attribute, so we compensate with this modifier when they are possessed
      */
@@ -56,7 +56,7 @@ public final class RequiemCore {
         AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
     );
 
-    public static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 }

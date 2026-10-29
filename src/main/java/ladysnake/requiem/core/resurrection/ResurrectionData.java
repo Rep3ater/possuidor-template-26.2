@@ -34,7 +34,7 @@
  */
 package ladysnake.requiem.core.resurrection;
 
-import net.minecraft.world.level.storage.TagValueInput;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -44,18 +44,18 @@ import com.mojang.serialization.JsonOps;
 import ladysnake.requiem.api.v1.event.requiem.ConsumableItemEvents;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.RequiemCoreNetworking;
-import net.minecraft.advancements.predicates.ItemPredicate;
-import net.minecraft.advancements.predicates.entity.EntityPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -150,7 +150,7 @@ public record ResurrectionData(
 
     @Nullable
     public Entity createEntity(Level world) {
-        Entity e = this.entityType.create(world, net.minecraft.world.entity.EntitySpawnReason.LOAD);
+        Entity e = this.entityType.create(world, net.minecraft.world.entity.MobSpawnType.LOAD);
         if (e != null && this.entityNbt != null) {
             e.load(TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, e.registryAccess(), this.entityNbt.copy()));   // some entities may keep direct references to the passed NBT
         }
@@ -189,7 +189,7 @@ public record ResurrectionData(
 
         JsonObject entityData = GsonHelper.getAsJsonObject(json, "entity");
         String typeId = GsonHelper.getAsString(entityData, "type");
-        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(typeId)).orElseThrow(() -> new JsonParseException("Invalid entity id " + typeId));
+        EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(typeId)).orElseThrow(() -> new JsonParseException("Invalid entity id " + typeId));
         @Nullable CompoundTag nbt;
         if (entityData.has("nbt")) {
             try {

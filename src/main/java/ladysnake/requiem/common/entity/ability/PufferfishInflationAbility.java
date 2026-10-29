@@ -19,7 +19,7 @@ package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
 import ladysnake.requiem.mixin.common.possession.gameplay.ability.PufferfishEntityAccessor;
-import net.minecraft.world.entity.animal.fish.Pufferfish;
+import net.minecraft.world.entity.animal.Pufferfish;
 
 /**
  * Depends on {@link ladysnake.requiem.mixin.common.possession.gameplay.ability.PufferfishEntityMixin} to work

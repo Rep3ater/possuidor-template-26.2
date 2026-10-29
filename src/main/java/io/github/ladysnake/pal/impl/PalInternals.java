@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
@@ -32,10 +32,10 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public final class PalInternals implements EntityComponentInitializer {
-    private static final Map<Identifier, AbilitySource> SOURCES = new ConcurrentHashMap<>();
-    private static final Map<Identifier, PlayerAbility> ABILITIES = new LinkedHashMap<>();
+    private static final Map<ResourceLocation, AbilitySource> SOURCES = new ConcurrentHashMap<>();
+    private static final Map<ResourceLocation, PlayerAbility> ABILITIES = new LinkedHashMap<>();
     public static final ComponentKey<PalPlayerComponent> PAL_COMPONENT =
-        ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("pal", "abilities"), PalPlayerComponent.class);
+        ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("pal", "abilities"), PalPlayerComponent.class);
 
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
@@ -55,7 +55,7 @@ public final class PalInternals implements EntityComponentInitializer {
     }
 
     public static synchronized PlayerAbility registerAbility(
-        Identifier id,
+        ResourceLocation id,
         BiFunction<PlayerAbility, Player, AbilityTracker> factory
     ) {
         if (ABILITIES.containsKey(id)) {
@@ -67,7 +67,7 @@ public final class PalInternals implements EntityComponentInitializer {
     }
 
     @Nullable
-    public static synchronized PlayerAbility getAbility(Identifier id) {
+    public static synchronized PlayerAbility getAbility(ResourceLocation id) {
         return ABILITIES.get(id);
     }
 
@@ -75,7 +75,7 @@ public final class PalInternals implements EntityComponentInitializer {
         return Collections.unmodifiableCollection(ABILITIES.values());
     }
 
-    public static AbilitySource getSource(Identifier id, int priority) {
+    public static AbilitySource getSource(ResourceLocation id, int priority) {
         AbilitySource existing = SOURCES.computeIfAbsent(id, k -> new AbilitySource(k, priority));
         if (existing.getPriority() != priority && priority != AbilitySource.DEFAULT) {
             throw new IllegalStateException("AbilitySource " + id + " registered with conflicting priorities: "
@@ -177,7 +177,7 @@ public final class PalInternals implements EntityComponentInitializer {
         public void writeSyncPacket(RegistryFriendlyByteBuf buf, ServerPlayer recipient) {
             buf.writeVarInt(this.trackers.size());
             for (Map.Entry<PlayerAbility, AbilityTracker> entry : this.trackers.entrySet()) {
-                buf.writeIdentifier(entry.getKey().getId());
+                buf.writeResourceLocation(entry.getKey().getId());
                 buf.writeBoolean(entry.getValue().isEnabled());
             }
         }
@@ -186,7 +186,7 @@ public final class PalInternals implements EntityComponentInitializer {
         public void applySyncPacket(RegistryFriendlyByteBuf buf) {
             int count = buf.readVarInt();
             for (int i = 0; i < count; i++) {
-                Identifier id = buf.readIdentifier();
+                ResourceLocation id = buf.readResourceLocation();
                 boolean enabled = buf.readBoolean();
                 PlayerAbility ability = getAbility(id);
                 if (ability != null) {

@@ -23,10 +23,10 @@ import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public interface DeathSuspender extends AutoSyncedComponent, ServerTickingComponent {
-    ComponentKey<DeathSuspender> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "death_suspension"), DeathSuspender.class);
+    ComponentKey<DeathSuspender> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "death_suspension"), DeathSuspender.class);
 
     static DeathSuspender get(Player player) {
         return KEY.get(player);

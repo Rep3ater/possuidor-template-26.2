@@ -23,6 +23,7 @@ import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.movement.PlayerMovementAlterer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -33,8 +34,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -149,15 +148,15 @@ public class ObeliskSoulEntity extends SoulEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
-        this.targetPos = input.read("target_pos", BlockPos.CODEC).orElse(null);
+        this.targetPos = BlockPos.CODEC.parse(NbtOps.INSTANCE, input.get("target_pos")).result().orElse(null);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
-        output.storeNullable("target_pos", BlockPos.CODEC, this.targetPos);
+        if (this.targetPos != null) BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.targetPos).result().ifPresent(tag -> output.put("target_pos", tag));
     }
 
     private boolean isTargetStale(BlockPos targetPos) {

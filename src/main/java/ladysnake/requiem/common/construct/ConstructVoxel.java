@@ -6,7 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -155,7 +155,7 @@ public class ConstructVoxel {
                 if (listTag.get(i) instanceof CompoundTag itemTag) {
                     String id = itemTag.getString("id").orElse("");
                     int count = itemTag.getInt("count").orElse(1);
-                    Item item = BuiltInRegistries.ITEM.get(Identifier.tryParse(id)).map(net.minecraft.core.Holder::value).orElse(Items.AIR);
+                    Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(id)).map(net.minecraft.core.Holder::value).orElse(Items.AIR);
                     if (item != Items.AIR) {
                         voxel.inventory.add(new ItemStack(item, count));
                     }

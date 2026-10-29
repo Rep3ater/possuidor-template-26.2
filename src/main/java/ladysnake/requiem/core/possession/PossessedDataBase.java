@@ -43,10 +43,10 @@ import ladysnake.requiem.core.util.OrderedInventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -115,7 +115,7 @@ public abstract class PossessedDataBase implements PossessedData, AutoSyncedComp
                 this.inventory = null;
                 inventory.setSelectedSlot(this.selectedSlot);
                 if (inventory.player instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.connection.send(new ClientboundSetHeldSlotPacket(inventory.getSelectedSlot()));
+                    serverPlayer.connection.send(new ClientboundSetCarriedItemPacket(inventory.getSelectedSlot()));
                 }
             }
         }

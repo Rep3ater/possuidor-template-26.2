@@ -74,7 +74,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -415,11 +415,11 @@ public final class PossessionComponentImpl implements PossessionComponent {
             return false;
         }
         if (host.isNoGravity()
-            || host.getType() == EntityTypes.GHAST
-            || host.getType() == EntityTypes.PHANTOM
-            || host.getType() == EntityTypes.BAT
-            || host.getType() == EntityTypes.ALLAY
-            || host.getType() == EntityTypes.BEE
+            || host.getType() == EntityType.GHAST
+            || host.getType() == EntityType.PHANTOM
+            || host.getType() == EntityType.BAT
+            || host.getType() == EntityType.ALLAY
+            || host.getType() == EntityType.BEE
             || host.getMoveControl() instanceof FlyingMoveControl) {
             return true;
         }

@@ -49,7 +49,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -103,7 +103,7 @@ public record PossessionItemOverrideWrapper(
 
     private static Codec<PossessionItemOverride> overrideCodecV1(Codec<JsonElement> jsonCodec) {
         // I promise I will make this a registry at some point
-        return PolymorphicCodecBuilder.create("type", Identifier.CODEC, PossessionItemOverride::getType)
+        return PolymorphicCodecBuilder.create("type", ResourceLocation.CODEC, PossessionItemOverride::getType)
             .with(OldPossessionItemOverride.ID, OldPossessionItemOverride.codec(jsonCodec))
             .with(DietItemOverride.ID, DietItemOverride.codec(jsonCodec))
             .with(HealingItemOverride.ID, HealingItemOverride.codec(jsonCodec))

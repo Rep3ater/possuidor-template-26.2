@@ -1,7 +1,7 @@
 package ladysnake.requiem.common.advancement.criterion;
 
 import ladysnake.requiem.Requiem;
-import net.minecraft.advancements.triggers.CriterionTrigger;
+import net.minecraft.advancements.CriterionTrigger;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class RequiemCriteria {

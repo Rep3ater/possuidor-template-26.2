@@ -91,7 +91,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.effect.MobEffect;
@@ -399,38 +399,38 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
     @Override
     public void registerMobAbilities(MobAbilityRegistry reg) {
-        reg.beginRegistration(EntityTypes.AXOLOTL).indirectInteract(AxolotlPlayingDeadAbility::new).build();
-        reg.beginRegistration(EntityTypes.BLAZE).indirectAttack(BlazeFireballAbility::new).build();
-        reg.beginRegistration(EntityTypes.CREEPER)
+        reg.beginRegistration(EntityType.AXOLOTL).indirectInteract(AxolotlPlayingDeadAbility::new).build();
+        reg.beginRegistration(EntityType.BLAZE).indirectAttack(BlazeFireballAbility::new).build();
+        reg.beginRegistration(EntityType.CREEPER)
             .indirectAttack(CreeperPrimingAbility::new)
             .indirectInteract(CreeperPrimingAbility::new)
             .build();
-        reg.beginRegistration(EntityTypes.ENDERMAN).indirectInteract(BlinkAbility::new).build();
-        reg.beginRegistration(EntityTypes.EVOKER)
+        reg.beginRegistration(EntityType.ENDERMAN).indirectInteract(BlinkAbility::new).build();
+        reg.beginRegistration(EntityType.EVOKER)
             .directAttack(EvokerFangAbility::new)
             .directInteract(EvokerWololoAbility::new)
             .indirectInteract(EvokerVexAbility::new)
             .build();
-        reg.beginRegistration(EntityTypes.FROG)
+        reg.beginRegistration(EntityType.FROG)
             .directAttack(FrogCatchAbility::new)
             .build();
-        reg.beginRegistration(EntityTypes.GHAST).indirectAttack(GhastFireballAbility::new).build();
-        reg.beginRegistration(EntityTypes.GOAT).directAttack(GoatRamAbility::create).build();
-        reg.beginRegistration(EntityTypes.GUARDIAN).directAttack(GuardianBeamAbility::new).build();
-        reg.beginRegistration(EntityTypes.ELDER_GUARDIAN).directAttack(GuardianBeamAbility::new).build();
-        reg.beginRegistration(EntityTypes.LLAMA).directAttack(RangedAttackAbility::new).build();
-        reg.beginRegistration(EntityTypes.PUFFERFISH).indirectAttack(PufferfishInflationAbility::new).build();
-        reg.beginRegistration(EntityTypes.SHULKER)
+        reg.beginRegistration(EntityType.GHAST).indirectAttack(GhastFireballAbility::new).build();
+        reg.beginRegistration(EntityType.GOAT).directAttack(GoatRamAbility::create).build();
+        reg.beginRegistration(EntityType.GUARDIAN).directAttack(GuardianBeamAbility::new).build();
+        reg.beginRegistration(EntityType.ELDER_GUARDIAN).directAttack(GuardianBeamAbility::new).build();
+        reg.beginRegistration(EntityType.LLAMA).directAttack(RangedAttackAbility::new).build();
+        reg.beginRegistration(EntityType.PUFFERFISH).indirectAttack(PufferfishInflationAbility::new).build();
+        reg.beginRegistration(EntityType.SHULKER)
             .directAttack(ShulkerShootAbility::new)
             .indirectAttack(shulker -> new AutoAimAbility<>(shulker, AbilityType.ATTACK, 16.0, 4.0))
             .indirectInteract(ShulkerPeekAbility::new).build();
-        reg.beginRegistration(EntityTypes.SNOW_GOLEM)
+        reg.beginRegistration(EntityType.SNOW_GOLEM)
             .directAttack(e -> new RangedAttackAbility<>(e, 20, 10))
             .indirectInteract(SnowmanSnowballAbility::new).build();
-        reg.beginRegistration(EntityTypes.TRADER_LLAMA).directAttack(RangedAttackAbility::new).build();
-        reg.beginRegistration(EntityTypes.WITCH)
+        reg.beginRegistration(EntityType.TRADER_LLAMA).directAttack(RangedAttackAbility::new).build();
+        reg.beginRegistration(EntityType.WITCH)
             .directAttack(owner -> new RangedAttackAbility<>(owner, 50, 10.)).build();
-        reg.beginRegistration(EntityTypes.WITHER)
+        reg.beginRegistration(EntityType.WITHER)
             .indirectAttack(WitherSkullAbility.BlueWitherSkullAbility::new)
             .directAttack(WitherSkullAbility.BlackWitherSkullAbility::new).build();
     }

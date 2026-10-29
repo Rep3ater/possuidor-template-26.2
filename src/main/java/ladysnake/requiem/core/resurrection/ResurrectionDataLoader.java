@@ -43,7 +43,7 @@ import com.mojang.datafixers.util.Pair;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.util.serde.EntityTypeAdapter;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.damagesource.DamageSource;
@@ -62,7 +62,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public final class ResurrectionDataLoader implements SimpleResourceReloadListener<List<Pair<Identifier, JsonObject>>> {
+public final class ResurrectionDataLoader implements SimpleResourceReloadListener<List<Pair<ResourceLocation, JsonObject>>> {
     public static final ResurrectionDataLoader INSTANCE = new ResurrectionDataLoader();
 
     public static final Gson GSON = new GsonBuilder()
@@ -92,9 +92,9 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
     }
 
     @Override
-    public CompletableFuture<List<Pair<Identifier, JsonObject>>> load(ResourceManager manager, Executor executor) {
+    public CompletableFuture<List<Pair<ResourceLocation, JsonObject>>> load(ResourceManager manager, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
-            List<Pair<Identifier, JsonObject>> resurrectionData = new ArrayList<>();
+            List<Pair<ResourceLocation, JsonObject>> resurrectionData = new ArrayList<>();
             manager.listResources("requiem_resurrections", (res) -> res.getPath().endsWith(".json")).forEach((location, resource) -> {
                 try (Reader in = new InputStreamReader(resource.open())) {
                     resurrectionData.add(Pair.of(location, GSON.fromJson(in, JsonObject.class)));
@@ -107,10 +107,10 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
     }
 
     @Override
-    public CompletableFuture<Void> apply(List<Pair<Identifier, JsonObject>> resurrectionData, ResourceManager resourceManager, Executor executor) {
+    public CompletableFuture<Void> apply(List<Pair<ResourceLocation, JsonObject>> resurrectionData, ResourceManager resourceManager, Executor executor) {
         return CompletableFuture.runAsync(() -> {
             this.resurrectionData.clear();
-            for (Pair<Identifier, JsonObject> resurrectionDatum : resurrectionData) {
+            for (Pair<ResourceLocation, JsonObject> resurrectionDatum : resurrectionData) {
                 try {
                     this.resurrectionData.add(ResurrectionData.deserialize(resurrectionDatum.getSecond()));
                 } catch (JsonParseException e) {
@@ -122,7 +122,7 @@ public final class ResurrectionDataLoader implements SimpleResourceReloadListene
     }
 
     @Override
-    public Identifier getFabricId() {
+    public ResourceLocation getFabricId() {
         return RequiemCore.id("resurrection");
     }
 }

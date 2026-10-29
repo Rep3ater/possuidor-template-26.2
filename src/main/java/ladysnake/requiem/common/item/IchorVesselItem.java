@@ -21,7 +21,7 @@ import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.obelisk.InertRunestoneBlock;
 import ladysnake.requiem.common.block.obelisk.RunestoneBlock;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import net.minecraft.advancements.triggers.CriteriaTriggers;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +36,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -109,8 +109,8 @@ public class IchorVesselItem extends Item {
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        return ItemUseAnimation.BOW;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     @Override

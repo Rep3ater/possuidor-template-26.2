@@ -24,7 +24,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.monster.piglin.Piglin;
@@ -72,7 +72,7 @@ public final class RequiemEntities {
         .build(ResourceKey.create(Registries.ENTITY_TYPE, Requiem.id("cured_piglin_brute")));
 
     public static final ImmutableMap<EntityType<? extends Mob>, EntityType<? extends Mob>> CURED_PIGLIN_VARIANTS =
-        ImmutableMap.of(EntityTypes.PIGLIN, CURED_PIGLIN, EntityTypes.PIGLIN_BRUTE, CURED_PIGLIN_BRUTE);
+        ImmutableMap.of(EntityType.PIGLIN, CURED_PIGLIN, EntityType.PIGLIN_BRUTE, CURED_PIGLIN_BRUTE);
 
     public static final EntityType<PlayerShellEntity> PLAYER_SHELL = EntityType.Builder.<PlayerShellEntity>of(FakePlayers.entityFactory(PlayerShellEntity::new), MobCategory.MISC)
         .sized(0.6f, 1.8f)

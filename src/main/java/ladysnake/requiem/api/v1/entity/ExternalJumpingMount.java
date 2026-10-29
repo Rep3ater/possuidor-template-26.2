@@ -27,7 +27,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.apiguardian.api.API;
 
@@ -38,7 +38,7 @@ import org.apiguardian.api.API;
  */
 @API(status = API.Status.EXPERIMENTAL, since = "2.0.0")
 public interface ExternalJumpingMount extends PlayerRideableJumping, Component {
-    ComponentKey<ExternalJumpingMount> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "charged_jump"), ExternalJumpingMount.class);
+    ComponentKey<ExternalJumpingMount> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "charged_jump"), ExternalJumpingMount.class);
 
     static <E extends LivingEntity> ComponentFactory<E, ExternalJumpingMount> simple(float baseJumpStrength, SoundEvent stepSound) {
         return ApiInternals.getExternalJumpingMountFactory().simple(baseJumpStrength, stepSound);

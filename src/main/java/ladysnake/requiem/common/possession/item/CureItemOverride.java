@@ -46,14 +46,14 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
 public class CureItemOverride implements PossessionItemOverride, InstancedItemOverride {
-    public static final Identifier ID = RequiemCore.id("cure");
+    public static final ResourceLocation ID = RequiemCore.id("cure");
 
     public static Codec<CureItemOverride> codec(Codec<JsonElement> jsonCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
@@ -94,7 +94,7 @@ public class CureItemOverride implements PossessionItemOverride, InstancedItemOv
     }
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 

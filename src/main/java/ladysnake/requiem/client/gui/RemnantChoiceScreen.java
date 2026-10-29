@@ -2,10 +2,8 @@ package ladysnake.requiem.client.gui;
 
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -155,21 +153,21 @@ public class RemnantChoiceScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
-            int clicked = getChoiceIndexAt(event.x(), event.y());
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
+            int clicked = getChoiceIndexAt(mouseX, mouseY);
             if (clicked >= 0 && clicked < this.currentChoices.size()) {
                 playSelectSound();
                 this.currentChoices.get(clicked).onSelect().run();
                 return true;
             }
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        int keyCode = event.key();
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        int keyCode = keyCode;
         if (keyCode >= GLFW.GLFW_KEY_1 && keyCode <= GLFW.GLFW_KEY_9) {
             int index = keyCode - GLFW.GLFW_KEY_1;
             if (index < this.currentChoices.size()) {
@@ -207,11 +205,11 @@ public class RemnantChoiceScreen extends Screen {
                 return true;
             }
         }
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // Deep ethereal darkening overlay
         graphics.fill(0, 0, this.width, this.height, 0xC0060912);
 
@@ -236,13 +234,13 @@ public class RemnantChoiceScreen extends Screen {
         int speakerTagHeight = 18;
         graphics.fill(boxLeft + 12, boxTop - 10, boxLeft + 12 + speakerTagWidth, boxTop + 8, 0xFF192130);
         graphics.fill(boxLeft + 12, boxTop - 10, boxLeft + 12 + speakerTagWidth, boxTop - 8, 0xFF5D789D);
-        graphics.text(this.font, Component.literal("§6§l✦ A Whispering Voice ✦"), boxLeft + 20, boxTop - 6, 0xFFFFFFFF, true);
+        graphics.drawString(this.font, Component.literal("§6§l✦ A Whispering Voice ✦"), boxLeft + 20, boxTop - 6, 0xFFFFFFFF, true);
 
         // Dialogue speech text wrapped
         int textLeft = boxLeft + 16;
         int textTop = boxTop + 16;
         int textWrapWidth = boxWidth - 32;
-        graphics.textWithWordWrap(this.font, this.currentDialogueText, textLeft, textTop, textWrapWidth, 0xFFE0E0E0, true);
+        graphics.drawWordWrap(this.font, this.currentDialogueText, textLeft, textTop, textWrapWidth, 0xFFE0E0E0);
 
         // Choices section below
         int choiceY = boxTop + 65;
@@ -273,9 +271,9 @@ public class RemnantChoiceScreen extends Screen {
             String hotkeyBadge = "§e[" + (i + 1) + "]§r ";
             Component label = Component.literal(hotkeyBadge).append(choice.text());
             int textColor = isHovered ? 0xFFFFFFFF : 0xFFCCCCCC;
-            graphics.text(this.font, label, itemLeft + 10, itemTop + 7, textColor, true);
+            graphics.drawString(this.font, label, itemLeft + 10, itemTop + 7, textColor, true);
         }
 
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
     }
 }

@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Contract;
@@ -20,7 +20,7 @@ public final class Locki {
     public static final Logger LOGGER = LogManager.getLogger("Locki");
     public static final Pattern NODE_NAME_PART = Pattern.compile("[a-z0-9_-]+");
 
-    private static final Map<Identifier, InventoryLock> locks = new HashMap<>();
+    private static final Map<ResourceLocation, InventoryLock> locks = new HashMap<>();
     private static final Map<String, InventoryNode> nodes = new HashMap<>();
     private static int nextId;
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
@@ -37,11 +37,11 @@ public final class Locki {
         CcaNeoForgeEngine.registerEntityInitializer(new LockiComponents());
     }
 
-    public static synchronized InventoryLock registerLock(Identifier id) {
+    public static synchronized InventoryLock registerLock(ResourceLocation id) {
         return registerLock(id, true);
     }
 
-    public static synchronized InventoryLock registerLock(Identifier id, boolean persistent) {
+    public static synchronized InventoryLock registerLock(ResourceLocation id, boolean persistent) {
         Preconditions.checkNotNull(id, "id");
         InventoryLock lock = locks.computeIfAbsent(id, id1 -> new InventoryLock(id1, nextId++, persistent));
         if (lock.shouldSave() != persistent) {
@@ -53,7 +53,7 @@ public final class Locki {
 
     @Contract(value = "null -> null; !null -> _", pure = true)
     @Nullable
-    public static synchronized InventoryLock getLock(@Nullable Identifier id) {
+    public static synchronized InventoryLock getLock(@Nullable ResourceLocation id) {
         return id == null ? null : locks.get(id);
     }
 
@@ -75,7 +75,7 @@ public final class Locki {
         return fullName == null ? null : nodes.get(fullName);
     }
 
-    public static synchronized Stream<Identifier> streamLockIds() {
+    public static synchronized Stream<ResourceLocation> streamLockIds() {
         return locks.keySet().stream();
     }
 

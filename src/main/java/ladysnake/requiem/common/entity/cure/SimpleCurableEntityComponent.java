@@ -38,7 +38,7 @@ import ladysnake.requiem.api.v1.entity.CurableEntityComponent;
 import ladysnake.requiem.core.tag.RequiemCoreTags;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Mob;
@@ -105,7 +105,7 @@ public class SimpleCurableEntityComponent implements CurableEntityComponent {
                 }
             }
             ServerLevel serverLevel = (ServerLevel) this.entity.level();
-            cured.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(cured.blockPosition()), EntitySpawnReason.CONVERSION, null);
+            cured.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(cured.blockPosition()), MobSpawnType.CONVERSION, null);
             cured.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200, 0));
             cured.setBaby(this.entity.isBaby());
 

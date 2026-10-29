@@ -25,7 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -69,7 +69,7 @@ public class LootingPossessedData extends PossessedDataBase {
     }
 
     protected void dropLoot(Player player) {
-        Identifier identifier = this.getLootTable();
+        ResourceLocation identifier = this.getLootTable();
         ServerLevel world = (ServerLevel) this.holder.level();
         LootTable lootTable = world.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, identifier));
         LootParams params = new LootParams.Builder(world)
@@ -80,9 +80,9 @@ public class LootingPossessedData extends PossessedDataBase {
         lootTable.getRandomItems(params, player.getInventory()::placeItemBackInInventory);
     }
 
-    private Identifier getLootTable() {
-        Identifier identifier = BuiltInRegistries.ENTITY_TYPE.getKey(this.holder.getType());
-        return Identifier.fromNamespaceAndPath(identifier.getNamespace(), "requiem/possession/" + identifier.getPath());
+    private ResourceLocation getLootTable() {
+        ResourceLocation identifier = BuiltInRegistries.ENTITY_TYPE.getKey(this.holder.getType());
+        return ResourceLocation.fromNamespaceAndPath(identifier.getNamespace(), "requiem/possession/" + identifier.getPath());
     }
 
     @Override

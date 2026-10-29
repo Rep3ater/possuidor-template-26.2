@@ -38,12 +38,11 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.ConversionParams;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import org.jetbrains.annotations.Nullable;
 
 public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponent {
@@ -68,12 +67,12 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
         @SuppressWarnings("unchecked") EntityType<? extends Mob> originalPiglinType = (EntityType<? extends Mob>) this.originalPiglinType;
         if (originalPiglinType != null) {
             try {
-                return this.entity.convertTo(getCuredVariant(originalPiglinType), ConversionParams.single(this.entity, true, false), cured -> {});
+                return this.entity.convertTo(getCuredVariant(originalPiglinType), true);
             } catch (ClassCastException e) {
                 Requiem.LOGGER.error("[Requiem] Invalid original piglin type", e);
             }
         }
-        return this.entity.convertTo(getCuredVariant(EntityTypes.PIGLIN), ConversionParams.single(this.entity, true, false), cured -> {});
+        return this.entity.convertTo(getCuredVariant(EntityType.PIGLIN), true);
     }
 
     private EntityType<? extends Mob> getCuredVariant(EntityType<? extends Mob> originalPiglinType) {
@@ -89,7 +88,7 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
     public void readFromNbt(CompoundTag tag) {
         super.readFromNbt(tag);
         if (tag.contains("original_piglin_type")) {
-            this.originalPiglinType = tag.getString("original_piglin_type").map(Identifier::tryParse).flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional).orElse(null);
+            this.originalPiglinType = tag.getString("original_piglin_type").map(ResourceLocation::tryParse).flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional).orElse(null);
         }
     }
 

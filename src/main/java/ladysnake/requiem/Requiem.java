@@ -49,20 +49,20 @@ import ladysnake.requiem.core.resurrection.ResurrectionDataLoader;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.monster.piglin.PiglinBrute;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
@@ -77,8 +77,8 @@ public final class Requiem {
     public static final String MOD_ID = "requiem";
     public static final Logger LOGGER = LogManager.getLogger("Requiem");
 
-    public static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public Requiem(IEventBus modEventBus) {
@@ -173,13 +173,13 @@ public final class Requiem {
 
     private void onEntityAttributeModification(EntityAttributeModificationEvent event) {
         for (EntityType<? extends LivingEntity> type : event.getTypes()) {
-            if (type == EntityTypes.FROG) {
+            if (type == EntityType.FROG) {
                 event.add(type, RequiemEntityAttributes.SOUL_DEFENSE, -5.0);
             } else {
                 event.add(type, RequiemEntityAttributes.SOUL_DEFENSE);
             }
         }
-        event.add(EntityTypes.PLAYER, RequiemEntityAttributes.SOUL_OFFENSE);
+        event.add(EntityType.PLAYER, RequiemEntityAttributes.SOUL_OFFENSE);
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event) {
@@ -201,7 +201,7 @@ public final class Requiem {
         RequiemCommand.register(event.getDispatcher());
     }
 
-    private void onAddReloadListeners(AddServerReloadListenersEvent event) {
+    private void onAddReloadListeners(AddReloadListenerEvent event) {
         event.addListener(id("resurrection_data"), ResurrectionDataLoader.INSTANCE);
     }
 

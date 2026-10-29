@@ -43,11 +43,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class SoulHolderComponent implements AutoSyncedComponent {
     public static final ComponentKey<SoulHolderComponent> KEY = ComponentRegistry.getOrCreate(RequiemCore.id("soul_holder"), SoulHolderComponent.class);
-    public static final Identifier SOUL_CAPTURE_MECHANISM_ID = RequiemCore.id("soul_capture");
+    public static final ResourceLocation SOUL_CAPTURE_MECHANISM_ID = RequiemCore.id("soul_capture");
 
     public static boolean isSoulless(LivingEntity target) {
         return target.getType().builtInRegistryHolder().is(RequiemCoreTags.Entity.SOULLESS) || get(target).removedSoul;

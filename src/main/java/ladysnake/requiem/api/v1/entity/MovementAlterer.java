@@ -24,7 +24,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.CheckForNull;
@@ -34,7 +34,7 @@ import javax.annotation.CheckForNull;
  * according to a {@link MovementConfig}.
  */
 public interface MovementAlterer extends CommonTickingComponent, AutoSyncedComponent {
-    ComponentKey<MovementAlterer> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "movement_alterer"), MovementAlterer.class);
+    ComponentKey<MovementAlterer> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "movement_alterer"), MovementAlterer.class);
 
     static MovementAlterer get(Player player) {
         return KEY.get(player);

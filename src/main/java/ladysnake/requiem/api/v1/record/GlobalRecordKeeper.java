@@ -22,7 +22,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import java.util.Collection;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
  * (To be reimplemented if needed)
  */
 public interface GlobalRecordKeeper extends CommonTickingComponent {
-    ComponentKey<GlobalRecordKeeper> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "global_record_keeper"), GlobalRecordKeeper.class);
+    ComponentKey<GlobalRecordKeeper> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "global_record_keeper"), GlobalRecordKeeper.class);
 
     static GlobalRecordKeeper get(Level world) {
         return KEY.get(world.getScoreboard());

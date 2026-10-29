@@ -22,7 +22,7 @@ import ladysnake.requiem.mixin.common.possession.gameplay.ability.BlazeEntityAcc
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Blaze;
-import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
+import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.phys.Vec3;
 
 public class BlazeFireballAbility extends IndirectAbilityBase<LivingEntity> {

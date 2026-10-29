@@ -43,8 +43,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.stream.Stream;
@@ -84,7 +84,7 @@ public class MorticianSpawner implements ServerTickEvents.EndTick {
                     MorticianEntity mortician = RequiemEntities.MORTICIAN.spawn(
                         world,
                         BlockPos.containing(spawnPos),
-                        EntitySpawnReason.STRUCTURE
+                        MobSpawnType.STRUCTURE
                     );
                     if (mortician != null) {
                         Vec3 towardsObelisk = obelisk.center().subtract(spawnPos).normalize();

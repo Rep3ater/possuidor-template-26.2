@@ -541,7 +541,7 @@ public final class PhenexAbilitySystem {
             return;
         }
         if (target.level() != player.level()) {
-            player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Soul Locator: " + target.getName().getString() + " is in another dimension (" + target.level().dimension().identifier() + ")."));
+            player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Soul Locator: " + target.getName().getString() + " is in another dimension (" + target.level().dimension().location() + ")."));
             return;
         }
         if (target instanceof ServerPlayer targetPlayer && !RemnantComponent.isIncorporeal(targetPlayer)

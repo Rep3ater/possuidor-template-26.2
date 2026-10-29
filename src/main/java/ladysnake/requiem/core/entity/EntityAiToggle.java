@@ -46,7 +46,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -63,7 +63,7 @@ public class EntityAiToggle implements AutoSyncedComponent {
     }
 
     private final LivingEntity owner;
-    private final Object2BooleanMap<Identifier> aiInhibitors = new Object2BooleanOpenHashMap<>();
+    private final Object2BooleanMap<ResourceLocation> aiInhibitors = new Object2BooleanOpenHashMap<>();
     private boolean disabled;
 
     public EntityAiToggle(LivingEntity owner) {
@@ -82,7 +82,7 @@ public class EntityAiToggle implements AutoSyncedComponent {
      * @param inhibitorId the unique identifier for the mechanic inhibiting this entity's AI
      * @param inhibit if {@code true}, the entity's AI will be disabled, otherwise the inhibitor will stop affecting the entity
      */
-    public void toggleAi(Identifier inhibitorId, boolean inhibit) {
+    public void toggleAi(ResourceLocation inhibitorId, boolean inhibit) {
         this.toggleAi(inhibitorId, inhibit, false);
     }
 
@@ -99,7 +99,7 @@ public class EntityAiToggle implements AutoSyncedComponent {
      * @param inhibit if {@code true}, the entity's AI will be disabled, otherwise the inhibitor will stop affecting the entity
      * @param persistent if {@code true}, the inhibition will be saved with the entity
      */
-    public void toggleAi(Identifier inhibitorId, boolean inhibit, boolean persistent) {
+    public void toggleAi(ResourceLocation inhibitorId, boolean inhibit, boolean persistent) {
         boolean wasDisabled = this.isAiDisabled();
         if (inhibit) {
             this.aiInhibitors.put(inhibitorId, persistent);
@@ -152,7 +152,7 @@ public class EntityAiToggle implements AutoSyncedComponent {
             .ifPresent(list -> list.stream()
                 .map(elem -> elem.asString().orElse(null))
                 .filter(Objects::nonNull)
-                .map(Identifier::tryParse)
+                .map(ResourceLocation::tryParse)
                 .filter(Objects::nonNull)
                 .forEach(id -> this.aiInhibitors.put(id, true)));
         this.refresh(!this.aiInhibitors.isEmpty());
@@ -163,7 +163,7 @@ public class EntityAiToggle implements AutoSyncedComponent {
         ListTag list = this.aiInhibitors.object2BooleanEntrySet().stream()
             .filter(Object2BooleanMap.Entry::getBooleanValue)
             .map(Map.Entry::getKey)
-            .map(Identifier::toString)
+            .map(ResourceLocation::toString)
             .map(StringTag::valueOf)
             .collect(Collectors.toCollection(ListTag::new));
         tag.put("inhibitors", list);

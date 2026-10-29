@@ -21,7 +21,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.core.entity.ability.MeleeAbility;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -31,7 +31,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -49,14 +49,14 @@ import java.util.function.ToIntFunction;
 
 public class GoatRamAbility<O extends PathfinderMob> extends DirectAbilityBase<O, Entity> {
     private static final long RAM_DURATION = 40;
-    private static final Identifier SPEED_MODIFIER_ID = Requiem.id("ram_speed_bonus");
+    private static final ResourceLocation SPEED_MODIFIER_ID = Requiem.id("ram_speed_bonus");
 
     public static <O extends PathfinderMob> GoatRamAbility<O> create(O owner) {
         Function<? super O, SoundEvent> prepareRamSound = o -> o instanceof Goat g && g.isScreamingGoat() ? SoundEvents.GOAT_SCREAMING_PREPARE_RAM : SoundEvents.GOAT_PREPARE_RAM;
         Function<? super O, SoundEvent> impactRamSound = o -> o instanceof Goat g && g.isScreamingGoat() ? SoundEvents.GOAT_SCREAMING_RAM_IMPACT : SoundEvents.GOAT_RAM_IMPACT;
         ToIntFunction<? super O> cooldown = o -> o instanceof Goat g && g.isScreamingGoat() ? 100 : 600;
         ToDoubleFunction<? super O> strengthMultiplier = o -> o instanceof Goat g && g.isScreamingGoat() ? 2.0 : 1.0;
-        TargetingConditions targeting = TargetingConditions.forCombat().selector((target, level) -> !target.getType().equals(EntityTypes.GOAT) && target.level().getWorldBorder().isWithinBounds(target.getBoundingBox()));
+        TargetingConditions targeting = TargetingConditions.forCombat().selector((target, level) -> !target.getType().equals(EntityType.GOAT) && target.level().getWorldBorder().isWithinBounds(target.getBoundingBox()));
 
         return new GoatRamAbility<>(
             owner,

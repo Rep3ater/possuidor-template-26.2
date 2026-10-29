@@ -34,11 +34,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.TriState;
+import net.neoforged.neoforge.common.util.TriState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -61,7 +61,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public final class RequiemForgeEvents {
@@ -321,7 +321,7 @@ public final class RequiemForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onBreakBlock(BreakBlockEvent event) {
+    public static void onBreakBlock(BlockEvent.BreakEvent event) {
         Player player = event.getPlayer();
         if (player != null && RemnantComponent.isIncorporeal(player) && !player.isCreative()) {
             event.setCanceled(true);
@@ -470,8 +470,8 @@ public final class RequiemForgeEvents {
                 if (host != null && host.isAlive()) {
                     if (event.getSource().is(DamageTypeTags.IS_FALL)) {
                         if (host.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.FALL_DAMAGE_IMMUNE)
-                                || host.getType() == EntityTypes.CHICKEN
-                                || host.getType() == EntityTypes.IRON_GOLEM
+                                || host.getType() == EntityType.CHICKEN
+                                || host.getType() == EntityType.IRON_GOLEM
                                 || host.isNoGravity()
                                 || (host.getAttributes().hasAttribute(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER)
                                     && host.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER) <= 0.0)) {
@@ -590,8 +590,8 @@ public final class RequiemForgeEvents {
                 }
 
                 boolean slowFall = host.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.FALL_DAMAGE_IMMUNE)
-                        || host.getType() == EntityTypes.CHICKEN
-                        || host.getType() == EntityTypes.IRON_GOLEM
+                        || host.getType() == EntityType.CHICKEN
+                        || host.getType() == EntityType.IRON_GOLEM
                         || host.isNoGravity()
                         || (host.getAttributes().hasAttribute(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER)
                             && host.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.FALL_DAMAGE_MULTIPLIER) <= 0.0);
@@ -623,7 +623,7 @@ public final class RequiemForgeEvents {
                     }
                 }
 
-                if ((host.getType() == EntityTypes.SPIDER || host.getType() == EntityTypes.CAVE_SPIDER || host.onClimbable()) && player.horizontalCollision) {
+                if ((host.getType() == EntityType.SPIDER || host.getType() == EntityType.CAVE_SPIDER || host.onClimbable()) && player.horizontalCollision) {
                     net.minecraft.world.phys.Vec3 delta = player.getDeltaMovement();
                     player.setDeltaMovement(delta.x, 0.2, delta.z);
                 }

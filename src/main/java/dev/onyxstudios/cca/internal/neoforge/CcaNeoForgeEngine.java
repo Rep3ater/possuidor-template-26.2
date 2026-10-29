@@ -34,7 +34,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
@@ -42,7 +42,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.scores.Scoreboard;
@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
 
 public final class CcaNeoForgeEngine {
     public static final String MOD_ID = "requiem";
-    public static final Identifier ENTITY_ATTACHMENT_ID = Identifier.fromNamespaceAndPath(MOD_ID, "cca_entity");
+    public static final ResourceLocation ENTITY_ATTACHMENT_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "cca_entity");
     private static final Logger LOGGER = LoggerFactory.getLogger("Requiem/CCAEngine");
 
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =

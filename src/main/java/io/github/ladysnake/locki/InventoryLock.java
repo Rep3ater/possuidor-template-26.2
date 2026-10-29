@@ -1,21 +1,21 @@
 package io.github.ladysnake.locki;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 
 public final class InventoryLock {
-    private final Identifier id;
+    private final ResourceLocation id;
     private final int rawId;
     private final boolean persistent;
 
-    InventoryLock(Identifier id, int rawId, boolean persistent) {
+    InventoryLock(ResourceLocation id, int rawId, boolean persistent) {
         this.id = id;
         this.rawId = rawId;
         this.persistent = persistent;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 

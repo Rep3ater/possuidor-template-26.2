@@ -39,8 +39,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
@@ -223,12 +221,12 @@ public class SoulEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        this.maxAge = input.getIntOr("max_age", this.maxAge);
+    protected void readAdditionalSaveData(CompoundTag input) {
+        if (input.contains("max_age")) this.maxAge = input.getInt("max_age");
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         output.putInt("max_age", this.maxAge);
     }
 }

@@ -21,13 +21,13 @@ import dev.onyxstudios.cca.api.v3.component.Component;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.apiguardian.api.API;
 import org.jetbrains.annotations.Nullable;
 
 @API(status = API.Status.EXPERIMENTAL)
 public interface CurableEntityComponent extends Component {
-    ComponentKey<CurableEntityComponent> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "curable"), CurableEntityComponent.class);
+    ComponentKey<CurableEntityComponent> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "curable"), CurableEntityComponent.class);
 
     boolean hasBeenCured();
 

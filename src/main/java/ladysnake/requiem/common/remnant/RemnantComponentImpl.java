@@ -53,7 +53,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -256,7 +256,7 @@ public final class RemnantComponentImpl implements RemnantComponent {
 
     @Override
     public void readFromNbt(CompoundTag compoundTag) {
-        RemnantType remnantType = RemnantTypes.get(Identifier.parse(compoundTag.getStringOr("id", RemnantState.NULL_STATE_ID)));
+        RemnantType remnantType = RemnantTypes.get(ResourceLocation.parse(compoundTag.getStringOr("id", RemnantState.NULL_STATE_ID)));
         this.chosen = compoundTag.getBooleanOr("chosen", false);
         this.become(remnantType);
         this.setVagrant(compoundTag.getBooleanOr(ETHEREAL_TAG, false));

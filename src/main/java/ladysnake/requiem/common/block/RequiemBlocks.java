@@ -12,7 +12,7 @@ import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.RequiemItems;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
@@ -164,7 +164,7 @@ public final class RequiemBlocks {
         // Registered via RegisterEvent
     }
 
-    public static Stream<Map.Entry<Block, Identifier>> streamRunestones() {
+    public static Stream<Map.Entry<Block, ResourceLocation>> streamRunestones() {
         return allBlocks.entrySet().stream().filter(e -> e.getKey() instanceof InertRunestoneBlock).map(e -> Map.entry(e.getKey(), Requiem.id(e.getValue().name())));
     }
 }

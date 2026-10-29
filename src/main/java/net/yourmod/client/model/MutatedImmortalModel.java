@@ -5,12 +5,12 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.resources.ResourceLocation;
 
-public class MutatedImmortalModel<S extends EntityRenderState> extends EntityModel<S> {
+public class MutatedImmortalModel extends EntityModel<LivingEntity> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
-        Identifier.fromNamespaceAndPath("yourmodid", "mutated_immortal"), "main"
+        ResourceLocation.fromNamespaceAndPath("yourmodid", "mutated_immortal"), "main"
     );
 
     public MutatedImmortalModel(ModelPart root) {
@@ -37,7 +37,7 @@ public class MutatedImmortalModel<S extends EntityRenderState> extends EntityMod
     }
 
     @Override
-    public void setupAnim(S state) {
+    public void setupAnim(LivingEntity state) {
         // Lógica de animação
     }
 }

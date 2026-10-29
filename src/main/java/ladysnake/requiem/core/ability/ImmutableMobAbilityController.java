@@ -45,7 +45,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -165,7 +165,7 @@ public class ImmutableMobAbilityController<T extends LivingEntity> implements Mo
     }
 
     @Override
-    public Identifier getIconTexture(AbilityType type) {
+    public ResourceLocation getIconTexture(AbilityType type) {
         this.ensureInitialized();
         DirectAbility<? super T, ?> direct = this.getDirect(type);
         return direct != null ? direct.getIconTexture() : null;

@@ -36,11 +36,11 @@ package ladysnake.requiem.core.remnant;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 public record VagrantInteraction(BiPredicate<LivingEntity, Player> predicate,
                                  BiConsumer<LivingEntity, Player> action,
-                                 Identifier icon) { }
+                                 ResourceLocation icon) { }

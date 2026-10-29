@@ -1,7 +1,7 @@
 package net.fabricmc.fabric.api.lookup.v1.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -12,21 +12,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class BlockApiLookupRegistry {
-    private static final Map<Identifier, BlockApiLookup<?, ?>> LOOKUPS = new ConcurrentHashMap<>();
+    private static final Map<ResourceLocation, BlockApiLookup<?, ?>> LOOKUPS = new ConcurrentHashMap<>();
 
     private BlockApiLookupRegistry() {
     }
 
     @SuppressWarnings("unchecked")
-    public static <A, C> BlockApiLookup<A, C> get(Identifier id) {
+    public static <A, C> BlockApiLookup<A, C> get(ResourceLocation id) {
         return (BlockApiLookup<A, C>) LOOKUPS.computeIfAbsent(id, DefaultBlockApiLookup::new);
     }
 
     private static final class DefaultBlockApiLookup<A, C> implements BlockApiLookup<A, C> {
-        private final Identifier id;
+        private final ResourceLocation id;
         private final Map<Block, BlockApiProvider<A, C>> providers = new ConcurrentHashMap<>();
 
-        DefaultBlockApiLookup(Identifier id) {
+        DefaultBlockApiLookup(ResourceLocation id) {
             this.id = id;
         }
 

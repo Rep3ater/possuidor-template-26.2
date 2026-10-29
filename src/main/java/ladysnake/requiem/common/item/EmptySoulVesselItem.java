@@ -45,7 +45,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -55,7 +55,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
@@ -159,8 +159,8 @@ public class EmptySoulVesselItem extends Item {
             if (!user.level().isClientSide()) {
                 String soulTypeStr = ladysnake.requiem.common.construct.ai.SoulAiManager.getInjectedSoulType(mob);
                 ladysnake.requiem.common.construct.ai.SoulAiManager.extractSoul(mob);
-                net.minecraft.resources.Identifier id = net.minecraft.resources.Identifier.tryParse(soulTypeStr);
-                EntityType<?> type = id != null ? net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(id).map(Holder::value).orElse(EntityTypes.ZOMBIE) : EntityTypes.ZOMBIE;
+                net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(soulTypeStr);
+                EntityType<?> type = id != null ? net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(id).map(Holder::value).orElse(EntityType.ZOMBIE) : EntityType.ZOMBIE;
                 ItemStack filled = FilledSoulVesselItem.forEntityType(type);
                 user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, filled));
             }
@@ -363,7 +363,7 @@ public class EmptySoulVesselItem extends Item {
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        return ItemUseAnimation.BOW;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 }

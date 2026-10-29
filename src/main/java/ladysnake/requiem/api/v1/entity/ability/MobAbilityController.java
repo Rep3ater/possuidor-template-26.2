@@ -28,13 +28,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * A {@link MobAbilityController} is interacted with by a player to use special {@link MobAbility mob abilities}
  */
 public interface MobAbilityController extends TransientComponent, CommonTickingComponent {
-    ComponentKey<MobAbilityController> KEY = ComponentRegistry.getOrCreate(Identifier.fromNamespaceAndPath("requiem", "ability_controller"), MobAbilityController.class);
+    ComponentKey<MobAbilityController> KEY = ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath("requiem", "ability_controller"), MobAbilityController.class);
 
     static MobAbilityController get(Entity entity) {
         MobAbilityController c = KEY.getNullable(entity);
@@ -60,6 +60,6 @@ public interface MobAbilityController extends TransientComponent, CommonTickingC
     void applySyncPacket(RegistryFriendlyByteBuf buf);
 
     @CheckEnv(Env.CLIENT)
-    Identifier getIconTexture(AbilityType type);
+    ResourceLocation getIconTexture(AbilityType type);
 }
 

@@ -39,9 +39,10 @@ import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import ladysnake.requiem.core.record.EntityPositionClerk;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.component.DataComponentExactPredicate;
+import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -63,15 +64,12 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
-import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.LookAtTradingPlayerGoal;
@@ -80,7 +78,7 @@ import net.minecraft.world.entity.ai.goal.TradeWithPlayerGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.ItemStack;
@@ -124,12 +122,12 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
                 bookIn = EnchantmentHelper.createBook(new EnchantmentInstance(humanity, 1));
                 bookOut = EnchantmentHelper.createBook(new EnchantmentInstance(humanity, 2));
             } catch (Exception ignored) {}
-            return new MerchantOffer(new ItemCost(bookIn.typeHolder(), 1, DataComponentExactPredicate.allOf(bookIn.getComponents())), Optional.of(new ItemCost(Items.GOLD_INGOT, 20)), bookOut, 5, 1, 0.05F);
+            return new MerchantOffer(new ItemCost(bookIn.getItem(), 1, DataComponentPredicate.allOf(bookIn.getComponents())), Optional.of(new ItemCost(Items.GOLD_INGOT, 20)), bookOut, 5, 1, 0.05F);
         },
-        (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(entity.level().dimension() == Level.NETHER ? EntityTypes.PIGLIN : EntityTypes.VILLAGER).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
-        (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(EntityTypes.AXOLOTL).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_RECLAMATION), 10, 1, 0.05F),
-        (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(EntityTypes.GHAST).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_ATTRITION), 10, 1, 0.05F),
-        (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(EntityTypes.PILLAGER).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_PENANCE), 10, 1, 0.05F)
+        (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(entity.level().dimension() == Level.NETHER ? EntityType.PIGLIN : EntityType.VILLAGER).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
+        (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(EntityType.AXOLOTL).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_RECLAMATION), 10, 1, 0.05F),
+        (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(EntityType.GHAST).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_ATTRITION), 10, 1, 0.05F),
+        (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(EntityType.PILLAGER).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_PENANCE), 10, 1, 0.05F)
     };
 
     private static final UniformInt ANGER_TIME_RANGE = UniformInt.of(20, 39);
@@ -145,7 +143,7 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
 
     private boolean checkLegacyData;
     private @Nullable UUID linkedObelisk;
-    private @Nullable EntityReference<LivingEntity> persistentAngerTarget;
+    private @Nullable UUID persistentAngerTarget;
     private HurtByTargetGoal revengeGoal;
     private final List<UUID> capturedSouls = new ArrayList<>();
 
@@ -233,12 +231,12 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
     }
 
     @Override
-    public @Nullable EntityReference<LivingEntity> getPersistentAngerTarget() {
+    public @Nullable UUID getPersistentAngerTarget() {
         return this.persistentAngerTarget;
     }
 
     @Override
-    public void setPersistentAngerTarget(@Nullable EntityReference<LivingEntity> persistentAngerTarget) {
+    public void setPersistentAngerTarget(@Nullable UUID persistentAngerTarget) {
         this.persistentAngerTarget = persistentAngerTarget;
     }
 
@@ -380,20 +378,21 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
+    protected void readAdditionalSaveData(CompoundTag input) {
         super.readAdditionalSaveData(input);
 
-        input.read("linked_obelisk", UUIDUtil.CODEC).ifPresentOrElse(uuid -> {
+        if (input.hasUUID("linked_obelisk")) {
+            UUID uuid = input.getUUID("linked_obelisk");
             this.setLinkedObelisk(uuid);
             this.setObeliskProjection(true);
             this.checkLegacyData = true;
-        }, () -> {
+        } else {
             this.setObeliskProjection(false);
-        });
+        }
 
-        this.setFadingTicks(input.getIntOr("fading_ticks", 0));
+        this.setFadingTicks(input.getInt("fading_ticks"));
 
-        input.read("captured_souls", UUIDUtil.CODEC.listOf()).ifPresent(list -> {
+        UUIDUtil.CODEC.listOf().parse(NbtOps.INSTANCE, input.get("captured_souls")).result().ifPresent(list -> {
             this.capturedSouls.clear();
             this.capturedSouls.addAll(list);
         });
@@ -402,11 +401,12 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
+    protected void addAdditionalSaveData(CompoundTag output) {
         super.addAdditionalSaveData(output);
-        output.storeNullable("linked_obelisk", UUIDUtil.CODEC, this.linkedObelisk);
+        if (this.linkedObelisk != null) output.putUUID("linked_obelisk", this.linkedObelisk);
         output.putInt("fading_ticks", this.getFadingTicks());
-        output.store("captured_souls", UUIDUtil.CODEC.listOf(), this.capturedSouls);
+        UUIDUtil.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.capturedSouls).result()
+            .ifPresent(tag -> output.put("captured_souls", tag));
         this.addPersistentAngerSaveData(output);
     }
 

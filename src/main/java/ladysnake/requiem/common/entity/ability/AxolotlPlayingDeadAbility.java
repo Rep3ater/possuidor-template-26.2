@@ -19,7 +19,7 @@ package ladysnake.requiem.common.entity.ability;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.core.entity.ability.IndirectAbilityBase;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -32,7 +32,7 @@ import java.util.Objects;
 public class AxolotlPlayingDeadAbility extends IndirectAbilityBase<Axolotl> {
     public static final int COOLDOWN = 20 * 30;
     public static final int ABILITY_TIME = 200;
-    public static final Identifier SPEED_MODIFIER_ID = Requiem.id("playing_dead_slowdown");
+    public static final ResourceLocation SPEED_MODIFIER_ID = Requiem.id("playing_dead_slowdown");
     public static final int MAX_HP_HEALED = 4;
 
     private int ticksLeft;

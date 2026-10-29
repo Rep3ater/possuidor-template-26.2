@@ -23,7 +23,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,20 +38,20 @@ import java.util.function.Function;
  * @since 2.0.0
  */
 public final class RecordType<T> {
-    public static final ResourceKey<Registry<RecordType<?>>> REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("requiem", "record_type"));
+    public static final ResourceKey<Registry<RecordType<?>>> REGISTRY_KEY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath("requiem", "record_type"));
     public static final Registry<RecordType<?>> REGISTRY = FabricRegistryBuilder.from(new MappedRegistry<>(REGISTRY_KEY, com.mojang.serialization.Lifecycle.experimental())).buildAndRegister();
 
-    private final Identifier id;
+    private final ResourceLocation id;
     private final Codec<T> codec;
     private final BiPredicate<MinecraftServer, T> validator;
 
-    public RecordType(Identifier id, Codec<T> codec, BiPredicate<MinecraftServer, T> validator) {
+    public RecordType(ResourceLocation id, Codec<T> codec, BiPredicate<MinecraftServer, T> validator) {
         this.id = id;
         this.codec = codec;
         this.validator = validator;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 
@@ -87,7 +87,7 @@ public final class RecordType<T> {
      * @param codec the {@link Codec} to use to (de)serialize associated data
      * @return a newly registered {@link RecordType} for encoding instances of {@code T}
      */
-    public static <T> RecordType<T> register(Identifier id, Codec<T> codec) {
+    public static <T> RecordType<T> register(ResourceLocation id, Codec<T> codec) {
         return register(id, codec, (Function<T, ResourceKey<Level>>) null);
     }
 
@@ -99,7 +99,7 @@ public final class RecordType<T> {
      * @param validator a validator for recorded instances
      * @return a newly registered {@link RecordType} for encoding instances of {@code T}
      */
-    public static <T> RecordType<T> register(Identifier id, Codec<T> codec, BiPredicate<MinecraftServer, T> validator) {
+    public static <T> RecordType<T> register(ResourceLocation id, Codec<T> codec, BiPredicate<MinecraftServer, T> validator) {
         return Registry.register(REGISTRY, id, new RecordType<>(id, codec, validator));
     }
 
@@ -111,7 +111,7 @@ public final class RecordType<T> {
      * @param worldGetter a getter for referenced worlds which absence could invalidate the record
      * @return a newly registered {@link RecordType} for encoding instances of {@code T}
      */
-    public static <T> RecordType<T> register(Identifier id, Codec<T> codec, @Nullable Function<T, ResourceKey<Level>> worldGetter) {
+    public static <T> RecordType<T> register(ResourceLocation id, Codec<T> codec, @Nullable Function<T, ResourceKey<Level>> worldGetter) {
         return Registry.register(REGISTRY, id, new RecordType<>(
             id,
             codec,
@@ -120,7 +120,7 @@ public final class RecordType<T> {
     }
 
     @Deprecated(forRemoval = true)
-    public static <T> RecordType<T> register(Identifier id, Codec<T> codec, @Nullable Function<T, ResourceKey<Level>> worldGetter, @SuppressWarnings("unused") boolean required) {
+    public static <T> RecordType<T> register(ResourceLocation id, Codec<T> codec, @Nullable Function<T, ResourceKey<Level>> worldGetter, @SuppressWarnings("unused") boolean required) {
         return register(id, codec, worldGetter);
     }
 }

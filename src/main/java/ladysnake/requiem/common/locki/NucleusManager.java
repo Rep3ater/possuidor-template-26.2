@@ -10,7 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -20,11 +20,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -193,7 +193,7 @@ public final class NucleusManager {
     private static void saveReturn(ServerPlayer player, String owner) {
         CompoundTag data = player.getPersistentData();
         data.putString(SESSION_OWNER, owner);
-        data.putString(RETURN_DIM, player.level().dimension().identifier().toString());
+        data.putString(RETURN_DIM, player.level().dimension().location().toString());
         data.putDouble(RETURN_X, player.getX());
         data.putDouble(RETURN_Y, player.getY());
         data.putDouble(RETURN_Z, player.getZ());
@@ -257,7 +257,7 @@ public final class NucleusManager {
         String owner = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(HEAD_OWNER).orElse("");
         if (owner.isBlank()) return;
         if (!event.getPlayer().getUUID().toString().equals(owner)) {
-            event.setCanPickup(net.minecraft.util.TriState.FALSE);
+            event.setCanPickup(net.neoforged.neoforge.common.util.TriState.FALSE);
             return;
         }
         MinecraftServer server = event.getPlayer().level().getServer();
@@ -269,8 +269,8 @@ public final class NucleusManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (!owner.equals(player.getPersistentData().getString(SESSION_OWNER).orElse(""))) continue;
             CompoundTag data = player.getPersistentData();
-            Identifier id = Identifier.tryParse(data.getString(RETURN_DIM).orElse("minecraft:overworld"));
-            if (id == null) id = Identifier.withDefaultNamespace("overworld");
+            ResourceLocation id = ResourceLocation.tryParse(data.getString(RETURN_DIM).orElse("minecraft:overworld"));
+            if (id == null) id = ResourceLocation.withDefaultNamespace("overworld");
             ServerLevel target = server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
             if (target == null) target = server.overworld();
             double x = data.getDouble(RETURN_X).orElse(0.0);

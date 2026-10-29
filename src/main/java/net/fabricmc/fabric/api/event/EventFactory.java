@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public final class EventFactory {
     private EventFactory() {
@@ -28,7 +28,7 @@ public final class EventFactory {
         });
     }
 
-    public static <T> Event<T> createWithPhases(Class<? super T> type, Function<T[], T> invokerFactory, Identifier... defaultPhases) {
+    public static <T> Event<T> createWithPhases(Class<? super T> type, Function<T[], T> invokerFactory, ResourceLocation... defaultPhases) {
         ArrayBackedEvent<T> event = new ArrayBackedEvent<>(type, invokerFactory);
         for (int i = 0; i < defaultPhases.length; i++) {
             event.ensurePhase(defaultPhases[i]);
@@ -51,9 +51,9 @@ public final class EventFactory {
         private final Class<? super T> type;
         private final Function<T[], T> invokerFactory;
         private final Object lock = new Object();
-        private final Map<Identifier, List<T>> phaseListeners = new LinkedHashMap<>();
-        private final Map<Identifier, Set<Identifier>> phaseAfter = new LinkedHashMap<>();
-        private List<Identifier> sortedPhases = List.of(DEFAULT_PHASE);
+        private final Map<ResourceLocation, List<T>> phaseListeners = new LinkedHashMap<>();
+        private final Map<ResourceLocation, Set<ResourceLocation>> phaseAfter = new LinkedHashMap<>();
+        private List<ResourceLocation> sortedPhases = List.of(DEFAULT_PHASE);
 
         @SuppressWarnings("unchecked")
         ArrayBackedEvent(Class<? super T> type, Function<T[], T> invokerFactory) {
@@ -65,7 +65,7 @@ public final class EventFactory {
             this.invoker = invokerFactory.apply(empty);
         }
 
-        void ensurePhase(Identifier phase) {
+        void ensurePhase(ResourceLocation phase) {
             Objects.requireNonNull(phase, "phase");
             synchronized (this.lock) {
                 if (!this.phaseListeners.containsKey(phase)) {
@@ -82,7 +82,7 @@ public final class EventFactory {
         }
 
         @Override
-        public void register(Identifier phase, T listener) {
+        public void register(ResourceLocation phase, T listener) {
             Objects.requireNonNull(phase, "phase");
             Objects.requireNonNull(listener, "listener");
             synchronized (this.lock) {
@@ -93,7 +93,7 @@ public final class EventFactory {
         }
 
         @Override
-        public void addPhaseOrdering(Identifier firstPhase, Identifier secondPhase) {
+        public void addPhaseOrdering(ResourceLocation firstPhase, ResourceLocation secondPhase) {
             Objects.requireNonNull(firstPhase, "firstPhase");
             Objects.requireNonNull(secondPhase, "secondPhase");
             if (firstPhase.equals(secondPhase)) {
@@ -110,25 +110,25 @@ public final class EventFactory {
         }
 
         private void rebuildPhaseOrderLocked() {
-            List<Identifier> result = new ArrayList<>(this.phaseListeners.size());
-            Set<Identifier> visited = new LinkedHashSet<>();
-            Set<Identifier> visiting = new LinkedHashSet<>();
-            for (Identifier phase : this.phaseListeners.keySet()) {
+            List<ResourceLocation> result = new ArrayList<>(this.phaseListeners.size());
+            Set<ResourceLocation> visited = new LinkedHashSet<>();
+            Set<ResourceLocation> visiting = new LinkedHashSet<>();
+            for (ResourceLocation phase : this.phaseListeners.keySet()) {
                 this.visitPhase(phase, visited, visiting, result);
             }
             this.sortedPhases = result;
         }
 
-        private void visitPhase(Identifier phase, Set<Identifier> visited, Set<Identifier> visiting, List<Identifier> result) {
+        private void visitPhase(ResourceLocation phase, Set<ResourceLocation> visited, Set<ResourceLocation> visiting, List<ResourceLocation> result) {
             if (visited.contains(phase)) {
                 return;
             }
             if (!visiting.add(phase)) {
                 return;
             }
-            Set<Identifier> deps = this.phaseAfter.get(phase);
+            Set<ResourceLocation> deps = this.phaseAfter.get(phase);
             if (deps != null) {
-                for (Identifier dep : deps) {
+                for (ResourceLocation dep : deps) {
                     this.visitPhase(dep, visited, visiting, result);
                 }
             }
@@ -140,12 +140,12 @@ public final class EventFactory {
         @SuppressWarnings("unchecked")
         private void rebuildInvokerLocked() {
             int total = 0;
-            for (Identifier phase : this.sortedPhases) {
+            for (ResourceLocation phase : this.sortedPhases) {
                 total += this.phaseListeners.get(phase).size();
             }
             T[] array = (T[]) Array.newInstance(this.type, total);
             int idx = 0;
-            for (Identifier phase : this.sortedPhases) {
+            for (ResourceLocation phase : this.sortedPhases) {
                 for (T listener : this.phaseListeners.get(phase)) {
                     array[idx++] = listener;
                 }

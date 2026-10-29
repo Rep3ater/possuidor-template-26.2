@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -55,8 +55,8 @@ public final class LockiSpiritSystem {
     private static final String MODE = DATA_PREFIX + "mode";
     private static final String SAVED_FLYING_SPEED = DATA_PREFIX + "saved_flying_speed";
     private static final String HAS_SAVED_FLYING_SPEED = DATA_PREFIX + "has_saved_flying_speed";
-    private static final Identifier ASTRAL_LAND_SLOWDOWN = Identifier.fromNamespaceAndPath("requiem", "locki_astral_land_slowdown");
-    private static final Identifier ASTRAL_ROOT_SPEED = Identifier.fromNamespaceAndPath("requiem", "locki_astral_root_speed");
+    private static final ResourceLocation ASTRAL_LAND_SLOWDOWN = ResourceLocation.fromNamespaceAndPath("requiem", "locki_astral_land_slowdown");
+    private static final ResourceLocation ASTRAL_ROOT_SPEED = ResourceLocation.fromNamespaceAndPath("requiem", "locki_astral_root_speed");
     private static final String TARGET_X = DATA_PREFIX + "target_x";
     private static final String TARGET_Y = DATA_PREFIX + "target_y";
     private static final String TARGET_Z = DATA_PREFIX + "target_z";
@@ -288,7 +288,7 @@ public final class LockiSpiritSystem {
             data.putInt(TREE_X, plant.pos().getX());
             data.putInt(TREE_Y, plant.pos().getY());
             data.putInt(TREE_Z, plant.pos().getZ());
-            data.putString(TREE_DIM, player.level().dimension().identifier().toString());
+            data.putString(TREE_DIM, player.level().dimension().location().toString());
             data.putString(TREE_SAPLING, BuiltInRegistries.BLOCK.getKey(LockiRootNetwork.getMatchingSapling(player.level().getBlockState(plant.pos()).getBlock())).toString());
         }
         setMode(player, MODE_CONVERSATION);
@@ -356,7 +356,7 @@ public final class LockiSpiritSystem {
         data.putDouble(APPLE_X, appleEntity.getX());
         data.putDouble(APPLE_Y, appleEntity.getY());
         data.putDouble(APPLE_Z, appleEntity.getZ());
-        data.putString(APPLE_DIM, level.dimension().identifier().toString());
+        data.putString(APPLE_DIM, level.dimension().location().toString());
         data.remove(APPLE_DROP_X);
         data.remove(APPLE_DROP_Y);
         data.remove(APPLE_DROP_Z);
@@ -424,12 +424,12 @@ public final class LockiSpiritSystem {
                 data.putDouble(APPLE_X, target.itemEntity().getX());
                 data.putDouble(APPLE_Y, target.itemEntity().getY());
                 data.putDouble(APPLE_Z, target.itemEntity().getZ());
-                data.putString(APPLE_DIM, target.itemEntity().level().dimension().identifier().toString());
+                data.putString(APPLE_DIM, target.itemEntity().level().dimension().location().toString());
             } else if (target.holder() != null) {
                 data.putDouble(APPLE_X, target.holder().getX());
                 data.putDouble(APPLE_Y, target.holder().getY());
                 data.putDouble(APPLE_Z, target.holder().getZ());
-                data.putString(APPLE_DIM, target.holder().level().dimension().identifier().toString());
+                data.putString(APPLE_DIM, target.holder().level().dimension().location().toString());
             }
             if (target.holder() != null) {
                 data.putBoolean(APPLE_HAS_BEEN_CARRIED, true);
@@ -454,7 +454,7 @@ public final class LockiSpiritSystem {
                     data.putDouble(APPLE_DROP_X, target.itemEntity().getX());
                     data.putDouble(APPLE_DROP_Y, target.itemEntity().getY());
                     data.putDouble(APPLE_DROP_Z, target.itemEntity().getZ());
-                    data.putString(APPLE_DROP_DIM, target.itemEntity().level().dimension().identifier().toString());
+                    data.putString(APPLE_DROP_DIM, target.itemEntity().level().dimension().location().toString());
                     if (player.level().getGameTime() - droppedAt >= DROP_TIMEOUT) {
                         releaseApple(player, false, false);
                         syncState(player);
@@ -630,14 +630,14 @@ public final class LockiSpiritSystem {
 
         CompoundTag data = owner.getPersistentData();
         String destinationDimension = data.getString(APPLE_DROP_DIM)
-            .orElseGet(() -> data.getString(APPLE_DIM).orElse(eaterLevel.dimension().identifier().toString()));
+            .orElseGet(() -> data.getString(APPLE_DIM).orElse(eaterLevel.dimension().location().toString()));
         boolean hasDropSite = data.contains(APPLE_DROP_X) && data.contains(APPLE_DROP_Y) && data.contains(APPLE_DROP_Z);
         double x = hasDropSite ? data.getDouble(APPLE_DROP_X).orElse(owner.getX()) : data.getDouble(APPLE_X).orElse(owner.getX());
         double y = hasDropSite ? data.getDouble(APPLE_DROP_Y).orElse(owner.getY()) : data.getDouble(APPLE_Y).orElse(owner.getY());
         double z = hasDropSite ? data.getDouble(APPLE_DROP_Z).orElse(owner.getZ()) : data.getDouble(APPLE_Z).orElse(owner.getZ());
         ResourceKey<Level> destinationKey;
         try {
-            destinationKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(destinationDimension));
+            destinationKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(destinationDimension));
         } catch (Exception ignored) {
             destinationKey = eaterLevel.dimension();
         }
@@ -711,10 +711,10 @@ public final class LockiSpiritSystem {
 
     private static void spawnOriginSapling(ServerPlayer player) {
         CompoundTag data = player.getPersistentData();
-        String dimension = data.getString(TREE_DIM).orElse(player.level().dimension().identifier().toString());
+        String dimension = data.getString(TREE_DIM).orElse(player.level().dimension().location().toString());
         ResourceKey<Level> dimensionKey;
         try {
-            dimensionKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(dimension));
+            dimensionKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimension));
         } catch (Exception ignored) {
             dimensionKey = player.level().dimension();
         }
@@ -726,7 +726,7 @@ public final class LockiSpiritSystem {
         String saplingName = data.getString(TREE_SAPLING).orElse("minecraft:oak_sapling");
         Block sapling;
         try {
-            sapling = BuiltInRegistries.BLOCK.getOptional(Identifier.parse(saplingName))
+            sapling = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(saplingName))
                 .filter(block -> block instanceof SaplingBlock || block instanceof net.minecraft.world.level.block.BushBlock)
                 .orElse(net.minecraft.world.level.block.Blocks.OAK_SAPLING);
         } catch (Exception ignored) {

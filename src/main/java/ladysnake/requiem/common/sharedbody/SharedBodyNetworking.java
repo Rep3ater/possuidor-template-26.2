@@ -5,7 +5,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -24,8 +24,8 @@ import java.util.List;
  * </ul>
  */
 public final class SharedBodyNetworking {
-    public static final Identifier INPUT = Requiem.id("shared_body_input");
-    public static final Identifier SYNC = Requiem.id("shared_body_sync");
+    public static final ResourceLocation INPUT = Requiem.id("shared_body_input");
+    public static final ResourceLocation SYNC = Requiem.id("shared_body_sync");
 
     private SharedBodyNetworking() {}
 
