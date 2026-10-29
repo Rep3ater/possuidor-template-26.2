@@ -76,7 +76,7 @@ public final class RequiemItems {
     public static final Item SULFUR_CUBE = new Item(new Item.Properties().setId(key("sulfur_cube")).stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final Item EMBRYO = new Item(new Item.Properties().setId(key("embryo")).stacksTo(16).rarity(Rarity.UNCOMMON));
     public static final Item VESSEL_SHARD = new Item(new Item.Properties().setId(key("vessel_shard")).stacksTo(16).rarity(Rarity.UNCOMMON));
-    public static final Item HOMUNCULUS = new Item(new Item.Properties().setId(key("homunculus")).stacksTo(16).rarity(Rarity.RARE));
+    public static final Item HOMUNCULUS = new Item(new Item.Properties().setId(key("homunculus")).stacksTo(1).rarity(Rarity.RARE));
     public static final Item MORTICIAN_SPAWN_EGG = new SpawnEggItem(new Item.Properties().setId(key("mortician_spawn_egg")).spawnEgg(RequiemEntities.MORTICIAN));
 
     public static final Map<MobEffect, IchorVesselItem> vesselsByEffect = new LinkedHashMap<>();

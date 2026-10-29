@@ -149,10 +149,14 @@
   "item.requiem.sulfur_cube": "Cubo de Enxofre",
   "item.requiem.embryo": "Embrião",
   "item.requiem.vessel_shard": "Fragmento de Receptáculo",
-  "item.requiem.homunculus": "Corpo de Homúnculo",
+  "item.requiem.homunculus": "Homúnculo",
   "block.requiem.cloning_machine": "Máquina de Clonagem",
   "effect.requiem.ash_lung": "Cinzas nos Pulmões",
   "effect.requiem.brain_damage": "Dano Cerebral",
   "effect.requiem.homunculus_mental_health": "Saúde Mental do Homúnculo",
-  "effect.requiem.nucleus_transition": "Transição para o Núcleo"
+  "effect.requiem.nucleus_transition": "Transição para o Núcleo",
+  "block.requiem.construct_heart": "Núcleo Construtivo",
+  "item.requiem.construct_heart": "Núcleo Construtivo",
+  "block.requiem.small_construct_heart": "Núcleo Construtivo Pequeno",
+  "item.requiem.small_construct_heart": "Núcleo Construtivo Pequeno"
 }
