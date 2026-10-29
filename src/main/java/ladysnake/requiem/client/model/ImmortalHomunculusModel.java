@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 
 /** Blockbench model port with the supplied 128x128 texture and animated limbs. */
 public final class ImmortalHomunculusModel extends EntityModel<LivingEntityRenderState> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Requiem.id("waist"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(Requiem.id("immortal_homunculus"), "main");
     private final ModelPart waist, head, body, leftArm, rightArm, leftLeg, rightLeg;
 
     public ImmortalHomunculusModel(ModelPart root) {
