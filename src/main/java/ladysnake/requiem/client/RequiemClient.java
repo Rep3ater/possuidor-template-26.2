@@ -42,7 +42,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import ;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -60,8 +59,8 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import ;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 public final class RequiemClient {
@@ -334,21 +333,21 @@ public final class RequiemClient {
             ResourceLocation current = activePostEffect;
             ResourceLocation lockiEffect = ladysnake.requiem.client.locki.LockiClientState.desiredPostEffect();
             if (mc.player.hasEffect(RequiemStatusEffects.NUCLEUS_TRANSITION)) {
-                if (!NUCLEUS_POST_EFFECT.equals(current)) ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(NUCLEUS_POST_EFFECT);
+                if (!NUCLEUS_POST_EFFECT.equals(current)) applyPostEffect(NUCLEUS_POST_EFFECT);
             } else if (ladysnake.requiem.client.locki.LockiClientState.isLockiModeActive()) {
                 if (lockiEffect != null && !lockiEffect.equals(current)) {
-                    ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(lockiEffect);
+                    applyPostEffect(lockiEffect);
                 } else if (lockiEffect == null && current != null) {
-                    applyPostEffect(null)
+                    applyPostEffect(null);
                 }
             } else if (RemnantComponent.isIncorporeal(mc.player) && !ladysnake.requiem.common.RequiemConfig.graphics.reducedEffects) {
                 if (!SPECTRE_POST_EFFECT.equals(current)) {
-                    ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(SPECTRE_POST_EFFECT);
+                    applyPostEffect(SPECTRE_POST_EFFECT);
                 }
             } else if (SPECTRE_POST_EFFECT.equals(current) || LOCKI_SPIRIT_POST_EFFECT.equals(current)
                     || LOCKI_APPLE_POST_EFFECT.equals(current) || LOCKI_WHITE_VISION_POST_EFFECT.equals(current)
                     || NUCLEUS_POST_EFFECT.equals(current)) {
-                applyPostEffect(null)
+                applyPostEffect(null);
             }
 
             // Spawn faint soul particles around incorporeal players
