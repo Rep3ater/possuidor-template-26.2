@@ -202,9 +202,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             // Proxy melee attacks
             InteractionResult result = MobAbilityController.get(player).useDirect(AbilityType.ATTACK, target);
             if (result.consumesAction()) {
-                if (result instanceof InteractionResult.Success success && success.swingSource() != InteractionResult.SwingSource.NONE) {
-                    player.resetAttackStrengthTicker();
-                }
+                player.resetAttackStrengthTicker();
                 return InteractionResult.SUCCESS;
             }
             return isInteractionForbidden(player, true) ? InteractionResult.FAIL : InteractionResult.PASS;
@@ -258,7 +256,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             if (newType == RemnantTypes.MORTAL) {
                 GameProfile bodyIdentity = Impersonator.get(player).getImpersonatedProfile(PlayerSplitter.BODY_IMPERSONATION);
                 if (bodyIdentity != null) {
-                    player.hurt(new MortalDysmorphiaDamageSource(player.level().damageSources().generic().typeHolder(), Component.literal(player.getGameProfile().name()), Component.literal(bodyIdentity.name())), 100F);
+                    player.hurt(new MortalDysmorphiaDamageSource(player.level().damageSources().generic().typeHolder(), Component.literal(player.getGameProfile().getName()), Component.literal(bodyIdentity.getName())), 100F);
                 }
             }
         });
