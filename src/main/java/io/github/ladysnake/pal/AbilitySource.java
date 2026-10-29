@@ -2,7 +2,7 @@ package io.github.ladysnake.pal;
 
 import io.github.ladysnake.pal.impl.PalInternals;
 import java.util.Objects;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public final class AbilitySource implements Comparable<AbilitySource> {
@@ -11,15 +11,15 @@ public final class AbilitySource implements Comparable<AbilitySource> {
     public static final int DEFAULT = 0;
     public static final int CONSUMABLE = -1000;
 
-    private final Identifier id;
+    private final ResourceLocation id;
     private final int priority;
 
-    public AbilitySource(Identifier id, int priority) {
+    public AbilitySource(ResourceLocation id, int priority) {
         this.id = Objects.requireNonNull(id, "id");
         this.priority = priority;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 
