@@ -60,7 +60,7 @@ PartDefinition waist = partdefinition.addOrReplaceChild("waist", CubeListBuilder
         float radians = (float) Math.PI / 180.0F;
         this.head.yRot = state.yRot * radians;
         this.head.xRot = state.xRot * radians;
-        if (state.pose == net.minecraft.world.entity.EntityPose.SWIMMING) {
+        if (state.isInWater) {
             float phase = state.ageInTicks * 0.18F;
             this.body.xRot = 1.1F;
             this.leftArm.xRot = -1.25F + net.minecraft.util.Mth.cos(phase) * 0.65F;
