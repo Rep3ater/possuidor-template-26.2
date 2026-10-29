@@ -73,7 +73,7 @@ public class SoulAiManager {
     }
 
     public static String getInjectedSoulType(PathfinderMob mob) {
-        return mob.getPersistentData().getString("requiem:injected_soul").orElse("");
+        return mob.getPersistentData().getString("requiem:injected_soul");
     }
 
     public static void applyInjectedGoals(PathfinderMob mob, String soulTypeStr, @Nullable UUID ownerUuid) {
@@ -205,7 +205,7 @@ public class SoulAiManager {
                     float damage = attack == null || attack.getValue() <= 0.0D
                         ? 1.0F : (float) Math.max(0.0D, attack.getValue());
                     if (damage > 0.0F) {
-                        target.hurtServer(serverLevel, serverLevel.damageSources().mobAttack(this.mob), damage);
+                        target.hurt(serverLevel.damageSources().mobAttack(this.mob), damage);
                     }
                 }
             } else {
