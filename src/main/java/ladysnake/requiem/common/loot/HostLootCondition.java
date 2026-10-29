@@ -67,7 +67,7 @@ public class HostLootCondition implements LootItemCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        if (!(lootContext.getParamOrNull(this.entity.contextParam()) instanceof LivingEntity e)) return false;
+        if (!(lootContext.getParamOrNull(this.entity.getParam()) instanceof LivingEntity e)) return false;
         if (predicate == null) return true;
 
         LivingEntity target = switch (checkedEntity) {
@@ -75,7 +75,7 @@ public class HostLootCondition implements LootItemCondition {
             case POSSESSOR -> e instanceof Possessable p ? p.getPossessor() : null;
         };
 
-        return predicate.matches(lootContext.getLevel(), lootContext.getOptionalParameter(LootContextParams.ORIGIN), target);
+        return predicate.matches(lootContext.getLevel(), lootContext.getParamOrNull(LootContextParams.ORIGIN), target);
     }
 
     public enum CheckedEntity {
