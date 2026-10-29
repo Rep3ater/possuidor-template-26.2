@@ -41,7 +41,7 @@ public class EvokerWololoAbility extends DirectAbilityBase<Evoker, Entity> {
         if (!super.canTarget(target)) return false;
         if (target instanceof Sheep sheep) {
             if (this.owner.level() instanceof ServerLevel serverLevel) {
-                return this.wololoGoal.requiem_getConvertibleSheepPredicate().test(serverLevel, this.owner, sheep);
+                return this.wololoGoal.requiem_getConvertibleSheepPredicate().test(this.owner, sheep);
             }
             return false;
         }
