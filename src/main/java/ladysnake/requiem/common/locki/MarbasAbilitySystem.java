@@ -102,7 +102,7 @@ public final class MarbasAbilitySystem {
     }
 
     private static ItemStack findNamedPlayerHead(Player player) {
-        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+        for (ItemStack stack : player.getInventory().items) {
             if (!stack.is(Items.PLAYER_HEAD)) continue;
             String name = stack.getHoverName().getString().toLowerCase(Locale.ROOT);
             if (name.contains("embryo") || name.contains("fetus")) return stack;
