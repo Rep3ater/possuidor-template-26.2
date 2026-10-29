@@ -166,7 +166,6 @@ public final class Requiem {
         event.put(RequiemEntities.CURED_PIGLIN_BRUTE, PiglinBrute.createAttributes().build());
         event.put(RequiemEntities.PLAYER_SHELL, PlayerShellEntity.createPlayerShellAttributes().build());
         event.put(RequiemEntities.MORTICIAN, MorticianEntity.createMorticianAttributes().build());
-        event.put(RequiemEntities.NUCLEUS_SOVEREIGN, net.minecraft.world.entity.monster.zombie.Husk.createAttributes().build());
         event.put(RequiemEntities.ROBOTIC_CONSTRUCT, ladysnake.requiem.common.construct.entity.RoboticConstructEntity.createAttributes().build());
     }
 
