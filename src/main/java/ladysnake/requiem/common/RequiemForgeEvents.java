@@ -116,7 +116,7 @@ public final class RequiemForgeEvents {
                 && attacker.level() instanceof ServerLevel level) {
             // Match the infected homunculus' olive-yellow dust: /particle dust{color:[0.59,0.57,0.11],scale:1}.
             net.minecraft.core.particles.DustParticleOptions infectedDust =
-                new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.59F, 0.57F, 0.11F), 1.0F);
+                new net.minecraft.core.particles.DustParticleOptions(0x96911C, 1.0F);
             level.sendParticles(infectedDust,
                 attacker.getX(), attacker.getY() + attacker.getBbHeight() * 0.55D, attacker.getZ(),
                 24, 0.45D, 0.5D, 0.45D, 0.035D);
