@@ -41,8 +41,8 @@ public final class Impersonate implements EntityComponentInitializer {
         Impersonator impersonator = IMPERSONATION.getNullable(event.getEntity());
         if (impersonator != null) {
             GameProfile profile = impersonator.getImpersonatedProfile();
-            if (profile != null && !profile.name().isEmpty()) {
-                event.setDisplayname(Component.literal(profile.name()));
+            if (profile != null && !profile.getName().isEmpty()) {
+                event.setDisplayname(Component.literal(profile.getName()));
             }
         }
     }
@@ -51,8 +51,8 @@ public final class Impersonate implements EntityComponentInitializer {
         Impersonator impersonator = IMPERSONATION.getNullable(event.getEntity());
         if (impersonator != null) {
             GameProfile profile = impersonator.getImpersonatedProfile();
-            if (profile != null && !profile.name().isEmpty()) {
-                event.setDisplayName(Component.literal(profile.name()));
+            if (profile != null && !profile.getName().isEmpty()) {
+                event.setDisplayName(Component.literal(profile.getName()));
             }
         }
     }
