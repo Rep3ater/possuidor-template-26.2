@@ -11,7 +11,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -56,9 +56,9 @@ public final class LockiClientState {
         ownRotStage = payload.rotStage();
 
         if ("conversation".equals(mode) && !"conversation".equals(previousMode)) {
-            mc.setScreenAndShow(new LockiPlantDialogueScreen());
-        } else if (!"conversation".equals(mode) && mc.gui.screen() instanceof LockiPlantDialogueScreen) {
-            mc.gui.setScreen(null);
+            mc.setScreen(new LockiPlantDialogueScreen());
+        } else if (!"conversation".equals(mode) && mc.screen instanceof LockiPlantDialogueScreen) {
+            mc.setScreen(null);
         }
     }
 
@@ -227,7 +227,7 @@ public final class LockiClientState {
     public static boolean isLockiModeActive() { return mode != null && !mode.isBlank() && !"none".equals(mode); }
     public static boolean isSpiritVision() { return "spirit".equals(mode) || "roots".equals(mode); }
     public static boolean isAppleGroundVision() { return "apple".equals(mode) && cameraMode == 4; }
-    public static Identifier desiredPostEffect() {
+    public static ResourceLocation desiredPostEffect() {
         if (isSpiritVision()) {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player != null && player.hasEffect(RequiemStatusEffects.WHITE_VISION)) {

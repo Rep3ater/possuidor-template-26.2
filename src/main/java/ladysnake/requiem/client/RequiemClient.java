@@ -27,7 +27,6 @@ import ladysnake.requiem.common.sharedbody.SharedBodyClientState;
 import ladysnake.requiem.common.sharedbody.SharedBodyNetworking;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
-import ladysnake.requiem.mixin.client.GameRendererAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -75,6 +74,25 @@ public final class RequiemClient {
 
     /** Opacity of a mob driven through the Shared Body effect, so that it never fully blocks the player's view. */
     /** Angular distance (radians) over which a driven mob fades back to full opacity, measured from the screen center. */
+
+    private static ResourceLocation activePostEffect;
+
+    public static ResourceLocation activePostEffect() {
+        return activePostEffect;
+    }
+
+    public static void applyPostEffect(ResourceLocation effect) {
+        Minecraft mc = Minecraft.getInstance();
+        if (effect == null) {
+            if (activePostEffect != null) {
+                mc.gameRenderer.shutdownEffect();
+                activePostEffect = null;
+            }
+        } else if (!effect.equals(activePostEffect)) {
+            mc.gameRenderer.loadEffect(effect);
+            activePostEffect = effect;
+        }
+    }
 
     public static KeyMapping DISSOCIATION_KEY;
     public static KeyMapping CONSTRUCT_ACTION_KEY;
@@ -269,6 +287,7 @@ public final class RequiemClient {
 
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         SharedBodyClientState.reset();
+        activePostEffect = null;
         ladysnake.requiem.client.locki.LockiClientState.reset();
     }
 
@@ -312,7 +331,7 @@ public final class RequiemClient {
             }
 
             // Locki's plant/fruit viewpoints take priority over the generic out-of-body shader.
-            ResourceLocation current = mc.gameRenderer.currentPostEffect();
+            ResourceLocation current = activePostEffect;
             ResourceLocation lockiEffect = ladysnake.requiem.client.locki.LockiClientState.desiredPostEffect();
             if (mc.player.hasEffect(RequiemStatusEffects.NUCLEUS_TRANSITION)) {
                 if (!NUCLEUS_POST_EFFECT.equals(current)) ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(NUCLEUS_POST_EFFECT);
@@ -320,7 +339,7 @@ public final class RequiemClient {
                 if (lockiEffect != null && !lockiEffect.equals(current)) {
                     ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(lockiEffect);
                 } else if (lockiEffect == null && current != null) {
-                    mc.gameRenderer.clearPostEffect();
+                    applyPostEffect(null)
                 }
             } else if (RemnantComponent.isIncorporeal(mc.player) && !ladysnake.requiem.common.RequiemConfig.graphics.reducedEffects) {
                 if (!SPECTRE_POST_EFFECT.equals(current)) {
@@ -329,7 +348,7 @@ public final class RequiemClient {
             } else if (SPECTRE_POST_EFFECT.equals(current) || LOCKI_SPIRIT_POST_EFFECT.equals(current)
                     || LOCKI_APPLE_POST_EFFECT.equals(current) || LOCKI_WHITE_VISION_POST_EFFECT.equals(current)
                     || NUCLEUS_POST_EFFECT.equals(current)) {
-                mc.gameRenderer.clearPostEffect();
+                applyPostEffect(null)
             }
 
             // Spawn faint soul particles around incorporeal players
