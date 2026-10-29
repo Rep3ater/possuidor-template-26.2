@@ -79,7 +79,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
             GameProfile actual = this.getActualProfile();
             this.editedProfile = profile == null
                 ? null
-                : new GameProfile(actual.id(), profile.name(), profile.properties());
+                : new GameProfile(actual.getId(), profile.getName(), profile.getProperties());
 
             if (this.player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.refreshDisplayName();
@@ -145,7 +145,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
             GameProfile profile = ByteBufCodecs.GAME_PROFILE.decode(buf);
             this.impersonatedProfile = profile;
             GameProfile actual = this.getActualProfile();
-            this.editedProfile = new GameProfile(actual.id(), profile.name(), profile.properties());
+            this.editedProfile = new GameProfile(actual.getId(), profile.getName(), profile.getProperties());
         } else {
             this.impersonatedProfile = null;
             this.editedProfile = null;
