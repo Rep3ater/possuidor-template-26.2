@@ -96,7 +96,7 @@ public final class BasePossessionHandlers {
         // Locki is a special spirit with an intentionally narrow host list. Other players keep
         // Requiem's normal possession rules; only entities tagged "locki" receive this restriction.
         PossessionStartCallback.EVENT.register(Requiem.id("locki_host_filter"), (target, possessor, simulate) -> {
-            if (!possessor.entityTags().contains("locki")) return PossessionStartCallback.Result.PASS;
+            if (!possessor.getTags().contains("locki")) return PossessionStartCallback.Result.PASS;
             boolean construct = target instanceof ladysnake.requiem.common.construct.entity.RoboticConstructEntity;
             String path = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()).getPath();
             boolean treeOrPlant = target.getType().builtInRegistryHolder().is(ladysnake.requiem.common.tag.RequiemEntityTypeTags.LOCKI_POSSESSABLE_PLANTS)
@@ -143,9 +143,9 @@ public final class BasePossessionHandlers {
             possessor.level().playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENDERMAN_TELEPORT, target.getSoundSource(), 1.0F, 1.0F);
             ServerLevel destination = possessor.level().getServer() != null ? possessor.level().getServer().getLevel(Level.OVERWORLD) : null;
             if (destination != null) {
-                possessor.teleportTo(destination, possessor.getX(), possessor.getY(), possessor.getZ(), java.util.Set.of(), possessor.getYRot(), possessor.getXRot(), true);
+                possessor.teleportTo(destination, possessor.getX(), possessor.getY(), possessor.getZ(), java.util.Set.of(), possessor.getYRot(), possessor.getXRot());
                 ((ServerPlayer) possessor).connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.WIN_GAME, 0.0F));
-                target.teleportTo(destination, possessor.getX(), possessor.getY(), possessor.getZ(), java.util.Set.of(), target.getYRot(), target.getXRot(), true);
+                target.teleportTo(destination, possessor.getX(), possessor.getY(), possessor.getZ(), java.util.Set.of(), target.getYRot(), target.getXRot());
             }
             tpDest = target;
         }
@@ -160,7 +160,7 @@ public final class BasePossessionHandlers {
                 if (slot.isArmor()) {
                     ItemStack equippedStack = converted.getItemBySlot(slot);
                     if (converted.level() instanceof ServerLevel serverLevel) {
-                        converted.spawnAtLocation(serverLevel, equippedStack.copy());
+                        converted.spawnAtLocation(equippedStack.copy(), 0.0F);
                     }
                     equippedStack.setCount(0);
                 }
