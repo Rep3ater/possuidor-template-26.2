@@ -42,12 +42,18 @@ jobs:
               wait "$server_pid"
               code=$?
               echo "Gradle/server exited early with code $code."
+              echo "--- full server startup log tail ---"
+              tail -n 240 server-startup.log || true
+              echo "--- filtered error lines ---"
               grep -Ein 'ERROR|FATAL|Failed to load|datapack|registry|Exception|Caused by|eula|Done \\(' server-startup.log | tail -n 160 || true
               exit 1
             fi
             sleep 2
           done
           echo "Timed out waiting for server readiness."
+          echo "--- full server startup log tail ---"
+          tail -n 240 server-startup.log || true
+          echo "--- filtered error lines ---"
           grep -Ein 'ERROR|FATAL|Failed to load|datapack|registry|Exception|Caused by|eula|Done \\(' server-startup.log | tail -n 160 || true
           kill "$server_pid" 2>/dev/null || true
           exit 1
