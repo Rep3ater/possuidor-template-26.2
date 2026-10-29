@@ -101,7 +101,7 @@ public class DroppedVesselTracker implements Component {
                 () -> {
                     ServerLevel level = player.level().getServer() != null ? player.level().getServer().getLevel(ptr.world()) : null;
                     if (level != null) {
-                        player.teleportTo(level, ptr.pos().x, ptr.pos().y, ptr.pos().z, java.util.Set.of(), player.getYRot(), player.getXRot(), true);
+                        player.teleportTo(level, ptr.pos().x, ptr.pos().y, ptr.pos().z, java.util.Set.of(), player.getYRot(), player.getXRot());
                     }
                 }
             );
@@ -112,7 +112,7 @@ public class DroppedVesselTracker implements Component {
 
     private void mergeWithVessel(ServerPlayer player, Entity body) {
         if (body.level() instanceof ServerLevel serverLevel) {
-            player.teleportTo(serverLevel, body.getX(), body.getY(), body.getZ(), java.util.Set.of(), body.getYRot(), body.getXRot(), true);
+            player.teleportTo(serverLevel, body.getX(), body.getY(), body.getZ(), java.util.Set.of(), body.getYRot(), body.getXRot());
         }
 
         if (body instanceof PlayerShellEntity shell) {
