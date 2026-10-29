@@ -21,7 +21,7 @@ import ladysnake.requiem.common.block.RequiemBlocks;
 import ladysnake.requiem.common.block.obelisk.InertRunestoneBlock;
 import ladysnake.requiem.common.block.obelisk.RunestoneBlock;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
-import net.minecraft.advancements.triggers.CriteriaTriggers;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

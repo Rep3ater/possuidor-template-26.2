@@ -24,7 +24,7 @@ import ladysnake.requiem.api.v1.record.EntityPointer;
 import ladysnake.requiem.common.RequiemRecordTypes;
 import ladysnake.requiem.common.remnant.PlayerBodyTracker;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;

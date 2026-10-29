@@ -10,7 +10,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -261,13 +261,13 @@ public class SoulAiManager {
 
     private static boolean isFoxPrey(LivingEntity entity) {
         var type = entity.getType();
-        return type == EntityTypes.CHICKEN
-            || type == EntityTypes.RABBIT
-            || type == EntityTypes.COD
-            || type == EntityTypes.SALMON
-            || type == EntityTypes.TROPICAL_FISH
-            || type == EntityTypes.PUFFERFISH
-            || type == EntityTypes.TURTLE;
+        return type == EntityType.CHICKEN
+            || type == EntityType.RABBIT
+            || type == EntityType.COD
+            || type == EntityType.SALMON
+            || type == EntityType.TROPICAL_FISH
+            || type == EntityType.PUFFERFISH
+            || type == EntityType.TURTLE;
     }
 
     /** Check a living target by its registry path rather than a version-sensitive Java package. */

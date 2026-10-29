@@ -128,7 +128,7 @@ public class InertRunestoneBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @Nullable net.minecraft.world.level.redstone.Orientation orientation, boolean notify) {
+    protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @Nullable net.minecraft.core.Direction orientation, boolean notify) {
         world.scheduleTick(pos, this, 0);
     }
 

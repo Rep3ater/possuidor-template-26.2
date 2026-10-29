@@ -19,7 +19,7 @@ package ladysnake.requiem.common.loot;
 
 import com.mojang.serialization.MapCodec;
 import ladysnake.requiem.Requiem;
-import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.registries.RegisterEvent;
