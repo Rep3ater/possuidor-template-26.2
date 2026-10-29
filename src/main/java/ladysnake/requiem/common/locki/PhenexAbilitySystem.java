@@ -332,12 +332,12 @@ public final class PhenexAbilitySystem {
     private static ItemStack findScroll(Player player) {
         if (player.getMainHandItem().is(RequiemItems.PHENEX_SCROLL)) return player.getMainHandItem();
         if (player.getOffhandItem().is(RequiemItems.PHENEX_SCROLL)) return player.getOffhandItem();
-        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) if (stack.is(RequiemItems.PHENEX_SCROLL)) return stack;
+        for (ItemStack stack : player.getInventory().items) if (stack.is(RequiemItems.PHENEX_SCROLL)) return stack;
         return ItemStack.EMPTY;
     }
 
     private static boolean findItem(Player player, net.minecraft.world.item.Item item) {
-        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) if (stack.is(item)) return true;
+        for (ItemStack stack : player.getInventory().items) if (stack.is(item)) return true;
         return false;
     }
 
@@ -363,7 +363,7 @@ public final class PhenexAbilitySystem {
                 extracted = RemnantComponent.get(victim).splitPlayer(true).isPresent();
             }
             phenex.sendSystemMessage(net.minecraft.network.chat.Component.literal(extracted
-                ? "You forcibly tore the soul from " + victim.getGameProfile().name() + "."
+                ? "You forcibly tore the soul from " + victim.getGameProfile().getName() + "."
                 : "That player's soul is already outside its body, or cannot be extracted."));
             return true;
         }
@@ -377,7 +377,7 @@ public final class PhenexAbilitySystem {
             UUID recordUuid = captureType.get() == SoulCaptureEvents.CaptureType.NORMAL
                 ? EmptySoulVesselItem.setupRecord(livingTarget).getUuid() : UUID.randomUUID();
             CustomData.update(DataComponents.CUSTOM_DATA, vessel, tag -> {
-                CompoundTag fragment = tag.getCompound(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).orElseGet(CompoundTag::new);
+                CompoundTag fragment = (tag.contains(FilledSoulVesselItem.SOUL_FRAGMENT_NBT, net.minecraft.nbt.Tag.TAG_COMPOUND) ? tag.getCompound(FilledSoulVesselItem.SOUL_FRAGMENT_NBT) : new CompoundTag());
                 NbtCompat.putUuid(fragment, "uuid", recordUuid);
                 fragment.putString("type", BuiltInRegistries.ENTITY_TYPE.getKey(livingTarget.getType()).toString());
                 tag.put(FilledSoulVesselItem.SOUL_FRAGMENT_NBT, fragment);
@@ -444,7 +444,7 @@ public final class PhenexAbilitySystem {
             }
         } catch (IllegalArgumentException ignored) { }
         for (ServerPlayer online : server.getPlayerList().getPlayers()) {
-            if (online.getGameProfile().name().equalsIgnoreCase(selector)) return online;
+            if (online.getGameProfile().getName().equalsIgnoreCase(selector)) return online;
         }
         AABB search = player.getBoundingBox().inflate(256.0);
         for (Entity entity : player.level().getEntitiesOfClass(Entity.class, search,
@@ -515,7 +515,7 @@ public final class PhenexAbilitySystem {
         long until = player.level().getGameTime() + 30L;
         player.getPersistentData().putLong(COUGH_UNTIL, until);
         player.hurt(player.damageSources().magic(), 1.0F + corruption * 0.15F);
-        player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 50, corruption >= 7 ? 1 : 0, false, true, true));
+        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 50, corruption >= 7 ? 1 : 0, false, true, true));
         player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 70, 0, false, true, false));
         if (player.level() instanceof ServerLevel level) {
             level.sendParticles(ParticleTypes.ASH, player.getX() - player.getLookAngle().x * 0.25, player.getY() + 1.48,
@@ -537,16 +537,16 @@ public final class PhenexAbilitySystem {
             }
         } catch (IllegalArgumentException ignored) { }
         if (target == null) {
-            player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Soul Locator: selected soul is not currently loaded. Shift-right-click to choose another target."));
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal("Soul Locator: selected soul is not currently loaded. Shift-right-click to choose another target."), true);
             return;
         }
         if (target.level() != player.level()) {
-            player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Soul Locator: " + target.getName().getString() + " is in another dimension (" + target.level().dimension().location() + ")."));
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal("Soul Locator: " + target.getName().getString() + " is in another dimension (" + target.level().dimension().location() + ")."), true);
             return;
         }
         if (target instanceof ServerPlayer targetPlayer && !RemnantComponent.isIncorporeal(targetPlayer)
                 && !LockiSpiritSystem.isAstralVisionActive(targetPlayer)) {
-            player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Soul Locator: " + target.getName().getString() + " is currently embodied; their soul is not outside the body."));
+            player.displayClientMessage(net.minecraft.network.chat.Component.literal("Soul Locator: " + target.getName().getString() + " is currently embodied; their soul is not outside the body."), true);
             return;
         }
         Vec3 delta = target.position().subtract(player.position());
@@ -554,7 +554,7 @@ public final class PhenexAbilitySystem {
         double yaw = Math.toDegrees(Math.atan2(delta.z, delta.x)) - player.getYRot();
         yaw = ((yaw + 540.0) % 360.0) - 180.0;
         String direction = Math.abs(yaw) < 25 ? "ahead" : Math.abs(yaw) > 155 ? "behind" : yaw < 0 ? "to your left" : "to your right";
-        player.sendOverlayMessage(net.minecraft.network.chat.Component.literal("Soul Locator: " + direction + " — " + target.getName().getString() + " (" + Math.round(distance) + " blocks)"));
+        player.displayClientMessage(net.minecraft.network.chat.Component.literal("Soul Locator: " + direction + " — " + target.getName().getString() + " (" + Math.round(distance) + " blocks)"), true);
     }
 
     /** Current Phenex corruption stacks from 0–10. */
