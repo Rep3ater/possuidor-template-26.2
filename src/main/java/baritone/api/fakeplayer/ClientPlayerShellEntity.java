@@ -10,7 +10,6 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.client.resources.PlayerSkin;
-import net.minecraft.world.item.component.ResolvableProfile;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,11 +68,6 @@ public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneF
     }
 
     @Override
-    public ResolvableProfile getProfile() {
-        return ResolvableProfile.createResolved(this.getDisplayProfile());
-    }
-
-    @Override
     public IBaritone getBaritone() {
         return this.baritone;
     }
@@ -101,7 +95,7 @@ public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneF
                 // Shells can use a profile copied from a body/impersonation that has the texture
                 // property but not a fresh session signature (offline servers and imported bodies
                 // are common examples). Requiring a secure signature silently fell back to Steve/Alex.
-                this.skinLookup = Minecraft.getInstance().getSkinManager().createLookup(profile, false);
+                this.skinLookup = Minecraft.getInstance().getSkinManager().lookupInsecure(profile);
             }
             return this.skinLookup.get();
         }
