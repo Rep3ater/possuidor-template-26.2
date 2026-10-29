@@ -94,8 +94,7 @@ public final class RequiemShellCommand {
                         .executes(context -> {
                             Collection<GameProfile> profiles = GameProfileArgument.getGameProfiles(context, "profile");
                             if (profiles.size() > 1) throw TOO_MANY_PLAYERS_EXCEPTION.create();
-                            NameAndId p = profiles.iterator().next();
-                            GameProfile profile = new GameProfile(p.id(), p.name());
+                            GameProfile profile = profiles.iterator().next();
                             return RequiemCommand.runMany(context.getSource(), getEntities(context, "shells"), s -> setIdentity(s, profile));
                         })
                     ))
@@ -130,7 +129,7 @@ public final class RequiemShellCommand {
         if (remnantComponent.isVagrant()) {
             throw new CommandRuntimeException(Component.translatable("requiem:commands.shell.split.fail.vagrant", player.getDisplayName()));
         }
-        if (!remnantComponent.getRemnantType().isDemon() && !player.isCreative() && (player.level().getServer() == null || !player.level().getServer().getPlayerList().isOp(new NameAndId(player.getGameProfile())))) {
+        if (!remnantComponent.getRemnantType().isDemon() && !player.isCreative() && (player.level().getServer() == null || !player.level().getServer().getPlayerList().isOp(player.getGameProfile()))) {
             throw new CommandRuntimeException(Component.translatable("requiem:commands.shell.split.fail.mortal", player.getDisplayName()));
         }
         if (!remnantComponent.getRemnantType().isDemon()) {
