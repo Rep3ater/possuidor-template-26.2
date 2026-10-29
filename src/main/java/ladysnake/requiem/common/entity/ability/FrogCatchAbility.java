@@ -83,7 +83,7 @@ public class FrogCatchAbility extends DirectAbilityBase<Frog, Entity> {
                 attackDamage.setBaseValue(1);
             }
 
-            frog.doHurtTarget(serverLevel, entity);
+            frog.doHurtTarget(entity);
 
             attackDamage.setBaseValue(baseAttackValue);
 
