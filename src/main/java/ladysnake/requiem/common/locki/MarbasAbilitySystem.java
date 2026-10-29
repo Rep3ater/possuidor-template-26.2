@@ -898,9 +898,16 @@ public final class MarbasAbilitySystem {
         if (mob.distanceToSqr(target) <= reach * reach) {
             mob.getNavigation().stop();
             if (now % 12L == 0L) {
+                float healthBefore = target.getHealth();
                 target.hurt(level.damageSources().mobAttack(mob), 20.0F);
-                // A strike consumes the feeding window even on targets with hurt immunity.
-                mob.getPersistentData().putLong(FED_UNTIL, now + 1200L);
+                if (target.getHealth() < healthBefore) {
+                    // Red flecks appear only when the strike actually removes health.
+                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.DAMAGE_INDICATOR,
+                        target.getX(), target.getY() + target.getBbHeight() * 0.55D, target.getZ(),
+                        7, target.getBbWidth() * 0.25D, target.getBbHeight() * 0.25D,
+                        target.getBbWidth() * 0.25D, 0.08D);
+                    mob.getPersistentData().putLong(FED_UNTIL, now + 1200L);
+                }
             }
         } else {
             mob.getNavigation().moveTo(target, 1.0D);
