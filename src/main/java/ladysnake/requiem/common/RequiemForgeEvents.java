@@ -250,6 +250,15 @@ public final class RequiemForgeEvents {
         Entity target = event.getTarget();
         ItemStack held = event.getItemStack();
 
+        if (!event.getLevel().isClientSide()
+                && target instanceof ladysnake.requiem.common.entity.ImmortalHomunculusEntity) {
+            // The suffering form ignores ordinary right-clicks, including ability handlers that
+            // would otherwise emit capture/interaction messages.
+            event.setCancellationResult(InteractionResult.PASS);
+            event.setCanceled(true);
+            return;
+        }
+
         if (!event.getLevel().isClientSide() && MarbasAbilitySystem.onEntityInteract(player, target, held, player.isShiftKeyDown())) {
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
