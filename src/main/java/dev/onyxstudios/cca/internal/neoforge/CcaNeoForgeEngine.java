@@ -269,15 +269,15 @@ public final class CcaNeoForgeEngine {
     public static void removeComponentFromEntityNbt(CompoundTag entityRootNbt, ComponentKey<?> key) {
         String keyId = key.getId().toString();
         if (entityRootNbt.contains(AbstractComponentContainer.NBT_KEY)) {
-            entityRootNbt.getCompoundOrEmpty(AbstractComponentContainer.NBT_KEY).remove(keyId);
+            entityRootNbt.getCompound(AbstractComponentContainer.NBT_KEY).remove(keyId);
         }
         if (entityRootNbt.contains("neoforge:attachments")) {
-            CompoundTag attachments = entityRootNbt.getCompoundOrEmpty("neoforge:attachments");
+            CompoundTag attachments = entityRootNbt.getCompound("neoforge:attachments");
             String attachmentId = ENTITY_ATTACHMENT_ID.toString();
             if (attachments.contains(attachmentId)) {
-                CompoundTag ccaAttachment = attachments.getCompoundOrEmpty(attachmentId);
+                CompoundTag ccaAttachment = attachments.getCompound(attachmentId);
                 if (ccaAttachment.contains(AbstractComponentContainer.NBT_KEY)) {
-                    ccaAttachment.getCompoundOrEmpty(AbstractComponentContainer.NBT_KEY).remove(keyId);
+                    ccaAttachment.getCompound(AbstractComponentContainer.NBT_KEY).remove(keyId);
                 }
             }
         }
@@ -373,7 +373,7 @@ public final class CcaNeoForgeEngine {
             recipients.add(selfPlayer);
         }
         if (entity.level().getChunkSource() instanceof ServerChunkCache chunkCache) {
-            for (ServerPlayer watcher : chunkCache.chunkMap.getPlayersWatching(entity)) {
+            for (ServerPlayer watcher : chunkCache.chunkMap.getPlayers(new net.minecraft.world.level.ChunkPos(entity.blockPosition()), false)) {
                 if (watcher != entity) {
                     recipients.add(watcher);
                 }
@@ -536,7 +536,7 @@ public final class CcaNeoForgeEngine {
         boolean sameCharacter = !switchingCharacter;
         boolean keepInventory = false;
         if (clone instanceof ServerPlayer serverClone) {
-            keepInventory = serverClone.level().getGameRules().get(GameRules.KEEP_INVENTORY);
+            keepInventory = serverClone.level().getGameRules().get(GameRules.RULE_KEEPINVENTORY);
         }
 
         AbstractComponentContainer fromContainer = getEntityContainer(original);
