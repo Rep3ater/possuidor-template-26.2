@@ -59,7 +59,7 @@ public class MorticianSpawner implements ServerTickEvents.EndTick {
 
     @Override
     public void onEndTick(MinecraftServer server) {
-        if (server.getGameRules().get(GameRules.SPAWN_MOBS)) {
+        if (server.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
             --this.ticksUntilNextSpawn;
             if (this.ticksUntilNextSpawn <= 0) {
                 this.ticksUntilNextSpawn = SPAWN_COOLDOWN;
