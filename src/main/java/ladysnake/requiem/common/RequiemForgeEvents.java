@@ -9,9 +9,20 @@ import ladysnake.requiem.api.v1.possession.Possessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.api.v1.event.requiem.PlayerShellEvents;
+import ladysnake.requiem.api.v1.event.requiem.PossessionEvents;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
+import ladysnake.requiem.common.entity.effect.AttritionStatusEffect;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.item.EmptySoulVesselItem;
+import ladysnake.requiem.common.remnant.PlayerBodyTracker;
+import ladysnake.requiem.common.locki.PhenexAbilitySystem;
+import ladysnake.requiem.common.locki.PhenexStructureSystem;
+import ladysnake.requiem.common.locki.NucleusManager;
+import ladysnake.requiem.common.locki.MarbasAbilitySystem;
+import ladysnake.requiem.common.remnant.PlayerSplitter;
 import ladysnake.requiem.common.remnant.RemnantComponentImpl;
+import ladysnake.requiem.core.record.EntityPositionClerk;
 import ladysnake.requiem.common.tag.RequiemBlockTags;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.possession.PossessionComponentImpl;
@@ -21,6 +32,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.TriState;
 import net.minecraft.world.InteractionHand;
@@ -35,12 +47,17 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.living.LivingGetProjectileEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -55,6 +72,25 @@ public final class RequiemForgeEvents {
 
     public static void init() {
         NeoForge.EVENT_BUS.register(RequiemForgeEvents.class);
+    }
+
+    @SubscribeEvent
+    public static void onServerChat(ServerChatEvent event) {
+        NucleusManager.onChat(event);
+        if (event.isCanceled()) return;
+        MarbasAbilitySystem.onChat(event);
+        if (event.isCanceled()) return;
+        PhenexAbilitySystem.onChat(event);
+    }
+
+    @SubscribeEvent
+    public static void onPhenexBlockPlaced(BlockEvent.EntityPlaceEvent event) {
+        PhenexStructureSystem.onBlockPlaced(event);
+    }
+
+    @SubscribeEvent
+    public static void onPhenexItemToss(ItemTossEvent event) {
+        PhenexStructureSystem.onItemToss(event);
     }
 
     @SubscribeEvent
@@ -76,7 +112,16 @@ public final class RequiemForgeEvents {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
+        NucleusManager.onLivingDeath(event);
         if (event.getEntity() instanceof ServerPlayer player) {
+            if (player.level().dimension() == ladysnake.requiem.common.construct.ConstructWorkshopManager.WORKSHOP_DIMENSION) {
+                event.setCanceled(true);
+                player.setHealth(player.getMaxHealth());
+                ladysnake.requiem.common.construct.ConstructWorkshopManager.exitWorkshop(player, null, false);
+                player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§eYou returned to your anchor unharmed."));
+                return;
+            }
+            ladysnake.requiem.common.locki.LockiSpiritSystem.onDeath(player);
             RemnantComponent remnant = RemnantComponent.get(player);
             if (!remnant.hasChosenRemnantType()) {
                 DeathSuspender suspender = DeathSuspender.get(player);
@@ -85,15 +130,58 @@ public final class RequiemForgeEvents {
                     suspender.suspendDeath(event.getSource());
                     return;
                 }
+            } else if (remnant.getRemnantType().isDemon() && !player.level().getLevelData().isHardcore()) {
+                PossessionComponent possession = PossessionComponent.get(player);
+                if (possession.isPossessionOngoing()) {
+                    event.setCanceled(true);
+                    Mob host = possession.getHost();
+                    if (host != null) {
+                        PossessionEvents.HOST_DEATH.invoker().onHostDeath(player, host, event.getSource());
+                        if (!host.isDeadOrDying()) {
+                            host.die(event.getSource());
+                        }
+                    }
+                    possession.stopPossessing();
+                    player.setHealth(player.getMaxHealth());
+                    remnant.setVagrant(true);
+                    return;
+                } else if (!remnant.isVagrant()) {
+                    event.setCanceled(true);
+                    PlayerShellEntity shell = PlayerSplitter.createShell(player);
+                    player.level().addFreshEntity(shell);
+                    player.getInventory().clearContent();
+                    PlayerSplitter.transferSoulboundItems(shell, player);
+                    PlayerBodyTracker.get(player).setAnchor(EntityPositionClerk.get(shell).getOrCreateRecord());
+                    player.setHealth(player.getMaxHealth());
+                    remnant.setVagrant(true);
+                    AttritionStatusEffect.apply(player);
+                    PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(player, player, shell);
+                    return;
+                }
             }
         }
 
         if (event.getEntity() instanceof Mob mob && mob instanceof Possessable p && p.isBeingPossessed()) {
             Player possessor = p.getPossessor();
             if (possessor != null) {
+                if (possessor instanceof ServerPlayer sp) {
+                    PossessionEvents.HOST_DEATH.invoker().onHostDeath(sp, mob, event.getSource());
+                }
                 PossessionComponent.get(possessor).stopPossessing();
+                possessor.setHealth(possessor.getMaxHealth());
+                RemnantComponent.get(possessor).setVagrant(true);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onNucleusBossDrops(LivingDropsEvent event) {
+        NucleusManager.onLivingDrops(event);
+    }
+
+    @SubscribeEvent
+    public static void onNucleusBossExperience(LivingExperienceDropEvent event) {
+        NucleusManager.onLivingExperienceDrop(event);
     }
 
     @SubscribeEvent
@@ -104,6 +192,11 @@ public final class RequiemForgeEvents {
     public static void onAttackEntity(AttackEntityEvent event) {
         Player player = event.getEntity();
         Entity target = event.getTarget();
+        if (MarbasAbilitySystem.onAttackEntity(player, target)) {
+            event.setCanceled(true);
+            return;
+        }
+        PhenexAbilitySystem.onAttack(player, target);
 
         PossessionComponent possession = PossessionComponent.get(player);
         if (possession.isPossessionOngoing()) {
@@ -148,6 +241,22 @@ public final class RequiemForgeEvents {
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
         Entity target = event.getTarget();
+        ItemStack held = event.getItemStack();
+
+        if (!event.getLevel().isClientSide() && MarbasAbilitySystem.onEntityInteract(player, target, held, player.isShiftKeyDown())) {
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            return;
+        }
+        if (!event.getLevel().isClientSide() && PhenexAbilitySystem.onEntityInteract(player, target)) {
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            return;
+        }
+
+        if (held.getItem() instanceof EmptySoulVesselItem) {
+            return;
+        }
 
         if (RemnantComponent.isVagrant(player)) {
             if (target instanceof PlayerShellEntity shell) {
@@ -204,6 +313,23 @@ public final class RequiemForgeEvents {
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
+        if (!event.getLevel().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            if (NucleusManager.tryEnter(serverPlayer, event.getPos())) {
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+                return;
+            }
+            if (PhenexAbilitySystem.onUseBlock(serverPlayer, event.getItemStack(), event.getPos(), player.isShiftKeyDown())) {
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+                return;
+            }
+            if (MarbasAbilitySystem.onUseBlock(serverPlayer, event.getItemStack(), event.getPos(), player.isShiftKeyDown())) {
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+                return;
+            }
+        }
         if (RemnantComponent.isIncorporeal(player) && !player.isCreative()) {
             BlockState state = event.getLevel().getBlockState(event.getPos());
             if (!state.is(RequiemBlockTags.SOUL_INTERACTABLE)) {
@@ -216,11 +342,63 @@ public final class RequiemForgeEvents {
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getEntity();
+        if (!event.getLevel().isClientSide() && player instanceof ServerPlayer serverPlayer
+                && PhenexAbilitySystem.onUseItem(serverPlayer, event.getItemStack(), player.isShiftKeyDown())) {
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            return;
+        }
+        // Player heads are food for Locki only while her astral sight is active.
+        if (!event.getLevel().isClientSide() && player instanceof ServerPlayer serverPlayer
+                && ladysnake.requiem.common.locki.LockiSpiritSystem.isAstralVisionActive(serverPlayer)
+                && event.getItemStack().is(Items.PLAYER_HEAD)) {
+            if (!serverPlayer.isCreative()) event.getItemStack().shrink(1);
+            serverPlayer.addEffect(new MobEffectInstance(RequiemStatusEffects.WHITE_VISION, 20 * 60 * 10, 0, false, true, true));
+            serverPlayer.playSound(SoundEvents.GENERIC_EAT.value(), 0.8F, 0.65F);
+            serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.literal("White Vision awakens. Corruption appears in yellow; the astral sky shifts to magenta."));
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            return;
+        }
         if (RemnantComponent.isIncorporeal(player) && !player.isCreative()) {
             ItemStack stack = event.getItemStack();
-            if (!(stack.getItem() instanceof EmptySoulVesselItem)) {
+            if (!(stack.getItem() instanceof EmptySoulVesselItem)
+                    && !(stack.getItem() instanceof ladysnake.requiem.common.item.FilledSoulVesselItem)
+                    && !(stack.getItem() instanceof ladysnake.requiem.common.item.DemonSoulVesselItem)
+                    && !(stack.getItem() instanceof ladysnake.requiem.common.item.IchorVesselItem)) {
                 event.setCancellationResult(InteractionResult.FAIL);
                 event.setCanceled(true);
+                return;
+            }
+        }
+
+        PossessionComponent possession = PossessionComponent.get(player);
+        if (possession.isPossessionOngoing()) {
+            var override = ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper.tryUseOverride(event.getLevel(), player, event.getItemStack(), event.getHand());
+            if (override.isPresent()) {
+                event.setCancellationResult(override.get());
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onItemUseFinish(net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent.Finish event) {
+        if (event.getEntity() instanceof Player player) {
+            ItemStack stack = event.getItem();
+            PossessionComponent possession = PossessionComponent.get(player);
+            if (possession.isPossessionOngoing()) {
+                var override = ladysnake.requiem.common.possession.item.PossessionItemOverrideWrapper.tryFinishUsingOverride(player.level(), player, stack, player.getUsedItemHand());
+                if (override.isPresent() && override.get().consumesAction()) {
+                    return;
+                }
+
+                Mob host = possession.getHost();
+                if (host != null && (host.hasEffect(net.minecraft.world.effect.MobEffects.WEAKNESS) || player.hasEffect(net.minecraft.world.effect.MobEffects.WEAKNESS))) {
+                    if (stack.is(ladysnake.requiem.core.tag.RequiemCoreTags.Item.UNDEAD_CURES) && RemnantComponent.get(player).canCurePossessed(host)) {
+                        possession.startCuring();
+                    }
+                }
             }
         }
     }
@@ -231,6 +409,7 @@ public final class RequiemForgeEvents {
 
     @SubscribeEvent
     public static void onItemPickup(ItemEntityPickupEvent.Pre event) {
+        NucleusManager.onPickupPre(event);
         Player player = event.getPlayer();
         if (RemnantComponent.isIncorporeal(player)) {
             event.setCanPickup(TriState.FALSE);
@@ -239,6 +418,7 @@ public final class RequiemForgeEvents {
 
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+        if (MarbasAbilitySystem.onBerserkDamage(event)) return;
         if (event.getEntity() instanceof Player player) {
             if (RemnantComponent.isIncorporeal(player)) {
                 if (!event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
@@ -269,22 +449,49 @@ public final class RequiemForgeEvents {
                         try {
                             syncingDamage = true;
                             host.hurt(event.getSource(), event.getAmount());
-                            player.setHealth(Math.min(host.getHealth(), player.getMaxHealth()));
+                            if (host.isDeadOrDying() || !host.isAlive()) {
+                                if (player instanceof ServerPlayer sp) {
+                                    PossessionEvents.HOST_DEATH.invoker().onHostDeath(sp, host, event.getSource());
+                                }
+                                possession.stopPossessing();
+                                player.setHealth(player.getMaxHealth());
+                                RemnantComponent.get(player).setVagrant(true);
+                            } else {
+                                player.setHealth(Math.min(host.getHealth(), player.getMaxHealth()));
+                            }
                         } finally {
                             syncingDamage = false;
                         }
                     }
+                    event.setCanceled(true);
+                    return;
                 }
             }
         } else if (event.getEntity() instanceof Mob host && host instanceof Possessable p && p.isBeingPossessed()) {
             Player possessor = p.getPossessor();
-            if (possessor != null && !possessor.level().isClientSide() && !syncingDamage) {
-                try {
-                    syncingDamage = true;
-                    possessor.hurt(event.getSource(), event.getAmount());
-                } finally {
-                    syncingDamage = false;
+            if (possessor != null && !possessor.level().isClientSide()) {
+                if (event.getAmount() >= host.getHealth() || host.isDeadOrDying()) {
+                    if (possessor instanceof ServerPlayer sp) {
+                        PossessionEvents.HOST_DEATH.invoker().onHostDeath(sp, host, event.getSource());
+                    }
+                    PossessionComponent.get(possessor).stopPossessing();
+                    possessor.setHealth(possessor.getMaxHealth());
+                    RemnantComponent.get(possessor).setVagrant(true);
+                } else if (!syncingDamage) {
+                    float newHealth = Math.max(1.0F, host.getHealth() - event.getAmount());
+                    possessor.setHealth(Math.min(newHealth, possessor.getMaxHealth()));
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityJoinLevel(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof net.minecraft.world.entity.PathfinderMob mob) {
+            if (ladysnake.requiem.common.construct.ai.SoulAiManager.hasInjectedSoul(mob)) {
+                String soulType = ladysnake.requiem.common.construct.ai.SoulAiManager.getInjectedSoulType(mob);
+                java.util.UUID owner = ladysnake.requiem.core.util.NbtCompat.getUuid(mob.getPersistentData(), "requiem:soul_owner").orElse(null);
+                ladysnake.requiem.common.construct.ai.SoulAiManager.applyInjectedGoals(mob, soulType, owner);
             }
         }
     }
@@ -311,6 +518,18 @@ public final class RequiemForgeEvents {
 
         if (alterer.isNoClipping()) {
             player.noPhysics = true;
+        }
+
+        if (!player.level().isClientSide() && player instanceof ServerPlayer sp && sp.level().dimension() == ladysnake.requiem.common.construct.ConstructWorkshopManager.WORKSHOP_DIMENSION) {
+            if (!sp.getAbilities().mayfly || !sp.getAbilities().flying) {
+                sp.getAbilities().mayfly = true;
+                sp.getAbilities().flying = true;
+                sp.onUpdateAbilities();
+            }
+            if (sp.getY() < 20) {
+                ladysnake.requiem.common.construct.ConstructWorkshopManager.exitWorkshop(sp, null, false);
+                sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("§eYou fell into the void and returned to your anchor unharmed."));
+            }
         }
 
         if (possession.isPossessionOngoing()) {
@@ -373,7 +592,8 @@ public final class RequiemForgeEvents {
                 }
             }
         } else if (RemnantComponent.isIncorporeal(player)) {
-            if (!player.isCreative() && !player.isSpectator()) {
+            if (!player.isCreative() && !player.isSpectator()
+                    && !ladysnake.requiem.common.locki.LockiSpiritSystem.shouldSuppressFlight(player)) {
                 if (!player.getAbilities().mayfly) {
                     player.getAbilities().mayfly = true;
                     if (player instanceof ServerPlayer sp) {
@@ -385,6 +605,10 @@ public final class RequiemForgeEvents {
                 player.resetFallDistance();
             }
         } else if (!RemnantComponent.isIncorporeal(player) && !player.isCreative() && !player.isSpectator()) {
+            var flightAttr = player.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.CREATIVE_FLIGHT);
+            if (flightAttr != null && flightAttr.hasModifier(io.github.ladysnake.pal.VanillaAbilities.CREATIVE_FLIGHT_MODIFIER_ID)) {
+                flightAttr.removeModifier(io.github.ladysnake.pal.VanillaAbilities.CREATIVE_FLIGHT_MODIFIER_ID);
+            }
             if (player.getAbilities().mayfly) {
                 player.getAbilities().mayfly = false;
                 player.getAbilities().flying = false;
@@ -392,6 +616,13 @@ public final class RequiemForgeEvents {
                     sp.onUpdateAbilities();
                 }
             }
+        }
+
+        ladysnake.requiem.common.locki.LockiSpiritSystem.tick(player);
+        if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel serverLevel) {
+            PhenexAbilitySystem.tick(serverPlayer);
+            MarbasAbilitySystem.onPlayerTick(serverPlayer);
+            MarbasAbilitySystem.tick(serverLevel, serverPlayer.blockPosition());
         }
     }
 

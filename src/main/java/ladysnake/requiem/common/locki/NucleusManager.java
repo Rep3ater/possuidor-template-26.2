@@ -1,0 +1,234 @@
+package ladysnake.requiem.common.locki;
+
+import ladysnake.requiem.Requiem;
+import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
+
+import java.util.Set;
+import java.util.UUID;
+
+/** Fixed arena dimension and return-session bookkeeping for the unnamed Nucleus boss encounter. */
+public final class NucleusManager {
+    public static final ResourceKey<Level> NUCLEUS_DIMENSION = ResourceKey.create(Registries.DIMENSION, Requiem.id("nucleus"));
+    private static final String BOSS_KEY = "requiem:nucleus_boss";
+    private static final String BOSS_OWNER = "requiem:nucleus_boss_owner";
+    private static final String PENDING_INVITE = "requiem:nucleus_pending_invite";
+    private static final String SESSION_OWNER = "requiem:nucleus_session_owner";
+    private static final String RETURN_X = "requiem:nucleus_return_x";
+    private static final String RETURN_Y = "requiem:nucleus_return_y";
+    private static final String RETURN_Z = "requiem:nucleus_return_z";
+    private static final String RETURN_YAW = "requiem:nucleus_return_yaw";
+    private static final String RETURN_PITCH = "requiem:nucleus_return_pitch";
+    private static final String RETURN_DIM = "requiem:nucleus_return_dimension";
+    private static final String HEAD_OWNER = "requiem:nucleus_owner";
+
+    private NucleusManager() {}
+
+    public static boolean tryEnter(ServerPlayer phoenix, BlockPos clicked) {
+        if (!PhenexAbilitySystem.isPhenex(phoenix) || !PhenexAbilitySystem.isAbilityActive(phoenix, "roubar")) return false;
+        if (phoenix.getXRot() < 89.0F) return false;
+        if (!(phoenix.level() instanceof ServerLevel source)) return false;
+        ServerLevel nucleus = source.getServer().getLevel(NUCLEUS_DIMENSION);
+        if (nucleus == null) {
+            phoenix.sendSystemMessage(Component.literal("Nucleus is not available: the dimension data may not have loaded."));
+            return true;
+        }
+        String owner = phoenix.getUUID().toString();
+        saveReturn(phoenix, owner);
+        ensureArena(nucleus, phoenix);
+        phoenix.addEffect(new MobEffectInstance(RequiemStatusEffects.NUCLEUS_TRANSITION, 35, 0, false, false, false));
+        phoenix.teleportTo(nucleus, 0.5, 80.0, 0.5, Set.of(), -90.0F, 0.0F, false);
+        phoenix.playSound(SoundEvents.PORTAL_TRAVEL, 0.8F, 0.7F);
+        phoenix.sendSystemMessage(Component.literal("§eYellow light swallows the world. You have entered Nucleus."));
+        inviteDevelopers(source.getServer(), phoenix);
+        return true;
+    }
+
+    private static void ensureArena(ServerLevel level, ServerPlayer phoenix) {
+        BlockPos phoenixMarker = new BlockPos(0, 79, 0);
+        BlockPos bossMarker = new BlockPos(100, 79, 0);
+        level.setBlock(phoenixMarker, Blocks.CONCRETE.pick(DyeColor.MAGENTA).defaultBlockState(), 3);
+        level.setBlock(bossMarker, Blocks.CONCRETE.pick(DyeColor.YELLOW).defaultBlockState(), 3);
+        // Keep the two spawn points deterministic. The user can build the arena around these markers.
+        boolean bossExists = !level.getEntitiesOfClass(Mob.class, new AABB(94, 80, -6, 106, 88, 6),
+            e -> e.getPersistentData().getBoolean(BOSS_KEY).orElse(false)).isEmpty();
+        if (bossExists) return;
+        Entity raw = EntityTypes.WARDEN.create(level, EntitySpawnReason.TRIGGERED);
+        if (!(raw instanceof Mob boss)) return;
+        boss.getPersistentData().putBoolean(BOSS_KEY, true);
+        boss.getPersistentData().putString(BOSS_OWNER, phoenix.getUUID().toString());
+        boss.addTag("requiem_nucleus_boss");
+        boss.setCustomName(null); // intentionally unnamed; a later supplied model can replace this placeholder
+        boss.setCustomNameVisible(false);
+        boss.setPos(100.5, 80.0, 0.5);
+        var health = boss.getAttribute(Attributes.MAX_HEALTH);
+        if (health != null) health.setBaseValue(500.0);
+        var attack = boss.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (attack != null) attack.setBaseValue(20.0);
+        var speed = boss.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null) speed.setBaseValue(0.30);
+        boss.setHealth(boss.getMaxHealth());
+        level.addFreshEntity(boss);
+    }
+
+    private static void inviteDevelopers(MinecraftServer server, ServerPlayer phoenix) {
+        for (ServerPlayer candidate : server.getPlayerList().getPlayers()) {
+            if (candidate == phoenix || !isDeveloper(candidate)) continue;
+            candidate.getPersistentData().putString(PENDING_INVITE, phoenix.getUUID().toString());
+            candidate.sendSystemMessage(Component.literal("§dNucleus arena invitation from " + phoenix.getGameProfile().name() + ". Type `join` to accept."));
+        }
+    }
+
+    public static boolean isDeveloper(Player player) {
+        return player.entityTags().contains("dev") || player.entityTags().contains("DEV")
+            || player.entityTags().contains("Developer") || player.entityTags().contains("tagDeveloper");
+    }
+
+    public static void onChat(ServerChatEvent event) {
+        ServerPlayer player = event.getPlayer();
+        String pending = player.getPersistentData().getString(PENDING_INVITE).orElse("");
+        String message = event.getRawText().trim();
+        if (!pending.isBlank() && (message.equalsIgnoreCase("join") || message.equalsIgnoreCase("accept"))) {
+            event.setCanceled(true);
+            joinArena(player, pending);
+            return;
+        }
+        if (!pending.isBlank() && message.equalsIgnoreCase("decline")) {
+            event.setCanceled(true);
+            player.getPersistentData().remove(PENDING_INVITE);
+            player.sendSystemMessage(Component.literal("Nucleus invitation declined."));
+        }
+    }
+
+    private static void joinArena(ServerPlayer developer, String ownerString) {
+        MinecraftServer server = developer.level().getServer();
+        if (server == null) return;
+        ServerPlayer phoenix = null;
+        try { phoenix = server.getPlayerList().getPlayer(UUID.fromString(ownerString)); } catch (IllegalArgumentException ignored) { }
+        if (phoenix == null || phoenix.level().dimension() != NUCLEUS_DIMENSION) {
+            developer.getPersistentData().remove(PENDING_INVITE);
+            developer.sendSystemMessage(Component.literal("That Nucleus encounter is no longer active."));
+            return;
+        }
+        saveReturn(developer, ownerString);
+        ServerLevel nucleus = server.getLevel(NUCLEUS_DIMENSION);
+        if (nucleus == null) return;
+        developer.getPersistentData().remove(PENDING_INVITE);
+        // The yellow marker is the fixed opposing spawn, 100 blocks ahead of Phoenix.
+        developer.teleportTo(nucleus, 100.5, 80.0, 4.5, Set.of(), 90.0F, 0.0F, false);
+        developer.sendSystemMessage(Component.literal("You joined the Nucleus arena. Your inventory is preserved; you will be returned when the Suffering Head is claimed."));
+        phoenix.sendSystemMessage(Component.literal(developer.getGameProfile().name() + " accepted the arena invitation."));
+    }
+
+    private static void saveReturn(ServerPlayer player, String owner) {
+        CompoundTag data = player.getPersistentData();
+        data.putString(SESSION_OWNER, owner);
+        data.putString(RETURN_DIM, player.level().dimension().identifier().toString());
+        data.putDouble(RETURN_X, player.getX());
+        data.putDouble(RETURN_Y, player.getY());
+        data.putDouble(RETURN_Z, player.getZ());
+        data.putFloat(RETURN_YAW, player.getYRot());
+        data.putFloat(RETURN_PITCH, player.getXRot());
+    }
+
+    public static void onLivingDeath(LivingDeathEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (!entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)) return;
+        Entity killer = event.getSource().getEntity();
+        String owner = entity.getPersistentData().getString(BOSS_OWNER).orElse("");
+        if (killer instanceof ServerPlayer player && PhenexAbilitySystem.isPhenex(player) && player.getUUID().toString().equals(owner)) {
+            PhenexAbilitySystem.addCorruption(player, 1);
+            player.sendSystemMessage(Component.literal("§7The Nucleus sovereign falls. Ash settles in your lungs. Claim the Suffering Head to leave."));
+        }
+    }
+
+    public static void onLivingExperienceDrop(LivingExperienceDropEvent event) {
+        if (event.getEntity().getPersistentData().getBoolean(BOSS_KEY).orElse(false)) {
+            event.setCanceled(true);
+        }
+    }
+
+    public static void onLivingDrops(LivingDropsEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (!entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)) return;
+        event.getDrops().clear();
+        ItemStack head = new ItemStack(RequiemItems.SUFFERING_HEAD);
+        String owner = entity.getPersistentData().getString(BOSS_OWNER).orElse("");
+        CustomData.update(DataComponents.CUSTOM_DATA, head, tag -> tag.putString(HEAD_OWNER, owner));
+        event.getDrops().add(new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), head));
+    }
+
+    /** Captures the owner before the pickup empties the ItemEntity, then returns the whole encounter. */
+    public static void onPickupPre(ItemEntityPickupEvent.Pre event) {
+        ItemStack stack = event.getItemEntity().getItem();
+        if (!stack.is(RequiemItems.SUFFERING_HEAD)) return;
+        String owner = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getString(HEAD_OWNER).orElse("");
+        if (owner.isBlank()) return;
+        if (!event.getPlayer().getUUID().toString().equals(owner)) {
+            event.setCanPickup(net.minecraft.util.TriState.FALSE);
+            return;
+        }
+        MinecraftServer server = event.getPlayer().level().getServer();
+        if (server != null) server.execute(() -> returnSession(server, owner));
+    }
+
+    private static void returnSession(MinecraftServer server, String owner) {
+        if (server == null) return;
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            if (!owner.equals(player.getPersistentData().getString(SESSION_OWNER).orElse(""))) continue;
+            CompoundTag data = player.getPersistentData();
+            Identifier id = Identifier.tryParse(data.getString(RETURN_DIM).orElse("minecraft:overworld"));
+            if (id == null) id = Identifier.withDefaultNamespace("overworld");
+            ServerLevel target = server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
+            if (target == null) target = server.overworld();
+            double x = data.getDouble(RETURN_X).orElse(0.0);
+            double y = data.getDouble(RETURN_Y).orElse(80.0);
+            double z = data.getDouble(RETURN_Z).orElse(0.0);
+            float yaw = data.getFloat(RETURN_YAW).orElse(0.0F);
+            float pitch = data.getFloat(RETURN_PITCH).orElse(0.0F);
+            player.teleportTo(target, x, y, z, Set.of(), yaw, pitch, false);
+            data.remove(SESSION_OWNER);
+            data.remove(RETURN_DIM);
+            data.remove(RETURN_X);
+            data.remove(RETURN_Y);
+            data.remove(RETURN_Z);
+            data.remove(RETURN_YAW);
+            data.remove(RETURN_PITCH);
+            player.sendSystemMessage(Component.literal("§eThe Suffering Head is claimed. You return to where you entered Nucleus."));
+        }
+    }
+}

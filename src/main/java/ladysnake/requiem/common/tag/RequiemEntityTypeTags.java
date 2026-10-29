@@ -46,6 +46,7 @@ public final class RequiemEntityTypeTags {
     public static final TagKey<EntityType<?>> TETRACHROMATS = register("vision/tetrachromats");
 
     public static final TagKey<EntityType<?>> POSSESSABLES = register("possession/possessables");
+    public static final TagKey<EntityType<?>> LOCKI_POSSESSABLE_PLANTS = register("locki_possessable_plants");
 
     public static final TagKey<EntityType<?>> ARMOR_USERS = register("inventory/armor_users");
     public static final TagKey<EntityType<?>> HOTBAR_CARRIERS = register("inventory/hotbar_carriers");

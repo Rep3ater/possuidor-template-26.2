@@ -139,7 +139,11 @@ public record PossessionItemOverrideWrapper(
 
     public static Optional<InstancedItemOverride> findOverride(Level world, Player player, Mob possessedEntity, ItemStack heldStack) {
         Optional<InstancedItemOverride> fallback = Optional.empty();
-        for (PossessionItemOverrideWrapper wrapper : world.registryAccess().lookupOrThrow(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY).listElements().map(Holder::value).sorted().toList()) {
+        var regOpt = world.registryAccess().lookup(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY);
+        if (regOpt.isEmpty()) {
+            return fallback;
+        }
+        for (PossessionItemOverrideWrapper wrapper : regOpt.get().listElements().map(Holder::value).sorted().toList()) {
             Optional<InstancedItemOverride> tested = wrapper.test(player, possessedEntity, heldStack);
             if (tested.isPresent()) {
                 if (tested.get().shortCircuits()) {
@@ -154,7 +158,11 @@ public record PossessionItemOverrideWrapper(
 
     public static List<Component> buildTooltip(Level world, Player player, Mob possessedEntity, ItemStack heldStack) {
         List<Component> lines = new ArrayList<>();
-        for (PossessionItemOverrideWrapper wrapper : world.registryAccess().lookupOrThrow(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY).listElements().map(Holder::value).sorted().toList()) {
+        var regOpt = world.registryAccess().lookup(RequiemRegistries.MOB_ITEM_OVERRIDE_KEY);
+        if (regOpt.isEmpty()) {
+            return lines;
+        }
+        for (PossessionItemOverrideWrapper wrapper : regOpt.get().listElements().map(Holder::value).sorted().toList()) {
             Optional<InstancedItemOverride> tested = wrapper.test(player, possessedEntity, heldStack);
             if (tested.isPresent()) {
                 InstancedItemOverride override = tested.get();

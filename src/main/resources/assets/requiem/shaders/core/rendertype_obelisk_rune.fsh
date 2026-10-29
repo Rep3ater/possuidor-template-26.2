@@ -2,6 +2,7 @@
 
 #moj_import <minecraft:fog.glsl>
 #moj_import <minecraft:dynamictransforms.glsl>
+#moj_import <minecraft:globals.glsl>
 
 uniform sampler2D Sampler0;
 
@@ -37,5 +38,15 @@ void main() {
     vec3 hsv = rgb2hsv(color.rgb);
     hsv.y = saturation;
     color.rgb = hsv2rgb(hsv);
-    fragColor = apply_fog(color, sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
+
+    // Emissive glow: bright rune pixels pulse with a cool cyan-violet halo and stay visible through fog
+    float pulse = 0.8 + 0.2 * sin(GameTime * 1200.0 * 2.0 + texCoord0.x * 20.0);
+    float brightness = max(color.r, max(color.g, color.b));
+    vec3 glowTint = vec3(0.45, 0.7, 1.0);
+    vec3 glow = mix(color.rgb, glowTint, 0.35) * smoothstep(0.4, 1.0, brightness) * pulse * 0.6;
+    color.rgb += glow * 0.5;
+
+    vec4 fogged = apply_fog(color, sphericalVertexDistance, cylindricalVertexDistance, FogEnvironmentalStart, FogEnvironmentalEnd, FogRenderDistanceStart, FogRenderDistanceEnd, FogColor);
+    fogged.rgb += glow * 0.5;
+    fragColor = fogged;
 }

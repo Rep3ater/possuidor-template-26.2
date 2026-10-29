@@ -7,17 +7,47 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.PlayerSkin;
+import net.minecraft.world.item.component.ResolvableProfile;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneFakePlayer {
+    private static final Map<Integer, GameProfile> PENDING_PROFILES = new ConcurrentHashMap<>();
+
     protected GameProfile displayProfile;
     private final IBaritone baritone;
+    private Supplier<PlayerSkin> skinLookup;
+    private GameProfile lastProfile;
+
+    public static void handleProfileSync(int entityId, GameProfile profile) {
+        PENDING_PROFILES.put(entityId, profile);
+        if (Minecraft.getInstance().level != null) {
+            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+            if (entity instanceof AutomatoneFakePlayer fakePlayer) {
+                fakePlayer.setDisplayProfile(profile);
+            }
+        }
+    }
 
     public ClientPlayerShellEntity(ClientLevel level, GameProfile profile) {
         super(level, profile);
         this.displayProfile = profile;
         this.baritone = new DummyBaritoneImpl(this);
+        this.getEntityData().set(DATA_PLAYER_MODE_CUSTOMISATION, (byte) 0xFF);
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        GameProfile pending = PENDING_PROFILES.remove(id);
+        if (pending != null) {
+            this.setDisplayProfile(pending);
+        }
     }
 
     @Override
@@ -33,6 +63,14 @@ public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneF
     @Override
     public void setDisplayProfile(GameProfile profile) {
         this.displayProfile = profile;
+        this.skinLookup = null;
+        this.lastProfile = null;
+        this.getEntityData().set(DATA_PLAYER_MODE_CUSTOMISATION, (byte) 0xFF);
+    }
+
+    @Override
+    public ResolvableProfile getProfile() {
+        return ResolvableProfile.createResolved(this.getDisplayProfile());
     }
 
     @Override
@@ -58,7 +96,14 @@ public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneF
     public PlayerSkin getSkin() {
         GameProfile profile = this.getDisplayProfile();
         if (profile != null) {
-            return Minecraft.getInstance().getSkinManager().createLookup(profile, false).get();
+            if (this.skinLookup == null || this.lastProfile != profile) {
+                this.lastProfile = profile;
+                // Shells can use a profile copied from a body/impersonation that has the texture
+                // property but not a fresh session signature (offline servers and imported bodies
+                // are common examples). Requiring a secure signature silently fell back to Steve/Alex.
+                this.skinLookup = Minecraft.getInstance().getSkinManager().createLookup(profile, false);
+            }
+            return this.skinLookup.get();
         }
         return DefaultPlayerSkin.get(this.getUUID());
     }

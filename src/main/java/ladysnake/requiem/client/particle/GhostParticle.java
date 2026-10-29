@@ -27,11 +27,20 @@ public class GhostParticle extends SingleQuadParticle {
         return Layer.TRANSLUCENT;
     }
 
+    /** Emissive: ignore world lighting so ghosts glow in the dark. */
+    @Override
+    protected int getLightCoords(float partialTick) {
+        return 0xF000F0;
+    }
+
     @Override
     public void tick() {
         super.tick();
         this.setSpriteFromAge(this.sprites);
-        this.alpha = Math.max(0.0F, 1.0F - (float) this.age / (float) this.lifetime);
+        float fadeOut = Math.max(0.0F, 1.0F - (float) this.age / (float) this.lifetime);
+        float fadeIn = Math.min(1.0F, (this.age + 1) / 6.0F);
+        float shimmer = 0.85F + 0.15F * (float) Math.sin(this.age * 0.6F);
+        this.alpha = fadeOut * fadeIn * shimmer;
     }
 
     public static class Provider implements ParticleProvider<SimpleParticleType> {

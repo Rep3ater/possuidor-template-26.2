@@ -50,6 +50,12 @@ public final class RequiemStatusEffects {
     public static final DeferredHolder<MobEffect, MobEffect> EMANCIPATION = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("emancipation"));
     public static final DeferredHolder<MobEffect, MobEffect> RECLAMATION = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("reclamation"));
     public static final DeferredHolder<MobEffect, MobEffect> PENANCE = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("penance"));
+    public static final DeferredHolder<MobEffect, MobEffect> SHARED_BODY = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("shared_body"));
+    public static final DeferredHolder<MobEffect, MobEffect> WHITE_VISION = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("white_vision"));
+    public static final DeferredHolder<MobEffect, MobEffect> NUCLEUS_TRANSITION = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("nucleus_transition"));
+    public static final DeferredHolder<MobEffect, MobEffect> ASH_LUNG = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("ash_lung"));
+    public static final DeferredHolder<MobEffect, MobEffect> BRAIN_DAMAGE = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("brain_damage"));
+    public static final DeferredHolder<MobEffect, MobEffect> HOMUNCULUS_MENTAL_HEALTH = DeferredHolder.create(Registries.MOB_EFFECT, Requiem.id("homunculus_mental_health"));
 
     public static void register(RegisterEvent.RegisterHelper<MobEffect> helper) {
         helper.register(Requiem.id("attrition"), new AttritionStatusEffect(MobEffectCategory.HARMFUL, 0xAA3322)
@@ -58,6 +64,12 @@ public final class RequiemStatusEffects {
         helper.register(Requiem.id("emancipation"), new EmancipationStatusEffect(MobEffectCategory.BENEFICIAL, 0x7799FF));
         helper.register(Requiem.id("reclamation"), new ReclamationStatusEffect(MobEffectCategory.BENEFICIAL, 0xFFDF00));
         helper.register(Requiem.id("penance"), new PenanceStatusEffect(MobEffectCategory.HARMFUL, 0xB6FF00));
+        helper.register(Requiem.id("shared_body"), new SharedBodyStatusEffect(MobEffectCategory.NEUTRAL, 0x8E7CFF));
+        helper.register(Requiem.id("white_vision"), new WhiteVisionStatusEffect());
+        helper.register(Requiem.id("nucleus_transition"), new NucleusTransitionStatusEffect());
+        helper.register(Requiem.id("ash_lung"), new CorruptionMarkerStatusEffect(0xB5A58A));
+        helper.register(Requiem.id("brain_damage"), new CorruptionMarkerStatusEffect(0xB47AC7));
+        helper.register(Requiem.id("homunculus_mental_health"), new CorruptionMarkerStatusEffect(0xE6D75C));
     }
 
     public static void postRegister() {

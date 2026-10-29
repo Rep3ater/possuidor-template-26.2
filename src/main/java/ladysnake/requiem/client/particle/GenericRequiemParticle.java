@@ -28,6 +28,12 @@ public class GenericRequiemParticle extends SingleQuadParticle {
         return Layer.TRANSLUCENT;
     }
 
+    /** Emissive: ignore world lighting so soul/wisp effects glow in the dark. */
+    @Override
+    protected int getLightCoords(float partialTick) {
+        return 0xF000F0;
+    }
+
     @Override
     public void tick() {
         super.tick();

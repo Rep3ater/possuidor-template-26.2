@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:nether_star",
+    "#requiem:construct_meat",
+    "minecraft:iron_nugget"
+  ],
+  "result": {
+    "id": "requiem:small_construct_heart",
+    "count": 1
+  }
+}

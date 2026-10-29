@@ -34,6 +34,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
@@ -104,6 +106,24 @@ public class FilledSoulVesselItem extends Item {
                 .flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional)
                 .ifPresent(contained -> tooltipAdder.accept(Component.translatable("requiem:tooltip.filled_vessel", contained.getDescription()).withStyle(ChatFormatting.GRAY)));
         });
+    }
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player user, LivingEntity target, InteractionHand hand) {
+        if (target instanceof PathfinderMob mob) {
+            if (!user.level().isClientSide()) {
+                CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+                String soulType = tag.getCompound(SOUL_FRAGMENT_NBT)
+                    .flatMap(frag -> frag.getString("type"))
+                    .orElse("minecraft:zombie");
+
+                ladysnake.requiem.common.construct.ai.SoulAiManager.injectSoul(mob, soulType, user);
+                user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, this.getEmptiedStack()));
+            }
+            user.playSound(RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, 2.0f, 1.0f);
+            return InteractionResult.SUCCESS;
+        }
+        return super.interactLivingEntity(stack, user, target, hand);
     }
 
     @Override

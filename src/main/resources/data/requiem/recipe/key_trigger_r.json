@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    " R ",
+    " I ",
+    " S "
+  ],
+  "key": {
+    "R": "minecraft:redstone",
+    "I": "minecraft:iron_ingot",
+    "S": "minecraft:stone"
+  },
+  "result": {
+    "count": 1,
+    "id": "requiem:key_trigger_r"
+  }
+}

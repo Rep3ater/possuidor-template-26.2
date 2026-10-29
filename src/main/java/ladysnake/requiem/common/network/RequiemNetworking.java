@@ -73,6 +73,12 @@ public final class RequiemNetworking {
     public static final Identifier OBELISK_POWER_UPDATE = Requiem.id("obelisk_power_update");
     public static final Identifier RIFT_WITNESSED = Requiem.id("rift_witnessed");
     public static final Identifier OPEN_DIALOGUE = Requiem.id("open_dialogue");
+    public static final Identifier SHELL_PROFILE_SYNC = Requiem.id("shell_profile_sync");
+    public static final Identifier LOCKI_STATE = Requiem.id("locki_state");
+    public static final Identifier HOMUNCULUS_BRAIN_OPEN = Requiem.id("homunculus_brain_open");
+
+    // Client -> Server
+    public static final Identifier HOMUNCULUS_BRAIN_SAVE = Requiem.id("homunculus_brain_save");
 
     // Client -> Server
     public static final Identifier DIALOGUE_ACTION = Requiem.id("dialogue_action");
@@ -80,6 +86,59 @@ public final class RequiemNetworking {
     public static final Identifier OPEN_CRAFTING_MENU = Requiem.id("open_crafting");
     public static final Identifier USE_INDIRECT_ABILITY = Requiem.id("indirect_ability");
     public static final Identifier USE_RIFT = Requiem.id("use_rift");
+    public static final Identifier CONSTRUCT_ACTION = Requiem.id("construct_action");
+    public static final Identifier LOCKI_PLANT_CHOICE = Requiem.id("locki_plant_choice");
+
+    public record LockiStatePayload(int playerEntityId, String mode, int cameraEntityId, int cameraMode, int rotStage) implements CustomPacketPayload {
+        public static final Type<LockiStatePayload> TYPE = new Type<>(LOCKI_STATE);
+        public static final StreamCodec<RegistryFriendlyByteBuf, LockiStatePayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, LockiStatePayload::playerEntityId,
+            ByteBufCodecs.STRING_UTF8, LockiStatePayload::mode,
+            ByteBufCodecs.VAR_INT, LockiStatePayload::cameraEntityId,
+            ByteBufCodecs.VAR_INT, LockiStatePayload::cameraMode,
+            ByteBufCodecs.VAR_INT, LockiStatePayload::rotStage,
+            LockiStatePayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public record HomunculusBrainOpenPayload(int entityId, String program) implements CustomPacketPayload {
+        public static final Type<HomunculusBrainOpenPayload> TYPE = new Type<>(HOMUNCULUS_BRAIN_OPEN);
+        public static final StreamCodec<RegistryFriendlyByteBuf, HomunculusBrainOpenPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, HomunculusBrainOpenPayload::entityId,
+            ByteBufCodecs.STRING_UTF8, HomunculusBrainOpenPayload::program,
+            HomunculusBrainOpenPayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public record HomunculusBrainSavePayload(int entityId, String program) implements CustomPacketPayload {
+        public static final Type<HomunculusBrainSavePayload> TYPE = new Type<>(HOMUNCULUS_BRAIN_SAVE);
+        public static final StreamCodec<RegistryFriendlyByteBuf, HomunculusBrainSavePayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, HomunculusBrainSavePayload::entityId,
+            ByteBufCodecs.STRING_UTF8, HomunculusBrainSavePayload::program,
+            HomunculusBrainSavePayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public record LockiPlantChoicePayload(int choice) implements CustomPacketPayload {
+        public static final Type<LockiPlantChoicePayload> TYPE = new Type<>(LOCKI_PLANT_CHOICE);
+        public static final StreamCodec<RegistryFriendlyByteBuf, LockiPlantChoicePayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, LockiPlantChoicePayload::choice,
+            LockiPlantChoicePayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public record ConstructActionPayload(int actionId) implements CustomPacketPayload {
+        public static final Type<ConstructActionPayload> TYPE = new Type<>(CONSTRUCT_ACTION);
+        public static final StreamCodec<RegistryFriendlyByteBuf, ConstructActionPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ConstructActionPayload::actionId,
+            ConstructActionPayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
 
     public record AnchorDamagePayload(boolean dead) implements CustomPacketPayload {
         public static final Type<AnchorDamagePayload> TYPE = new Type<>(ANCHOR_DAMAGE);
@@ -188,6 +247,18 @@ public final class RequiemNetworking {
         ClientPacketDistributor.sendToServer(payload);
     }
 
+    public static void sendLockiPlantChoice(int choice) {
+        ClientPacketDistributor.sendToServer(new LockiPlantChoicePayload(choice));
+    }
+
+    public static void sendHomunculusBrainOpen(ServerPlayer player, int entityId, String program) {
+        PacketDistributor.sendToPlayer(player, new HomunculusBrainOpenPayload(entityId, program == null ? "" : program));
+    }
+
+    public static void sendHomunculusBrain(int entityId, String program) {
+        ClientPacketDistributor.sendToServer(new HomunculusBrainSavePayload(entityId, program == null ? "" : program));
+    }
+
     public static void sendTo(ServerPlayer player, Packet<?> message) {
         if (player.connection != null) {
             player.connection.send(message);
@@ -265,5 +336,19 @@ public final class RequiemNetworking {
 
     public static void sendRiftWitnessedMessage(ServerPlayer player, Component obeliskName) {
         PacketDistributor.sendToPlayer(player, new RiftWitnessedPayload(obeliskName));
+    }
+
+    public record ShellProfileSyncPayload(int entityId, com.mojang.authlib.GameProfile profile) implements CustomPacketPayload {
+        public static final Type<ShellProfileSyncPayload> TYPE = new Type<>(SHELL_PROFILE_SYNC);
+        public static final StreamCodec<RegistryFriendlyByteBuf, ShellProfileSyncPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ShellProfileSyncPayload::entityId,
+            ByteBufCodecs.GAME_PROFILE.cast(), ShellProfileSyncPayload::profile,
+            ShellProfileSyncPayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public static void sendShellProfileSyncMessage(ServerPlayer player, int entityId, com.mojang.authlib.GameProfile profile) {
+        PacketDistributor.sendToPlayer(player, new ShellProfileSyncPayload(entityId, profile));
     }
 }

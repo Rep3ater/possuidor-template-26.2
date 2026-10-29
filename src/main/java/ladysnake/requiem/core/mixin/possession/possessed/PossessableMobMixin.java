@@ -61,6 +61,21 @@ public abstract class PossessableMobMixin implements Possessable {
                 return;
             }
             Mob self = (Mob) (Object) this;
+            if (self.isDeadOrDying() || !self.isAlive()) {
+                Player possessor = this.requiem$possessor;
+                this.requiem$possessor = null;
+                if (possessor instanceof net.minecraft.server.level.ServerPlayer sp) {
+                    ladysnake.requiem.api.v1.event.requiem.PossessionEvents.HOST_DEATH.invoker().onHostDeath(
+                        sp,
+                        self,
+                        self.getLastDamageSource() != null ? self.getLastDamageSource() : self.damageSources().generic()
+                    );
+                }
+                PossessionComponent.get(possessor).stopPossessing();
+                possessor.setHealth(possessor.getMaxHealth());
+                ladysnake.requiem.api.v1.remnant.RemnantComponent.get(possessor).setVagrant(true);
+                return;
+            }
             self.setYRot(this.requiem$possessor.getYRot());
             self.setXRot(this.requiem$possessor.getXRot());
             self.setYHeadRot(this.requiem$possessor.getYHeadRot());
@@ -100,7 +115,10 @@ public abstract class PossessableMobMixin implements Possessable {
                 }
                 this.requiem$possessor.setAirSupply(self.getAirSupply());
                 if (Math.abs(this.requiem$possessor.getHealth() - self.getHealth()) > 0.05F) {
-                    this.requiem$possessor.setHealth(Math.min(self.getHealth(), this.requiem$possessor.getMaxHealth()));
+                    float newHealth = Math.min(self.getHealth(), this.requiem$possessor.getMaxHealth());
+                    if (newHealth > 0.0F) {
+                        this.requiem$possessor.setHealth(newHealth);
+                    }
                 }
             } else {
                 self.setItemSlot(EquipmentSlot.MAINHAND, this.requiem$possessor.getMainHandItem());

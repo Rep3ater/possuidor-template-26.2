@@ -121,8 +121,90 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     public void storePlayerData(ServerPlayer player, CompoundTag respawnNbt) {
         // Save the complete representation of the player
         PlayerSplitter.performNbtCopy(respawnNbt, this);
+        this.setInvulnerable(false);
+        this.getAbilities().invulnerable = false;
+        this.getAbilities().flying = false;
+        this.getAbilities().mayfly = false;
         this.setDisplayProfile(Optional.ofNullable(Impersonator.get(player).getImpersonatedProfile()).orElse(player.getGameProfile()));
         this.setHome(GlobalPos.of(player.level().dimension(), player.blockPosition()));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide()) {
+            if (!this.isNoGravity() && !this.isPassenger()) {
+                Vec3 movement = this.getDeltaMovement();
+                if (!this.onGround()) {
+                    movement = movement.add(0, -0.08, 0);
+                }
+                this.move(net.minecraft.world.entity.MoverType.SELF, movement);
+                this.setDeltaMovement(movement.multiply(0.91, 0.98, 0.91));
+            }
+        }
+    }
+
+    @Override
+    public boolean isInvulnerable() {
+        return false;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(ServerLevel world, net.minecraft.world.damagesource.DamageSource source) {
+        return false;
+    }
+
+    @Override
+    public boolean canHarmPlayer(Player other) {
+        return true;
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
+        this.invulnerableTime = 0;
+        this.getAbilities().invulnerable = false;
+        boolean hurt = super.hurtServer(level, source, amount);
+        if (!hurt && amount > 0.0F) {
+            float health = this.getHealth() - amount;
+            this.setHealth(Math.max(0.0F, health));
+            if (this.getHealth() <= 0.0F) {
+                this.die(source);
+            }
+            return true;
+        }
+        return hurt;
+    }
+
+    @Override
+    public void die(net.minecraft.world.damagesource.DamageSource cause) {
+        super.die(cause);
+        if (!this.level().isClientSide()) {
+            this.getInventory().dropAll();
+            this.remove(RemovalReason.KILLED);
+        }
+    }
+
+    @Override
+    public java.util.UUID getOwnerUuid() {
+        com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
+        return profile != null ? profile.id() : null;
+    }
+
+    @Override
+    public void setDisplayProfile(com.mojang.authlib.GameProfile profile) {
+        super.setDisplayProfile(profile);
+        if (this.level() instanceof ServerLevel && profile != null) {
+            net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntity(this, new ladysnake.requiem.common.network.RequiemNetworking.ShellProfileSyncPayload(this.getId(), profile));
+        }
+    }
+
+    @Override
+    public void startSeenByPlayer(ServerPlayer player) {
+        super.startSeenByPlayer(player);
+        com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
+        if (profile != null) {
+            ladysnake.requiem.common.network.RequiemNetworking.sendShellProfileSyncMessage(player, this.getId(), profile);
+        }
     }
 
     @Override

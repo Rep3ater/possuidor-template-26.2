@@ -82,6 +82,10 @@ public class DemonSoulVesselItem extends Item {
     public InteractionResult use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
+        if (world.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+
         if (player instanceof ServerPlayer serverPlayer && stack.getItem() == this) {
             RemnantComponent remnantComponent = RemnantComponent.get(player);
             RemnantType currentState = remnantComponent.getRemnantType();
@@ -91,6 +95,7 @@ public class DemonSoulVesselItem extends Item {
                 Mob possessedEntity = possessionComponent.getHost();
 
                 if (possessedEntity == null || possessionComponent.isCuring()) {
+                    boolean wasVagrant = remnantComponent.isVagrant();
                     world.playSound(null,
                         player.getX(), player.getY(), player.getZ(),
                         RequiemSoundEvents.ITEM_OPUS_USE,
@@ -113,6 +118,15 @@ public class DemonSoulVesselItem extends Item {
                         } else {
                             PossessionComponentImpl.dropEquipment(possessedEntity, serverPlayer);
                         }
+                    } else if (wasVagrant && !this.remnantType.isDemon()) {
+                        // Becoming mortal while out of body -> restore physical body
+                        remnantComponent.setVagrant(false);
+                        serverPlayer.setHealth(serverPlayer.getMaxHealth());
+                        serverPlayer.getAbilities().mayfly = false;
+                        serverPlayer.getAbilities().flying = false;
+                        serverPlayer.onUpdateAbilities();
+                        ladysnake.requiem.api.v1.entity.MovementAlterer.get(serverPlayer).setConfig(null);
+                        io.github.ladysnake.pal.Pal.revokeAbility(serverPlayer, io.github.ladysnake.pal.VanillaAbilities.INVULNERABLE, ladysnake.requiem.core.remnant.MutableRemnantState.SOUL_STATE);
                     } else if (remnantComponent.isIncorporeal() && !serverPlayer.isCreative() && !serverPlayer.isSpectator()) {
                         player.getInventory().dropAll();
                     }

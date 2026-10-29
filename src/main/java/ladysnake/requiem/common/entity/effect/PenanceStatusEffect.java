@@ -77,9 +77,7 @@ public class PenanceStatusEffect extends MobEffect implements StickyStatusEffect
     @Override
     public void onEffectAdded(LivingEntity entity, int amplifier) {
         super.onEffectAdded(entity, amplifier);
-        if (PenanceComponent.KEY.maybeGet(entity).filter(PenanceComponent::shouldApplyPenance).isPresent()) {
-            applyPenance(entity, amplifier);
-        }
+        applyPenance(entity, amplifier);
     }
 
     @Override
@@ -99,13 +97,11 @@ public class PenanceStatusEffect extends MobEffect implements StickyStatusEffect
      * @return the respawned player if the target got split, otherwise {@code null}
      */
     public static Result applyPenance(LivingEntity entity, int amplifier) {
-        if (amplifier >= PLAYER_BAN_THRESHOLD && entity instanceof ServerPlayer player) { // level 2+
-            if (amplifier >= MOB_BAN_THRESHOLD) { // level 3+
-                PossessionComponent possessionComponent = PossessionComponent.get(player);
-                if (possessionComponent.isPossessionOngoing()) {
-                    possessionComponent.stopPossessing();
-                    return new Result(true, null);
-                }
+        if (entity instanceof ServerPlayer player) {
+            PossessionComponent possessionComponent = PossessionComponent.get(player);
+            if (possessionComponent.isPossessionOngoing()) {
+                possessionComponent.stopPossessing();
+                return new Result(true, null);
             }
             RemnantComponent remnant = RemnantComponent.get(player);
             if (!remnant.isVagrant()) {

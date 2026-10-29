@@ -68,5 +68,7 @@ void main() {
     float value = shape(st, a, 0.8, time);
     vec3 color = mix(scene, OverlayColor, value * SolidIntensity);
     color += streaks(st, a, 0.8, time) * value * RaysIntensity;
+    // Emissive core: a soft bloom of the overlay color where the rays are strongest
+    color += OverlayColor * pow(clamp(value, 0.0, 1.0), 3.0) * 0.35 * (0.85 + 0.15 * sin(time * 2.0));
     fragColor = vec4(color, 1.0);
 }

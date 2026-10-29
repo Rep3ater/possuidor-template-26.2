@@ -14,9 +14,12 @@ import ladysnake.requiem.client.render.entity.MorticianEntityRenderer;
 import ladysnake.requiem.client.render.entity.PlayerShellEntityRenderer;
 import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.particle.WispTrailParticleEffect;
+import ladysnake.requiem.common.sharedbody.SharedBodyClientState;
+import ladysnake.requiem.common.sharedbody.SharedBodyNetworking;
 import ladysnake.requiem.core.ability.PlayerAbilityController;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.mixin.client.GameRendererAccessor;
@@ -53,12 +56,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -70,6 +75,13 @@ import org.lwjgl.glfw.GLFW;
 public final class RequiemClient {
 
     public static final Identifier SPECTRE_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "spectre");
+    public static final Identifier LOCKI_SPIRIT_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "locki_spirit");
+    public static final Identifier LOCKI_APPLE_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "locki_apple_vision");
+    public static final Identifier LOCKI_WHITE_VISION_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "locki_white_vision");
+    public static final Identifier NUCLEUS_POST_EFFECT = Identifier.fromNamespaceAndPath("requiem", "nucleus_transition");
+    public static final ContextKey<Integer> LOCKI_ROT_STAGE = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "locki_rot_stage"));
+    public static final ContextKey<Boolean> HAS_ATTRITION = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "has_attrition"));
+    public static final ContextKey<Integer> CORRUPTION_LEVEL = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "corruption_level"));
     private static final Identifier VIGNETTE_LOCATION = Identifier.withDefaultNamespace("textures/misc/vignette.png");
     public static final ContextKey<Boolean> IS_LOCAL_HOST = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "is_local_host"));
 
@@ -81,7 +93,16 @@ public final class RequiemClient {
         true
     );
 
+    /** Opacity of a mob driven through the Shared Body effect, so that it never fully blocks the player's view. */
+    public static final ContextKey<Float> SHARED_BODY_ALPHA = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "shared_body_alpha"));
+    public static final ContextKey<Float> GHOST_ALPHA = new ContextKey<>(Identifier.fromNamespaceAndPath("requiem", "ghost_alpha"));
+    private static final float SHARED_BODY_MIN_ALPHA = 0.1F;
+    /** Angular distance (radians) over which a driven mob fades back to full opacity, measured from the screen center. */
+    private static final double SHARED_BODY_FADE_RADIANS = 0.35;
+
     public static KeyMapping DISSOCIATION_KEY;
+    public static KeyMapping CONSTRUCT_ACTION_KEY;
+    public static KeyMapping CONSTRUCT_SECONDARY_KEY;
 
     public static void init(IEventBus modEventBus) {
         modEventBus.addListener(RequiemClient::onRegisterRenderers);
@@ -91,8 +112,10 @@ public final class RequiemClient {
         NeoForge.EVENT_BUS.addListener(RequiemClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderPlayerPre);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderLivingPre);
+        NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderHand);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderGuiPost);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onInteractionKeyMapping);
+        NeoForge.EVENT_BUS.addListener(RequiemClient::onLoggingOut);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -106,6 +129,7 @@ public final class RequiemClient {
 
         EntityType<? extends AbstractClientPlayer> shellType = (EntityType) RequiemEntities.PLAYER_SHELL;
         event.registerEntityRenderer(shellType, PlayerShellEntityRenderer::new);
+        event.registerEntityRenderer(RequiemEntities.ROBOTIC_CONSTRUCT, ladysnake.requiem.client.render.entity.RoboticConstructRenderer::new);
     }
 
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
@@ -116,6 +140,22 @@ public final class RequiemClient {
             KeyMapping.Category.GAMEPLAY
         );
         event.register(DISSOCIATION_KEY);
+
+        CONSTRUCT_ACTION_KEY = new KeyMapping(
+            "key.requiem.construct_action",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_R,
+            KeyMapping.Category.GAMEPLAY
+        );
+        event.register(CONSTRUCT_ACTION_KEY);
+
+        CONSTRUCT_SECONDARY_KEY = new KeyMapping(
+            "key.requiem.construct_secondary",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_V,
+            KeyMapping.Category.GAMEPLAY
+        );
+        event.register(CONSTRUCT_SECONDARY_KEY);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -123,6 +163,29 @@ public final class RequiemClient {
         event.registerEntityModifier((Class) LivingEntityRenderer.class, (entity, state) -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null && entity instanceof LivingEntity living) {
+                if (SharedBodyClientState.isControlled(living.getId())) {
+                    float alpha = sharedBodyAlpha(mc.player, living);
+                    if (alpha < 0.999F) {
+                        ((EntityRenderState) state).setRenderData(SHARED_BODY_ALPHA, alpha);
+                    }
+                }
+                if (living instanceof Player) {
+                    int rotStage = ladysnake.requiem.client.locki.LockiClientState.rotStage(living.getId());
+                    if (rotStage > 0) ((EntityRenderState) state).setRenderData(LOCKI_ROT_STAGE, rotStage);
+                }
+                int corruptionLevel = 0;
+                var attrition = living.getEffect(RequiemStatusEffects.ATTRITION);
+                if (attrition != null) corruptionLevel = Math.max(corruptionLevel, attrition.getAmplifier() + 1);
+                var ashLung = living.getEffect(RequiemStatusEffects.ASH_LUNG);
+                if (ashLung != null) corruptionLevel = Math.max(corruptionLevel, ashLung.getAmplifier() + 1);
+                var brainDamage = living.getEffect(RequiemStatusEffects.BRAIN_DAMAGE);
+                if (brainDamage != null) corruptionLevel = Math.max(corruptionLevel, brainDamage.getAmplifier() + 1);
+                var homunculusMind = living.getEffect(RequiemStatusEffects.HOMUNCULUS_MENTAL_HEALTH);
+                if (homunculusMind != null) corruptionLevel = Math.max(corruptionLevel, homunculusMind.getAmplifier() + 1);
+                if (corruptionLevel > 0) {
+                    ((EntityRenderState) state).setRenderData(HAS_ATTRITION, living.hasEffect(RequiemStatusEffects.ATTRITION));
+                    ((EntityRenderState) state).setRenderData(CORRUPTION_LEVEL, Math.min(10, corruptionLevel));
+                }
                 Mob host = PossessionComponent.getHost(mc.player);
                 if (host != null && host.getId() == living.getId()) {
                     ((EntityRenderState) state).setRenderData(IS_LOCAL_HOST, true);
@@ -133,22 +196,24 @@ public final class RequiemClient {
         event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
             @Override
             public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
-                if (avatar instanceof Player player && RemnantComponent.isIncorporeal(player)) {
-                    renderState.skin = SOUL_SKIN;
+                if (avatar instanceof Player player && ladysnake.requiem.client.locki.LockiClientState.isInvisibleMode(player.getId())) {
+                    // Locki's spirit/root/apple forms have no renderable player body at all: no
+                    // armor layers, player shadow, or translucent avatar. Environmental root
+                    // visuals are separate from the hidden entity.
                     renderState.headEquipment = ItemStack.EMPTY;
                     renderState.chestEquipment = ItemStack.EMPTY;
                     renderState.legsEquipment = ItemStack.EMPTY;
                     renderState.feetEquipment = ItemStack.EMPTY;
-                    renderState.showCape = false;
-                    renderState.showJacket = false;
-                    renderState.showLeftPants = false;
-                    renderState.showRightPants = false;
-                    renderState.showLeftSleeve = false;
-                    renderState.showRightSleeve = false;
-                    renderState.showHat = false;
-
-                    // Enable spectral ghost translucency (renders with entityTranslucent shader)
                     renderState.isInvisible = true;
+                    renderState.isInvisibleToPlayer = true;
+                } else if (avatar instanceof Player player && RemnantComponent.isIncorporeal(player)) {
+                    ((EntityRenderState) renderState).setRenderData(GHOST_ALPHA, 0.10F);
+                    renderState.headEquipment = ItemStack.EMPTY;
+                    renderState.chestEquipment = ItemStack.EMPTY;
+                    renderState.legsEquipment = ItemStack.EMPTY;
+                    renderState.feetEquipment = ItemStack.EMPTY;
+
+                    renderState.isInvisible = false;
                     renderState.isInvisibleToPlayer = false;
 
                     boolean isFlying = player.getAbilities().flying || !player.onGround();
@@ -193,32 +258,23 @@ public final class RequiemClient {
         if (mc.level != null) {
             Entity entity = mc.level.getEntity(event.getRenderState().id);
             if (entity instanceof Player player) {
-                if (PossessionComponent.get(player).isPossessionOngoing()) {
+                if (ladysnake.requiem.client.locki.LockiClientState.isInvisibleMode(player.getId())) {
+                    event.setCanceled(true);
+                } else if (PossessionComponent.get(player).isPossessionOngoing()) {
                     event.setCanceled(true);
                 } else if (RemnantComponent.isIncorporeal(player)) {
-                    Vec3 vel = player.getDeltaMovement();
-                    boolean isMoving = (vel.x * vel.x + vel.z * vel.z) > 0.001 || Math.abs(vel.y) > 0.03;
-                    int count = isMoving ? 3 : 1;
-                    for (int i = 0; i < count; i++) {
-                        mc.level.addParticle(
-                            RequiemParticleTypes.GHOST,
-                            player.getX() + (mc.level.getRandom().nextDouble() - 0.5) * player.getBbWidth() * 0.8,
-                            player.getY() + mc.level.getRandom().nextDouble() * player.getBbHeight() * 0.8,
-                            player.getZ() + (mc.level.getRandom().nextDouble() - 0.5) * player.getBbWidth() * 0.8,
-                            -vel.x * 0.15, 0.01 - vel.y * 0.1, -vel.z * 0.15
-                        );
-                    }
-                    if (isMoving && mc.level.getRandom().nextFloat() < 0.4F) {
-                        mc.level.addParticle(
-                            new WispTrailParticleEffect(0.3F, 0.85F, 1.0F, -0.05F, -0.02F, 0.0F),
-                            player.getX() - vel.x * 0.4,
-                            player.getY() + 0.6 - vel.y * 0.4,
-                            player.getZ() - vel.z * 0.4,
-                            0, 0, 0
-                        );
-                    }
+                    // Stealth ghost form: No noisy render-frame particle spam so ghosts can spy
                 }
             }
+        }
+    }
+
+    public static void onRenderHand(RenderHandEvent event) {
+        // The local Locki avatar is not the fruit's carrier, so its first-person arms would be misleading.
+        if (ladysnake.requiem.client.locki.LockiClientState.isLockiModeActive()
+                && "apple".equals(ladysnake.requiem.client.locki.LockiClientState.mode())
+                && ladysnake.requiem.client.locki.LockiClientState.cameraMode() == 2) {
+            event.setCanceled(true);
         }
     }
 
@@ -234,7 +290,9 @@ public final class RequiemClient {
 
     public static void onRenderGuiPost(RenderGuiEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && RemnantComponent.isIncorporeal(mc.player)) {
+        if (mc.player != null && RemnantComponent.isIncorporeal(mc.player)
+                && !(ladysnake.requiem.client.locki.LockiClientState.isLockiModeActive()
+                && !ladysnake.requiem.client.locki.LockiClientState.isSpiritVision())) {
             GuiGraphicsExtractor graphics = event.getGuiGraphics();
             long time = System.currentTimeMillis();
             // Subtle ethereal pulse between 0.35 and 0.60
@@ -338,13 +396,52 @@ public final class RequiemClient {
         }
     }
 
+    /**
+     * Computes how opaque a driven mob should be. The closer the mob is to the center of the screen, the more
+     * transparent it gets, fading in a gradient back to full opacity towards the edges of the view.
+     */
+    private static float sharedBodyAlpha(Player viewer, LivingEntity mob) {
+        Vec3 toMob = mob.getBoundingBox().getCenter().subtract(viewer.getEyePosition());
+        double distance = toMob.length();
+        if (distance < 1.0E-3) {
+            return SHARED_BODY_MIN_ALPHA;
+        }
+        double cos = viewer.getViewVector(1.0F).dot(toMob) / distance;
+        if (cos <= 0.0) {
+            return 1.0F;
+        }
+        double angle = Math.acos(Math.min(1.0, cos));
+        // A big or close mob covers more of the screen, so it keeps its transparency further from the center
+        double angularRadius = Math.atan2(Math.max(mob.getBbWidth(), mob.getBbHeight()) * 0.5, distance);
+        double t = Mth.clamp((angle - angularRadius * 0.6) / SHARED_BODY_FADE_RADIANS, 0.0, 1.0);
+        t = t * t * (3.0 - 2.0 * t);
+        return (float) (SHARED_BODY_MIN_ALPHA + (1.0F - SHARED_BODY_MIN_ALPHA) * t);
+    }
+
+    public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        SharedBodyClientState.reset();
+        ladysnake.requiem.client.locki.LockiClientState.reset();
+    }
+
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
+        ladysnake.requiem.client.locki.LockiClientState.tick();
         if (mc.level != null && mc.player != null) {
+            // Let the server know which keys are held, so controlled mobs can mimic attacking and using
+            boolean inGame = mc.mouseHandler.isMouseGrabbed();
+            boolean attackHeld = inGame && mc.options.keyAttack.isDown();
+            boolean useHeld = inGame && mc.options.keyUse.isDown();
+            SharedBodyClientState.updateHeldKeys(attackHeld, useHeld,
+                () -> ClientPacketDistributor.sendToServer(new SharedBodyNetworking.InputPayload(attackHeld, useHeld)));
             // Keep creative flight enabled client-side only when incorporeal
             if (RemnantComponent.isIncorporeal(mc.player)) {
                 if (!mc.player.isCreative() && !mc.player.isSpectator()) {
-                    mc.player.getAbilities().mayfly = true;
+                    if (ladysnake.requiem.client.locki.LockiClientState.shouldSuppressFlight()) {
+                        mc.player.getAbilities().flying = false;
+                        mc.player.getAbilities().mayfly = false;
+                    } else {
+                        mc.player.getAbilities().mayfly = true;
+                    }
                 }
             } else {
                 PossessionComponent pc = PossessionComponent.get(mc.player);
@@ -365,35 +462,59 @@ public final class RequiemClient {
                 }
             }
 
-            // Sync out-of-body shader post effect
+            // Locki's plant/fruit viewpoints take priority over the generic out-of-body shader.
             Identifier current = mc.gameRenderer.currentPostEffect();
-            if (RemnantComponent.isIncorporeal(mc.player)) {
+            Identifier lockiEffect = ladysnake.requiem.client.locki.LockiClientState.desiredPostEffect();
+            if (mc.player.hasEffect(RequiemStatusEffects.NUCLEUS_TRANSITION)) {
+                if (!NUCLEUS_POST_EFFECT.equals(current)) ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(NUCLEUS_POST_EFFECT);
+            } else if (ladysnake.requiem.client.locki.LockiClientState.isLockiModeActive()) {
+                if (lockiEffect != null && !lockiEffect.equals(current)) {
+                    ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(lockiEffect);
+                } else if (lockiEffect == null && current != null) {
+                    mc.gameRenderer.clearPostEffect();
+                }
+            } else if (RemnantComponent.isIncorporeal(mc.player) && !ladysnake.requiem.common.RequiemConfig.graphics.reducedEffects) {
                 if (!SPECTRE_POST_EFFECT.equals(current)) {
                     ((GameRendererAccessor) mc.gameRenderer).requiem$setPostEffect(SPECTRE_POST_EFFECT);
                 }
-            } else if (SPECTRE_POST_EFFECT.equals(current)) {
+            } else if (SPECTRE_POST_EFFECT.equals(current) || LOCKI_SPIRIT_POST_EFFECT.equals(current)
+                    || LOCKI_APPLE_POST_EFFECT.equals(current) || LOCKI_WHITE_VISION_POST_EFFECT.equals(current)
+                    || NUCLEUS_POST_EFFECT.equals(current)) {
                 mc.gameRenderer.clearPostEffect();
             }
 
-            // Spawn soul / ghost particles around incorporeal players
+            // Spawn faint soul particles around incorporeal players
             for (Player p : mc.level.players()) {
-                if (RemnantComponent.isIncorporeal(p)) {
+                if (RemnantComponent.isIncorporeal(p)
+                        && !ladysnake.requiem.client.locki.LockiClientState.isInvisibleMode(p.getId())) {
                     RandomSource rand = p.getRandom();
-                    mc.level.addParticle(
-                        RequiemParticleTypes.GHOST,
-                        p.getRandomX(0.5),
-                        p.getRandomY(),
-                        p.getRandomZ(0.5),
-                        (rand.nextDouble() - 0.5) * 0.05,
-                        rand.nextDouble() * 0.05,
-                        (rand.nextDouble() - 0.5) * 0.05
-                    );
+                    Vec3 vel = p.getDeltaMovement();
+                    boolean isMoving = (vel.x * vel.x + vel.z * vel.z) > 0.002 || Math.abs(vel.y) > 0.04;
+                    // Faint, rare particles so ghosts can stealthily spy on players without giving away position
+                    float spawnChance = isMoving ? 0.03F : 0.005F;
+                    if (rand.nextFloat() < spawnChance * ladysnake.requiem.common.RequiemConfig.graphics.particleDensity) {
+                        mc.level.addParticle(
+                            RequiemParticleTypes.GHOST,
+                            p.getRandomX(0.5),
+                            p.getRandomY(),
+                            p.getRandomZ(0.5),
+                            (rand.nextDouble() - 0.5) * 0.02,
+                            rand.nextDouble() * 0.02,
+                            (rand.nextDouble() - 0.5) * 0.02
+                        );
+                    }
                 }
             }
 
             // Check dissociation key press
             if (DISSOCIATION_KEY != null && DISSOCIATION_KEY.consumeClick()) {
                 ClientPacketDistributor.sendToServer(new RequiemNetworking.EtherealFracturePayload());
+            }
+            if (CONSTRUCT_ACTION_KEY != null && CONSTRUCT_ACTION_KEY.consumeClick()) {
+                ClientPacketDistributor.sendToServer(new RequiemNetworking.ConstructActionPayload(1));
+            }
+            if (CONSTRUCT_SECONDARY_KEY != null && CONSTRUCT_SECONDARY_KEY.consumeClick()) {
+                ClientPacketDistributor.sendToServer(new RequiemNetworking.ConstructActionPayload(2));
             }
         }
     }

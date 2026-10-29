@@ -33,6 +33,8 @@ import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.gamerule.RequiemGamerules;
 import ladysnake.requiem.common.item.RequiemItems;
 import ladysnake.requiem.common.loot.RequiemLootTables;
+import ladysnake.requiem.common.potion.RequiemPotions;
+import ladysnake.requiem.common.sharedbody.SharedBodyManager;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.network.ServerMessageHandling;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
@@ -107,6 +109,7 @@ public final class Requiem {
         CcaNeoForgeEngine.registerScoreboardInitializer(requiemComponents);
 
         modEventBus.addListener(ServerMessageHandling::registerPayloadHandlers);
+        modEventBus.addListener(io.github.ladysnake.blabber.impl.common.BlabberDynamicMetaregistry::onNewDatapackRegistry);
 
         modEventBus.addListener(this::onRegister);
         modEventBus.addListener(this::onCommonSetup);
@@ -117,6 +120,8 @@ public final class Requiem {
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         ladysnake.requiem.common.RequiemForgeEvents.init();
+        SharedBodyManager.init();
+        NeoForge.EVENT_BUS.addListener(RequiemPotions::onRegisterBrewingRecipes);
 
         if (FMLEnvironment.getDist().isClient()) {
             ladysnake.requiem.client.RequiemClient.init(modEventBus);
@@ -132,6 +137,7 @@ public final class Requiem {
         event.register(Registries.SOUND_EVENT, RequiemSoundEvents::register);
         event.register(Registries.ATTRIBUTE, RequiemEntityAttributes::register);
         event.register(Registries.MOB_EFFECT, RequiemStatusEffects::register);
+        event.register(Registries.POTION, RequiemPotions::register);
         event.register(Registries.GAME_RULE, RequiemGamerules::register);
         event.register(Registries.BLOCK, RequiemBlocks::registerBlocks);
         event.register(Registries.ITEM, helper -> {
@@ -160,6 +166,7 @@ public final class Requiem {
         event.put(RequiemEntities.CURED_PIGLIN_BRUTE, PiglinBrute.createAttributes().build());
         event.put(RequiemEntities.PLAYER_SHELL, PlayerShellEntity.createPlayerShellAttributes().build());
         event.put(RequiemEntities.MORTICIAN, MorticianEntity.createMorticianAttributes().build());
+        event.put(RequiemEntities.ROBOTIC_CONSTRUCT, ladysnake.requiem.common.construct.entity.RoboticConstructEntity.createAttributes().build());
     }
 
     private void onEntityAttributeModification(EntityAttributeModificationEvent event) {

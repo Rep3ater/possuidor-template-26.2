@@ -36,14 +36,45 @@ package ladysnake.requiem.common.possession.item;
 
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+
 public interface OverridableItemStack {
-    static OverridableItemStack get(ItemStack stack) {
-        @SuppressWarnings("ConstantConditions") OverridableItemStack s = (OverridableItemStack) (Object) stack;
-        return s;
-    }
+    Map<ItemStack, Integer> OVERRIDDEN_USE_TIMES = Collections.synchronizedMap(new WeakHashMap<>());
 
     static void overrideMaxUseTime(ItemStack stack, int useTime) {
-        OverridableItemStack.get(stack).requiem$overrideMaxUseTime(useTime);
+        if (stack != null) {
+            OVERRIDDEN_USE_TIMES.put(stack, useTime);
+        }
+    }
+
+    static void clearOverriddenUseTime(ItemStack stack) {
+        if (stack != null) {
+            OVERRIDDEN_USE_TIMES.remove(stack);
+        }
+    }
+
+    static int getOverriddenUseTime(ItemStack stack, int defaultUseTime) {
+        if (stack != null) {
+            Integer override = OVERRIDDEN_USE_TIMES.get(stack);
+            if (override != null) return override;
+        }
+        return defaultUseTime;
+    }
+
+    static OverridableItemStack get(ItemStack stack) {
+        return new OverridableItemStack() {
+            @Override
+            public void requiem$clearOverriddenUseTime() {
+                clearOverriddenUseTime(stack);
+            }
+
+            @Override
+            public void requiem$overrideMaxUseTime(int useTime) {
+                overrideMaxUseTime(stack, useTime);
+            }
+        };
     }
 
     void requiem$clearOverriddenUseTime();

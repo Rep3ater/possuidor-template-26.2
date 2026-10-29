@@ -44,9 +44,11 @@ import java.util.Optional;
 
 public final class RequiemTrackedDataHandlers {
     public static final EntityDataSerializer<Optional<Vec3>> OPTIONAL_VEC_3D = EntityDataSerializer.forValueType(ByteBufCodecs.optional(Vec3.STREAM_CODEC));
+    public static final EntityDataSerializer<net.minecraft.nbt.CompoundTag> COMPOUND_TAG = EntityDataSerializer.forValueType(ByteBufCodecs.COMPOUND_TAG);
 
     public static void register(RegisterEvent.RegisterHelper<EntityDataSerializer<?>> helper) {
         helper.register(Requiem.id("optional_vec_3d"), OPTIONAL_VEC_3D);
+        helper.register(Requiem.id("compound_tag"), COMPOUND_TAG);
     }
 
     public static void init() {

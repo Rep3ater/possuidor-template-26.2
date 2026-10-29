@@ -1,0 +1,497 @@
+package ladysnake.requiem.common.command;
+
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.commands.CommandContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.permissions.Permissions;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+
+import ladysnake.requiem.common.locki.LockiSpiritSystem;
+import ladysnake.requiem.common.item.LockiAppleItem;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.UUID;
+
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
+
+/**
+ * Debug commands for the Locki system (apple/body lifecycle, attrition, lifespan).
+ * Requires gamemaster permission.
+ */
+public final class LockiDebugCommand {
+
+    public static final String LOCKI_ROOT_COMMAND = "locki";
+    public static final String APPLE_SUBCOMMAND = "apple";
+    public static final String REQUEST_SUBCOMMAND = "requiem";
+    public static final String LIFESPAN_SUBCOMMAND = "lifespan";
+    public static final String RELEASE_SUBCOMMAND = "release";
+
+    private static final Method LOCKI_METHODS = initLockiMethods();
+    private static final Map<String, String> PERSISTENT_KEYS = Map.ofEntries(
+        Map.entry("mode", "requiem:locki_mode"),
+        Map.entry("apple_uuid", "requiem:locki_apple_uuid"),
+        Map.entry("apple_age", "requiem:locki_apple_age"),
+        Map.entry("apple_dropped_at", "requiem:locki_apple_dropped_at"),
+        Map.entry("apple_has_been_carried", "requiem:locki_apple_has_been_carried"),
+        Map.entry("apple_x", "requiem:locki_apple_x"),
+        Map.entry("apple_y", "requiem:locki_apple_y"),
+        Map.entry("apple_z", "requiem:locki_apple_z"),
+        Map.entry("rot_stage", "requiem:locki_rot_stage"),
+        Map.entry("applied_attrition", "requiem:locki_applied_attrition"),
+        Map.entry("life_span", "requiem:locki_life_span")
+    );
+
+    private static final int TICKS_PER_DAY = 24_000;
+    private static final long ROTTING_AWAY_AT = 14L * TICKS_PER_DAY;
+    private static final long DROP_TIMEOUT = 30L * 20L;
+    private static final int MAX_ATTRITION = 3;
+    private static final int MAX_ROT_STAGE = 4;
+
+    public static LiteralArgumentBuilder<CommandSourceStack> lockiSubcommand() {
+        return literal(LOCKI_ROOT_COMMAND)
+            .requires(LockiDebugCommand::checkPermissions)
+            .then(literal(APPLE_SUBCOMMAND).requires(LockiDebugCommand::checkPermissions)
+                .then(literal("spawn").executes(LockiDebugCommand::cmdAppleSpawn))
+                .then(literal("pick").executes(LockiDebugCommand::cmdApplePick))
+                .then(literal("drop").executes(LockiDebugCommand::cmdAppleDrop))
+                .then(literal("abandon").executes(context -> {
+                    int sec = IntegerArgumentType.getInteger(context, "sec");
+                    return cmdAppleAbandon(context, sec);
+                }))
+                .then(literal("rot").executes(LockiDebugCommand::cmdAppleRot))
+                .then(literal("healthy").executes(LockiDebugCommand::cmdAppleHealthy))
+                .then(literal("state").executes(LockiDebugCommand::cmdAppleState))
+            )
+            .then(literal(REQUEST_SUBCOMMAND).requires(LockiDebugCommand::checkPermissions)
+                .then(argument("value", IntegerArgumentType.integer(0, 100))
+                    .executes(context -> {
+                        int value = IntegerArgumentType.getInteger(context, "value");
+                        return cmdSetRequiem(context, value);
+                    })
+                )
+            )
+            .then(literal(LIFESPAN_SUBCOMMAND).requires(LockiDebugCommand::checkPermissions)
+                .then(argument("sec", IntegerArgumentType.integer(1, 28800))
+                    .executes(context -> {
+                        int sec = IntegerArgumentType.getInteger(context, "sec");
+                        return cmdSetLifespan(context, sec);
+                    })
+                )
+            )
+            .then(literal(RELEASE_SUBCOMMAND).executes(LockiDebugCommand::cmdRelease));
+    }
+
+    private static int checkPermissions(CommandSourceStack source) {
+        return source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER) ? 1 : 0;
+    }
+
+    // ---------------------------------------------------------------------
+    // Helper reflection access to LockiSpiritSystem
+    // ---------------------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
+    private static Method initLockiMethods() {
+        try {
+            Class<?> clazz = Class.forName("ladysnake.requiem.common.locki.LockiSpiritSystem");
+            Method m = clazz.getDeclaredMethod("handlePlantChoice", ServerPlayer.class, int.class);
+            m.setAccessible(true);
+            return m;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Method getHandlePlantChoice() {
+        if (LOCKI_METHODS == null) return null;
+        try {
+            return (Method) LOCKI_METHODS.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+
+    private static boolean isPlayerTagged(Player player) {
+        return player != null && player.entityTags().contains(LockiSpiritSystem.TAG);
+    }
+
+    private static boolean isTagPresent(Player player, String key) {
+        return player != null && player.entityTags().contains(key);
+    }
+
+    private static int getPersistentInt(ServerPlayer player, String key) {
+        return player.getPersistentData().getInt(key).orElse(0);
+    }
+
+    private static long getPersistentLong(ServerPlayer player, String key) {
+        return player.getPersistentData().getLong(key).orElse(0L);
+    }
+
+    private static boolean getPersistentBool(ServerPlayer player, String key) {
+        return player.getPersistentData().getBoolean(key).orElse(false);
+    }
+
+    private static double getPersistentDouble(ServerPlayer player, String key) {
+        return player.getPersistentData().getDouble(key).orElse(0.0);
+    }
+
+    private static String getPersistentString(ServerPlayer player, String key) {
+        return player.getPersistentData().getString(key).orElse("");
+    }
+
+    private static void setPersistent(ServerPlayer player, String key, int value) {
+        player.getPersistentData().putInt(key, value);
+    }
+
+    private static void setPersistent(ServerPlayer player, String key, long value) {
+        player.getPersistentData().putLong(key, value);
+    }
+
+    private static void setPersistent(ServerPlayer player, String key, boolean value) {
+        player.getPersistentData().putBoolean(key, value);
+    }
+
+    private static void setPersistent(ServerPlayer player, String key, double value) {
+        player.getPersistentData().putDouble(key, value);
+    }
+
+    private static void setPersistent(ServerPlayer player, String key, String value) {
+        player.getPersistentData().putString(key, value);
+    }
+
+    private static ServerLevel getServerLevel(ServerPlayer player) {
+        Level level = player.level();
+        return level instanceof ServerLevel sl ? sl : null;
+    }
+
+    private static ItemEntity findAppleEntity(ServerPlayer player) {
+        UUID owner = player.getUUID();
+        String uuidString = getPersistentString(player, PERSISTENT_KEYS.get("apple_uuid"));
+        if (uuidString == null || uuidString.isBlank()) return null;
+        try {
+            UUID id = UUID.fromString(uuidString);
+            ServerLevel level = getServerLevel(player);
+            if (level == null) return null;
+            Entity entity = level.getEntity(id);
+            if (entity instanceof ItemEntity item) {
+                return item;
+            }
+        } catch (IllegalArgumentException ignored) {
+        }
+        return null;
+    }
+
+    private static boolean isOwnedApple(ItemStack stack, UUID owner) {
+        if (stack.isEmpty()) return false;
+        ItemStack copy = stack.copy();
+        if (!(copy.getItem() instanceof ladysnake.requiem.common.item.LockiAppleItem)) return false;
+        String id = copy.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.core.component.DataComponents.CUSTOM_DATA.EMPTY)
+            .copyTag().getString("locki:owner").orElse("");
+        return owner.toString().equals(id);
+    }
+
+    // ---------------------------------------------------------------------
+    // Apple / body commands
+    // ---------------------------------------------------------------------
+
+    private static int cmdAppleSpawn(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.spawn.not_tagged"));
+            return 0;
+        }
+        ServerLevel level = getServerLevel(player);
+        if (level == null) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.spawn.no_level"));
+            return 0;
+        }
+        // Find a lower leaf position near the player
+        Vec3 pos = player.position();
+        int baseY = (int) Math.floor(pos.y) - 1;
+        BlockPos spawnPos = findLowerLeaf(level, new BlockPos((int) pos.x, baseY, (int) pos.z));
+        if (spawnPos == null) {
+            spawnPos = new BlockPos((int) pos.x, baseY, (int) pos.z);
+        }
+        ItemStack apple = new ItemStack(Items.APPLE);
+        apple.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+            net.minecraft.core.component.CustomData.of(new net.minecraft.nbt.CompoundTag()));
+        // Use a LockiAppleItem? We need the proper item. For debug we use a regular apple but tag it.
+        ItemEntity entity = new ItemEntity(level, spawnPos.getX() + 0.5, spawnPos.getY() + 0.35, spawnPos.getZ() + 0.5, apple);
+        entity.setDefaultPickUpDelay();
+        entity.setNoGravity(true);
+        entity.setDeltaMovement(Vec3.ZERO);
+        level.addFreshEntity(entity);
+
+        setPersistent(player, PERSISTENT_KEYS.get("mode"), LockiSpiritSystem.MODE_APPLE);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_uuid"), entity.getUUID().toString());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_age"), 0L);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_dropped_at"), -1L);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_has_been_carried"), false);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_x"), entity.getX());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_y"), entity.getY());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_z"), entity.getZ());
+        setPersistent(player, PERSISTENT_KEYS.get("rot_stage"), 0);
+        setPersistent(player, PERSISTENT_KEYS.get("applied_attrition"), 0);
+        player.sendSystemMessage(Component.literal("§aLocki apple spawned at ").append(
+            Component.literal((int) spawnPos.getX() + ", " + (int) spawnPos.getY() + ", " + (int) spawnPos.getZ())));
+        return 1;
+    }
+
+    private static int cmdApplePick(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.pick.not_tagged"));
+            return 0;
+        }
+        ServerLevel level = getServerLevel(player);
+        if (level == null) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.pick.no_level"));
+            return 0;
+        }
+        ItemEntity entity = findAppleEntity(player);
+        if (entity == null) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.pick.none"));
+            return 0;
+        }
+        // If already carried, nothing to do
+        if (getPersistentBool(player, PERSISTENT_KEYS.get("apple_has_been_carried"))) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.pick.already"));
+            return 0;
+        }
+        // Pick up: move apple to player, mark carried
+        setPersistent(player, PERSISTENT_KEYS.get("apple_has_been_carried"), true);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_dropped_at"), -1L);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_x"), player.getX());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_y"), player.getY());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_z"), player.getZ());
+        player.sendSystemMessage(Component.literal("§aApple picked up."));
+        return 1;
+    }
+
+    private static int cmdAppleDrop(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.drop.not_tagged"));
+            return 0;
+        }
+        ServerLevel level = getServerLevel(player);
+        if (level == null) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.drop.no_level"));
+            return 0;
+        }
+        if (!getPersistentBool(player, PERSISTENT_KEYS.get("apple_has_been_carried"))) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.drop.already"));
+            return 0;
+        }
+        // Spawn the apple at the player's feet
+        ItemStack apple = new ItemStack(Items.APPLE);
+        ItemEntity entity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), apple);
+        entity.setDefaultPickUpDelay();
+        entity.setNoGravity(true);
+        entity.setDeltaMovement(Vec3.ZERO);
+        level.addFreshEntity(entity);
+
+        setPersistent(player, PERSISTENT_KEYS.get("apple_dropped_at"), level.getGameTime());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_x"), entity.getX());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_y"), entity.getY());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_z"), entity.getZ());
+        player.sendSystemMessage(Component.literal("§aApple dropped."));
+        return 1;
+    }
+
+    private static int cmdAppleAbandon(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.abandon.not_tagged"));
+            return 0;
+        }
+        // Drop the apple
+        if (cmdAppleDrop(context) != 1) {
+            return 0;
+        }
+        int sec = IntegerArgumentType.getInteger(context, "sec");
+        sec = Math.max(1, Math.min(600, sec));
+        long droppedAt = player.getPersistentData().getLong(PERSISTENT_KEYS.get("apple_dropped_at")).orElse(-1L);
+        if (droppedAt < 0L) droppedAt = player.level().getGameTime();
+        setPersistent(player, PERSISTENT_KEYS.get("apple_dropped_at"), droppedAt + (long) sec * 20L);
+        player.sendSystemMessage(Component.literal("§aApple abandoned. Auto-release in " + sec + " seconds."));
+        return 1;
+    }
+
+    private static int cmdAppleRot(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.rot.not_tagged"));
+            return 0;
+        }
+        ServerLevel level = getServerLevel(player);
+        if (level == null) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.rot.no_level"));
+            return 0;
+        }
+        // Check if apple exists
+        ItemEntity entity = findAppleEntity(player);
+        if (entity == null) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.rot.no_apple"));
+            return 0;
+        }
+        // Apply max attrition
+        setPersistent(player, PERSISTENT_KEYS.get("apple_age"), ROTTING_AWAY_AT - 1L);
+        setPersistent(player, PERSISTENT_KEYS.get("rot_stage"), MAX_ROT_STAGE);
+        setPersistent(player, PERSISTENT_KEYS.get("applied_attrition"), MAX_ATTRITION);
+        // Force one tick to trigger the rotted message and release
+        LockiSpiritSystem.tick(player);
+        player.sendSystemMessage(Component.literal("§cApple rotted away. Sapling spawned."));
+        return 1;
+    }
+
+    private static int cmdAppleHealthy(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.healthy.not_tagged"));
+            return 0;
+        }
+        setPersistent(player, PERSISTENT_KEYS.get("apple_age"), 0L);
+        setPersistent(player, PERSISTENT_KEYS.get("rot_stage"), 0);
+        setPersistent(player, PERSISTENT_KEYS.get("applied_attrition"), 0);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_dropped_at"), -1L);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_has_been_carried"), false);
+        setPersistent(player, PERSISTENT_KEYS.get("apple_x"), player.getX());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_y"), player.getY());
+        setPersistent(player, PERSISTENT_KEYS.get("apple_z"), player.getZ());
+        player.sendSystemMessage(Component.literal("§aApple returned to fresh state."));
+        return 1;
+    }
+
+    private static int cmdAppleState(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.state.not_tagged"));
+            return 0;
+        }
+        ServerLevel level = getServerLevel(player);
+        if (level == null) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.apple.state.no_level"));
+            return 0;
+        }
+        String mode = getPersistentString(player, PERSISTENT_KEYS.get("mode"));
+        int age = getPersistentInt(player, PERSISTENT_KEYS.get("apple_age"));
+        int rotStage = getPersistentInt(player, PERSISTENT_KEYS.get("rot_stage"));
+        int applied = getPersistentInt(player, PERSISTENT_KEYS.get("applied_attrition"));
+        int droppedAt = getPersistentInt(player, PERSISTENT_KEYS.get("apple_dropped_at"));
+        boolean carried = getPersistentBool(player, PERSISTENT_KEYS.get("apple_has_been_carried"));
+        int lifespan = getPersistentInt(player, PERSISTENT_KEYS.get("life_span"));
+        String droppedFor = "";
+        if (droppedAt >= 0) {
+            long seconds = (level.getGameTime() - droppedAt) / 20;
+            droppedFor = " (" + seconds + "s dropped)";
+        }
+        Component msg = Component.translatable("requiem:commands.locki.apple.state.header")
+            .append(Component.literal(" mode=").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFFFFFF))))
+            .append(Component.literal(mode).withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0x4FC3F7))))
+            .append(Component.literal(" age=").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFFFFFF))))
+            .append(Component.literal(age + "t/" + (age / 20.0) + "s").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0x4FC3F7))))
+            .append(Component.literal(" rot=").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFFFFFF))))
+            .append(Component.literal(rotStage + "/" + MAX_ROT_STAGE).withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFF5722))))
+            .append(Component.literal(" attrition=").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFFFFFF))))
+            .append(Component.literal(applied + "/" + MAX_ATTRITION).withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFF5722))))
+            .append(Component.literal(" carried=").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFFFFFF))))
+            .append(Component.literal(carried ? "yes" : "no").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0x4FC3F7))))
+            .append(Component.literal(droppedFor).withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFF9800))))
+            .append(Component.literal(" lifespan=" + lifespan + "s").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0x9FA8DA))))
+            .append(Component.literal("").withStyle(new net.minecraft.util.text.Style().withColor(net.minecraft.util.math.Color.fromRgb(0xFFFFFF))));
+        context.getSource().sendSuccess(() -> msg, true);
+        return 1;
+    }
+
+    // ---------------------------------------------------------------------
+    // Requiem / lifespan commands
+    // ---------------------------------------------------------------------
+
+    private static int cmdSetRequiem(CommandContext<CommandSourceStack> context, int value) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.requiem.not_tagged"));
+            return 0;
+        }
+        value = Math.max(0, Math.min(100, value));
+        setPersistent(player, PERSISTENT_KEYS.get("applied_attrition"), value);
+        player.sendSystemMessage(Component.literal("§cRequiem Attrition set to " + value + "%."));
+        return 1;
+    }
+
+    private static int cmdSetLifespan(CommandContext<CommandSourceStack> context, int sec) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.lifespan.not_tagged"));
+            return 0;
+        }
+        sec = Math.max(1, Math.min(28800, sec));
+        setPersistent(player, PERSISTENT_KEYS.get("life_span"), sec);
+        player.sendSystemMessage(Component.literal("§aApple lifespan set to " + sec + " seconds."));
+        return 1;
+    }
+
+    // ---------------------------------------------------------------------
+    // Release command
+    // ---------------------------------------------------------------------
+
+    private static int cmdRelease(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        if (player == null || !isPlayerTagged(player)) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.release.not_tagged"));
+            return 0;
+        }
+        ServerLevel level = getServerLevel(player);
+        if (level == null) {
+            context.getSource().sendFailure(Component.translatable("requiem:commands.locki.release.no_level"));
+            return 0;
+        }
+        // Trigger release by calling the internal releaseApple logic
+        // We simulate the end state
+        setPersistent(player, PERSISTENT_KEYS.get("apple_age"), ROTTING_AWAY_AT - 1L);
+        setPersistent(player, PERSISTENT_KEYS.get("rot_stage"), MAX_ROT_STAGE);
+        setPersistent(player, PERSISTENT_KEYS.get("applied_attrition"), MAX_ATTRITION);
+        // Force the next tick to handle the rotted message and release
+        LockiSpiritSystem.tick(player);
+        player.sendSystemMessage(Component.literal("§cLocki released. Body rotted away, sapling spawned."));
+        return 1;
+    }
+
+    // ---------------------------------------------------------------------
+    // Private helpers
+    // ---------------------------------------------------------------------
+
+    private static BlockPos findLowerLeaf(Level level, BlockPos center) {
+        BlockPos best = null;
+        double bestScore = Double.MAX_VALUE;
+        for (int x = center.getX() - 4; x <= center.getX() + 4; x++) {
+            for (int z = center.getZ() - 4; z <= center.getZ() + 4; z++) {
+                for (int y = center.getY() - 2; y <= center.getY() + 1; y++) {
+                    BlockPos pos = new BlockPos(x, y, z);
+                    if (!level.getBlockState(pos).is(net.minecraft.tags.BlockTags.LEAVES)) continue;
+                    double dx = x - center.getX();
+                    double dz = z - center.getZ();
+                    double dy = y - center.getY();
+                    double score = dx * dx + dz * dz + dy * 0.5;
+                    if (score < bestScore) {
+                        bestScore = score;
+                        best = pos;
+                    }
+                }
+            }
+        }
+        return best;
+    }
+}

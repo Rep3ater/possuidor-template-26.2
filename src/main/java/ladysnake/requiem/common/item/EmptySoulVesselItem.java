@@ -44,9 +44,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -59,6 +62,11 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.gameevent.GameEvent;
+
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -114,21 +122,51 @@ public class EmptySoulVesselItem extends Item {
         return InteractionResult.PASS;
     }
 
+    public static LivingEntity findTarget(LivingEntity user) {
+        Vec3 eyePos = user.getEyePosition();
+        Vec3 look = user.getViewVector(1.0F);
+        Vec3 end = eyePos.add(look.scale(8.0));
+        AABB box = user.getBoundingBox().expandTowards(look.scale(8.0)).inflate(2.0);
+        EntityHitResult hit = ProjectileUtil.getEntityHitResult(
+            user, eyePos, end, box, e -> e instanceof LivingEntity && !e.isSpectator(), 64.0
+        );
+        return hit != null && hit.getEntity() instanceof LivingEntity living ? living : null;
+    }
+
+    @Override
+    public InteractionResult use(Level world, Player user, InteractionHand hand) {
+        ItemStack stack = user.getItemInHand(hand);
+        LivingEntity target = findTarget(user);
+        if (target != null) {
+            Optional<SoulCaptureEvents.CaptureType> captureType = checkCapturePreconditions(user, target);
+            if (captureType.isPresent()) {
+                final LivingEntity finalTarget = target;
+                CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
+                    CompoundTag activeData = new CompoundTag();
+                    activeData.putInt("use_time", computeCaptureTime(finalTarget, user, captureType.get()));
+                    NbtCompat.putUuid(activeData, "target", finalTarget.getUUID());
+                    tag.put(ACTIVE_DATA_TAG, activeData);
+                });
+            }
+        }
+        user.startUsingItem(hand);
+        return InteractionResult.CONSUME;
+    }
+
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
-        Optional<SoulCaptureEvents.CaptureType> captureType = checkCapturePreconditions(user, entity);
-        if (captureType.isPresent()) {
-            CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
-                CompoundTag activeData = new CompoundTag();
-                activeData.putInt("use_time", computeCaptureTime(entity, user, captureType.get()));
-                NbtCompat.putUuid(activeData, "target", entity.getUUID());
-                tag.put(ACTIVE_DATA_TAG, activeData);
-            });
-            user.startUsingItem(hand);
-            return InteractionResult.CONSUME;
+        if (entity instanceof PathfinderMob mob && ladysnake.requiem.common.construct.ai.SoulAiManager.hasInjectedSoul(mob)) {
+            if (!user.level().isClientSide()) {
+                String soulTypeStr = ladysnake.requiem.common.construct.ai.SoulAiManager.getInjectedSoulType(mob);
+                ladysnake.requiem.common.construct.ai.SoulAiManager.extractSoul(mob);
+                net.minecraft.resources.Identifier id = net.minecraft.resources.Identifier.tryParse(soulTypeStr);
+                EntityType<?> type = id != null ? net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(id).map(Holder::value).orElse(EntityTypes.ZOMBIE) : EntityTypes.ZOMBIE;
+                ItemStack filled = FilledSoulVesselItem.forEntityType(type);
+                user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, filled));
+            }
+            return InteractionResult.SUCCESS;
         }
-
-        return super.interactLivingEntity(stack, user, entity, hand);
+        return InteractionResult.PASS;
     }
 
     public static Optional<SoulCaptureEvents.CaptureType> checkCapturePreconditions(LivingEntity user, LivingEntity entity) {
@@ -149,13 +187,20 @@ public class EmptySoulVesselItem extends Item {
     }
 
     private int computeCaptureTime(LivingEntity target, LivingEntity user, SoulCaptureEvents.CaptureType captureType) {
+        if (user instanceof Player player && player.isCreative()) {
+            return 15;
+        }
+        if (user.getMainHandItem().getItem() instanceof CreativeSoulVesselItem || user.getOffhandItem().getItem() instanceof CreativeSoulVesselItem) {
+            return 15;
+        }
         int targetSoulStrength = computeSoulDefense(target, captureType);
         int playerSoulStrength = computeSoulOffense(user);
         float max = switch (captureType) {
-            case NORMAL -> 3.0f;
+            case NORMAL -> 2.0f;
             case AGGREGATE -> 1.5f;
         };
-        return Math.round(96.0f * Mth.clamp((float) targetSoulStrength / playerSoulStrength, 1.0f, max));
+        float ratio = Mth.clamp((float) targetSoulStrength / Math.max(1, playerSoulStrength), 0.5f, max);
+        return Math.round(40.0f * ratio);
     }
 
     @Override
@@ -163,13 +208,17 @@ public class EmptySoulVesselItem extends Item {
         if (!(world instanceof ServerLevel serverWorld)) return stack;
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         CompoundTag activeData = tag.getCompound(ACTIVE_DATA_TAG).orElse(null);
-        if (activeData == null) return stack;
+        UUID targetId = activeData != null ? NbtCompat.getUuid(activeData, "target").orElse(null) : null;
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.remove(ACTIVE_DATA_TAG));
-        UUID targetId = NbtCompat.getUuid(activeData, "target").orElse(null);
-        if (targetId == null) return stack;
-        Entity entity = serverWorld.getEntity(targetId);
 
-        if (!(entity instanceof LivingEntity target)) return stack;
+        LivingEntity target = null;
+        if (targetId != null && serverWorld.getEntity(targetId) instanceof LivingEntity living) {
+            target = living;
+        } else {
+            target = findTarget(user);
+        }
+
+        if (target == null) return stack;
         if (!(user instanceof ServerPlayer remnant)) return stack;
         Optional<SoulCaptureEvents.CaptureType> captureType = checkCapturePreconditions(remnant, target);
         if (captureType.isEmpty()) return stack;
@@ -177,23 +226,25 @@ public class EmptySoulVesselItem extends Item {
         ItemStack result;
         remnant.awardStat(Stats.ITEM_USED.get(this));
 
-        if (wins(remnant, target, captureType.get())) {
-            result = FilledSoulVesselItem.forEntityType(entity.getType());
+        final LivingEntity finalTarget = target;
+        if (wins(remnant, finalTarget, captureType.get())) {
+            result = FilledSoulVesselItem.forEntityType(finalTarget.getType());
             UUID recordUuid = switch(captureType.get()) {
-                case NORMAL -> setupRecord(target).getUuid();
+                case NORMAL -> setupRecord(finalTarget).getUuid();
                 case AGGREGATE -> UUID.randomUUID();
             };
             CustomData.update(DataComponents.CUSTOM_DATA, result, resTag -> {
                 CompoundTag soulFragment = resTag.getCompound(FilledSoulVesselItem.SOUL_FRAGMENT_NBT).orElseGet(CompoundTag::new);
                 NbtCompat.putUuid(soulFragment, "uuid", recordUuid);
-                soulFragment.putString("type", net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
+                soulFragment.putString("type", net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(finalTarget.getType()).toString());
                 resTag.put(FilledSoulVesselItem.SOUL_FRAGMENT_NBT, soulFragment);
             });
             switch (captureType.get()) {
-                case NORMAL -> SoulHolderComponent.get(target).removeSoul();
-                case AGGREGATE -> target.hurt(target.damageSources().magic(), SOUL_AGGREGATE_STEALING_DAMAGE);
+                case NORMAL -> SoulHolderComponent.get(finalTarget).removeSoul();
+                case AGGREGATE -> finalTarget.hurt(finalTarget.damageSources().magic(), SOUL_AGGREGATE_STEALING_DAMAGE);
             }
             remnant.getCooldowns().addCooldown(result, POST_CAPTURE_COOLDOWN);
+            remnant.level().playSound(null, remnant.getX(), remnant.getY(), remnant.getZ(), RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, remnant.getSoundSource(), 1.0F, 1.0F);
         } else {
             AttritionStatusEffect.apply(remnant, 1, 20 * 60 * 5);
             WandererRemnantState.spawnAttritionParticles(remnant, remnant);
@@ -212,7 +263,7 @@ public class EmptySoulVesselItem extends Item {
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-        return tag.getCompound(ACTIVE_DATA_TAG).flatMap(c -> c.getInt("use_time")).orElse(0);
+        return tag.getCompound(ACTIVE_DATA_TAG).flatMap(c -> c.getInt("use_time")).orElse(40);
     }
 
     @Override
@@ -220,11 +271,25 @@ public class EmptySoulVesselItem extends Item {
         if (world instanceof ServerLevel serverWorld) {
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             UUID targetId = tag.getCompound(ACTIVE_DATA_TAG).flatMap(c -> NbtCompat.getUuid(c, "target")).orElse(null);
-            if (targetId != null) {
-                Entity target = serverWorld.getEntity(targetId);
-                if (target instanceof LivingEntity) {
-                    playSoulCaptureEffects(user, target);
+            LivingEntity target = null;
+            if (targetId != null && serverWorld.getEntity(targetId) instanceof LivingEntity living) {
+                target = living;
+            } else {
+                target = findTarget(user);
+                if (target != null) {
+                    final LivingEntity finalTarget = target;
+                    checkCapturePreconditions(user, target).ifPresent(cap -> {
+                        CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> {
+                            CompoundTag activeDataTag = new CompoundTag();
+                            activeDataTag.putInt("use_time", computeCaptureTime(finalTarget, user, cap));
+                            NbtCompat.putUuid(activeDataTag, "target", finalTarget.getUUID());
+                            t.put(ACTIVE_DATA_TAG, activeDataTag);
+                        });
+                    });
                 }
+            }
+            if (target != null) {
+                playSoulCaptureEffects(user, target);
             }
         }
     }
@@ -246,14 +311,20 @@ public class EmptySoulVesselItem extends Item {
     }
 
     public static boolean wins(LivingEntity user, LivingEntity target, SoulCaptureEvents.CaptureType captureType) {
+        if (user instanceof Player player && player.isCreative()) {
+            return true;
+        }
+        if (user.getMainHandItem().getItem() instanceof CreativeSoulVesselItem || user.getOffhandItem().getItem() instanceof CreativeSoulVesselItem) {
+            return true;
+        }
         int soulOffense = computeSoulOffense(user);
         int soulDefense = computeSoulDefense(target, captureType);
 
-        if (soulOffense > soulDefense) {
+        if (soulOffense >= soulDefense) {
             return true;
         }
 
-        float strengthRatio = (float) soulOffense / soulDefense;
+        float strengthRatio = (float) soulOffense / Math.max(1, soulDefense);
         return user.getRandom().nextFloat() < (strengthRatio * strengthRatio);
     }
 

@@ -55,6 +55,36 @@ public final class RequiemBlocks {
     public static final RunestoneBlock RUNIC_TACHYLITE_PENANCE = makeRunic("penance", 3);
     public static final ReclamationRunestoneBlock RUNIC_TACHYLITE_RECLAMATION = make(p -> new ReclamationRunestoneBlock(p, () -> RequiemStatusEffects.RECLAMATION, 1), "tachylite/runic/reclamation", CreativeModeTabs.FUNCTIONAL_BLOCKS, BlockBehaviour.Properties.ofFullCopy(TACHYLITE_RUNESTONE));
     public static final RiftRunestoneBlock RIFT_RUNE = make(RiftRunestoneBlock::new, "tachylite/runic/rift", CreativeModeTabs.FUNCTIONAL_BLOCKS, BlockBehaviour.Properties.ofFullCopy(TACHYLITE_RUNESTONE));
+    public static final Block CONSTRUCT_HEART = make(
+        ladysnake.requiem.common.construct.block.ConstructHeartBlock::new,
+        "construct_heart",
+        CreativeModeTabs.FUNCTIONAL_BLOCKS,
+        BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).lightLevel(state -> 12).noOcclusion()
+    );
+    public static final Block SMALL_CONSTRUCT_HEART = make(
+        ladysnake.requiem.common.construct.block.SmallConstructHeartBlock::new,
+        "small_construct_heart",
+        CreativeModeTabs.FUNCTIONAL_BLOCKS,
+        BlockBehaviour.Properties.ofFullCopy(Blocks.GOLD_BLOCK).lightLevel(state -> 12).noOcclusion()
+    );
+    public static final Block KEY_TRIGGER_R = make(
+        ladysnake.requiem.common.construct.block.KeyTriggerBlock::newR,
+        "key_trigger_r",
+        CreativeModeTabs.REDSTONE_BLOCKS,
+        BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()
+    );
+    public static final Block KEY_TRIGGER_V = make(
+        ladysnake.requiem.common.construct.block.KeyTriggerBlock::newV,
+        "key_trigger_v",
+        CreativeModeTabs.REDSTONE_BLOCKS,
+        BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()
+    );
+    public static final Block CLONING_MACHINE = make(
+        Block::new,
+        "cloning_machine",
+        CreativeModeTabs.FUNCTIONAL_BLOCKS,
+        BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).strength(5.0F, 6.0F).lightLevel(state -> 7).noOcclusion()
+    );
 
     private static Block makeVariant(Block base, String id) {
         return make(Block::new, id, CreativeModeTabs.BUILDING_BLOCKS, BlockBehaviour.Properties.ofFullCopy(base));

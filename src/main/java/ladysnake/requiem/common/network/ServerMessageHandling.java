@@ -54,6 +54,8 @@ public final class ServerMessageHandling {
     public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1.0.0");
 
+        ladysnake.requiem.common.sharedbody.SharedBodyNetworking.register(registrar);
+
         // Core payloads
         registrar.playToServer(
             RequiemCoreNetworking.UseDirectAbilityPayload.TYPE,
@@ -97,6 +99,21 @@ public final class ServerMessageHandling {
             RequiemNetworking.DialogueActionPayload.STREAM_CODEC,
             ServerMessageHandling::handleDialogueAction
         );
+        registrar.playToServer(
+            RequiemNetworking.ConstructActionPayload.TYPE,
+            RequiemNetworking.ConstructActionPayload.STREAM_CODEC,
+            ServerMessageHandling::handleConstructAction
+        );
+        registrar.playToServer(
+            RequiemNetworking.LockiPlantChoicePayload.TYPE,
+            RequiemNetworking.LockiPlantChoicePayload.STREAM_CODEC,
+            ServerMessageHandling::handleLockiPlantChoice
+        );
+        registrar.playToServer(
+            RequiemNetworking.HomunculusBrainSavePayload.TYPE,
+            RequiemNetworking.HomunculusBrainSavePayload.STREAM_CODEC,
+            ServerMessageHandling::handleHomunculusBrainSave
+        );
 
         // Clientbound payloads
         registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, ServerMessageHandling::handleAnchorDamage);
@@ -107,6 +124,9 @@ public final class ServerMessageHandling {
         registrar.playToClient(RequiemNetworking.ObeliskPowerUpdatePayload.TYPE, RequiemNetworking.ObeliskPowerUpdatePayload.STREAM_CODEC, ServerMessageHandling::handleObeliskPowerUpdate);
         registrar.playToClient(RequiemNetworking.RiftWitnessedPayload.TYPE, RequiemNetworking.RiftWitnessedPayload.STREAM_CODEC, ServerMessageHandling::handleRiftWitnessed);
         registrar.playToClient(RequiemNetworking.OpenDialoguePayload.TYPE, RequiemNetworking.OpenDialoguePayload.STREAM_CODEC, ServerMessageHandling::handleOpenDialogue);
+        registrar.playToClient(RequiemNetworking.ShellProfileSyncPayload.TYPE, RequiemNetworking.ShellProfileSyncPayload.STREAM_CODEC, ServerMessageHandling::handleShellProfileSync);
+        registrar.playToClient(RequiemNetworking.LockiStatePayload.TYPE, RequiemNetworking.LockiStatePayload.STREAM_CODEC, ServerMessageHandling::handleLockiState);
+        registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, ServerMessageHandling::handleHomunculusBrainOpen);
     }
 
     private static void handleConsumeResurrectionItem(RequiemCoreNetworking.ConsumeResurrectionItemPayload payload, IPayloadContext context) {
@@ -199,6 +219,12 @@ public final class ServerMessageHandling {
         });
     }
 
+    private static void handleShellProfileSync(RequiemNetworking.ShellProfileSyncPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            baritone.api.fakeplayer.ClientPlayerShellEntity.handleProfileSync(payload.entityId(), payload.profile());
+        });
+    }
+
     private static void handleDialogueAction(RequiemNetworking.DialogueActionPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player) {
@@ -210,6 +236,42 @@ public final class ServerMessageHandling {
                 ladysnake.requiem.api.v1.remnant.DeathSuspender suspender = ladysnake.requiem.api.v1.remnant.DeathSuspender.get(player);
                 if (suspender.isLifeTransient()) {
                     suspender.resumeDeath();
+                }
+            }
+        });
+    }
+
+    private static void handleLockiPlantChoice(RequiemNetworking.LockiPlantChoicePayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            if (context.player() instanceof ServerPlayer player) {
+                ladysnake.requiem.common.locki.LockiSpiritSystem.handlePlantChoice(player, payload.choice());
+            }
+        });
+    }
+
+    private static void handleLockiState(RequiemNetworking.LockiStatePayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> ladysnake.requiem.client.locki.LockiClientState.accept(payload));
+    }
+
+    private static void handleHomunculusBrainOpen(RequiemNetworking.HomunculusBrainOpenPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> net.minecraft.client.Minecraft.getInstance().setScreenAndShow(
+            new ladysnake.requiem.client.gui.HomunculusBrainScreen(payload.entityId(), payload.program())));
+    }
+
+    private static void handleHomunculusBrainSave(RequiemNetworking.HomunculusBrainSavePayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            if (context.player() instanceof ServerPlayer player) {
+                ladysnake.requiem.common.locki.MarbasAbilitySystem.applyBrainProgram(player, payload.entityId(), payload.program());
+            }
+        });
+    }
+
+    private static void handleConstructAction(RequiemNetworking.ConstructActionPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            if (context.player() instanceof ServerPlayer player) {
+                Mob host = ladysnake.requiem.api.v1.possession.PossessionComponent.get(player).getHost();
+                if (host instanceof ladysnake.requiem.common.construct.entity.RoboticConstructEntity construct) {
+                    construct.performConstructAction(payload.actionId());
                 }
             }
         });

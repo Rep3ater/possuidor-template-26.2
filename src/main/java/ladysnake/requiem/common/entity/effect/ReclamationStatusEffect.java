@@ -74,6 +74,12 @@ public class ReclamationStatusEffect extends MobEffect implements StickyStatusEf
     }
 
     @Override
+    public void onEffectAdded(LivingEntity entity, int amplifier) {
+        super.onEffectAdded(entity, amplifier);
+        AttritionStatusEffect.reduce(entity, amplifier + 1);
+    }
+
+    @Override
     public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration == 1;
     }

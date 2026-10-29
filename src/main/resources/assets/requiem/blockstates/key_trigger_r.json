@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "requiem:block/key_trigger_r"
+    },
+    "powered=true": {
+      "model": "requiem:block/key_trigger_r_on"
+    }
+  }
+}

@@ -28,6 +28,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -53,8 +54,24 @@ public final class RequiemItems {
     public static final CreativeSoulVesselItem CREATIVE_SOUL_VESSEL = new CreativeSoulVesselItem(new Item.Properties().setId(key("creative_soul_vessel")).stacksTo(1));
     public static final FilledSoulVesselItem FILLED_SOUL_VESSEL = new FilledSoulVesselItem(new Item.Properties().setId(key("filled_soul_vessel")).stacksTo(1), EMPTY_SOUL_VESSEL);
     public static final Item SHATTERED_SOUL_VESSEL = new Item(new Item.Properties().setId(key("shattered_soul_vessel")).stacksTo(1));
+    private static Item.Properties lockiAppleProperties(String id) {
+        return new Item.Properties().setId(key(id)).stacksTo(64)
+            .food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.3F).build());
+    }
+    public static final LockiAppleItem LOCKI_APPLE = new LockiAppleItem(lockiAppleProperties("locki_apple"), 0);
+    public static final LockiAppleItem LOCKI_APPLE_ROT_1 = new LockiAppleItem(lockiAppleProperties("locki_apple_rot_1"), 1);
+    public static final LockiAppleItem LOCKI_APPLE_ROT_2 = new LockiAppleItem(lockiAppleProperties("locki_apple_rot_2"), 2);
+    public static final LockiAppleItem LOCKI_APPLE_ROT_3 = new LockiAppleItem(lockiAppleProperties("locki_apple_rot_3"), 3);
+    public static final LockiAppleItem LOCKI_APPLE_ROT_4 = new LockiAppleItem(lockiAppleProperties("locki_apple_rot_4"), 4);
     public static final DemonSoulVesselItem PURE_SOUL_VESSEL = new DemonSoulVesselItem(RemnantTypes.MORTAL, ChatFormatting.AQUA, new Item.Properties().setId(key("pure_soul_vessel")).stacksTo(1), "requiem:remnant_vessel.cure");
     public static final DemonSoulVesselItem SEALED_REMNANT_VESSEL = new DemonSoulVesselItem(RemnantTypes.REMNANT, ChatFormatting.RED, new Item.Properties().setId(key("sealed_remnant_vessel")).stacksTo(1), "requiem:remnant_vessel.curse");
+    public static final Item PHENEX_SCROLL = new Item(new Item.Properties().setId(key("phenex_scroll")).stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static final Item SOUL_LOCATOR = new Item(new Item.Properties().setId(key("soul_locator")).stacksTo(1).rarity(Rarity.RARE));
+    public static final Item SUFFERING_HEAD = new Item(new Item.Properties().setId(key("suffering_head")).stacksTo(1).rarity(Rarity.EPIC));
+    public static final Item SULFUR_CUBE = new Item(new Item.Properties().setId(key("sulfur_cube")).stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final Item EMBRYO = new Item(new Item.Properties().setId(key("embryo")).stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final Item VESSEL_SHARD = new Item(new Item.Properties().setId(key("vessel_shard")).stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final Item HOMUNCULUS = new Item(new Item.Properties().setId(key("homunculus")).stacksTo(16).rarity(Rarity.RARE));
     public static final Item MORTICIAN_SPAWN_EGG = new SpawnEggItem(new Item.Properties().setId(key("mortician_spawn_egg")).spawnEgg(RequiemEntities.MORTICIAN));
 
     public static final Map<MobEffect, IchorVesselItem> vesselsByEffect = new LinkedHashMap<>();
@@ -83,12 +100,34 @@ public final class RequiemItems {
         registerItem(helper, CREATIVE_SOUL_VESSEL, "creative_soul_vessel", CreativeModeTabs.TOOLS_AND_UTILITIES);
         registerItem(helper, FILLED_SOUL_VESSEL, "filled_soul_vessel", CreativeModeTabs.TOOLS_AND_UTILITIES);
         registerItem(helper, SHATTERED_SOUL_VESSEL, "shattered_soul_vessel", CreativeModeTabs.TOOLS_AND_UTILITIES);
+        registerItem(helper, LOCKI_APPLE, "locki_apple", null);
+        registerItem(helper, LOCKI_APPLE_ROT_1, "locki_apple_rot_1", null);
+        registerItem(helper, LOCKI_APPLE_ROT_2, "locki_apple_rot_2", null);
+        registerItem(helper, LOCKI_APPLE_ROT_3, "locki_apple_rot_3", null);
+        registerItem(helper, LOCKI_APPLE_ROT_4, "locki_apple_rot_4", null);
         registerItem(helper, SEALED_REMNANT_VESSEL, "sealed_remnant_vessel", CreativeModeTabs.TOOLS_AND_UTILITIES);
         registerItem(helper, ICHOR_VESSEL_ATTRITION, "ichor_vessel_attrition", CreativeModeTabs.TOOLS_AND_UTILITIES);
         registerItem(helper, ICHOR_VESSEL_EMANCIPATION, "ichor_vessel_emancipation", CreativeModeTabs.TOOLS_AND_UTILITIES);
         registerItem(helper, ICHOR_VESSEL_PENANCE, "ichor_vessel_penance", CreativeModeTabs.TOOLS_AND_UTILITIES);
         registerItem(helper, ICHOR_VESSEL_RECLAMATION, "ichor_vessel_reclamation", CreativeModeTabs.TOOLS_AND_UTILITIES);
+        registerItem(helper, PHENEX_SCROLL, "phenex_scroll", CreativeModeTabs.TOOLS_AND_UTILITIES);
+        registerItem(helper, SOUL_LOCATOR, "soul_locator", CreativeModeTabs.TOOLS_AND_UTILITIES);
+        registerItem(helper, SUFFERING_HEAD, "suffering_head", CreativeModeTabs.COMBAT);
+        registerItem(helper, SULFUR_CUBE, "sulfur_cube", CreativeModeTabs.INGREDIENTS);
+        registerItem(helper, EMBRYO, "embryo", CreativeModeTabs.INGREDIENTS);
+        registerItem(helper, VESSEL_SHARD, "vessel_shard", CreativeModeTabs.INGREDIENTS);
+        registerItem(helper, HOMUNCULUS, "homunculus", CreativeModeTabs.TOOLS_AND_UTILITIES);
         registerItem(helper, MORTICIAN_SPAWN_EGG, "mortician_spawn_egg", CreativeModeTabs.SPAWN_EGGS);
+    }
+
+    public static Item getLockiApple(int stage) {
+        return switch (Math.max(0, Math.min(4, stage))) {
+            case 1 -> LOCKI_APPLE_ROT_1;
+            case 2 -> LOCKI_APPLE_ROT_2;
+            case 3 -> LOCKI_APPLE_ROT_3;
+            case 4 -> LOCKI_APPLE_ROT_4;
+            default -> LOCKI_APPLE;
+        };
     }
 
     public static void postRegister() {

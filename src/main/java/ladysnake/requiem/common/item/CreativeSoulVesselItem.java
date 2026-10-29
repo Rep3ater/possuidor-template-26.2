@@ -22,6 +22,7 @@ import ladysnake.requiem.common.entity.RequiemEntityAttributes;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 public class CreativeSoulVesselItem extends EmptySoulVesselItem {
@@ -31,5 +32,10 @@ public class CreativeSoulVesselItem extends EmptySoulVesselItem {
                 .add(RequiemEntityAttributes.SOUL_OFFENSE, new AttributeModifier(Requiem.id("creative_vessel_modifier"), 1E12, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.HAND)
                 .build()
         ));
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack, net.minecraft.world.entity.LivingEntity entity) {
+        return 15;
     }
 }

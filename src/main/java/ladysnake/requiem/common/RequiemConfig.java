@@ -51,10 +51,16 @@ public final class RequiemConfig {
 
     public static class Graphics {
         public boolean fancyDemonRender = true;
+        /** Disables full-screen post-processing effects (accessibility / low-end GPUs). */
+        public boolean reducedEffects = false;
+        /** Multiplier for ghost particle spawn rate, from 0 (none) to 1 (default). */
+        public float particleDensity = 1.0f;
     }
 
     private static class ConfigData {
         public boolean fancyDemonRender = true;
+        public boolean reducedEffects = false;
+        public float particleDensity = 1.0f;
     }
 
     public static void load() {
@@ -63,6 +69,8 @@ public final class RequiemConfig {
                 ConfigData data = GSON.fromJson(reader, ConfigData.class);
                 if (data != null) {
                     graphics.fancyDemonRender = data.fancyDemonRender;
+                    graphics.reducedEffects = data.reducedEffects;
+                    graphics.particleDensity = Math.max(0.0f, Math.min(1.0f, data.particleDensity));
                 }
             } catch (Exception e) {
                 Requiem.LOGGER.error("[Requiem] Failed to load config", e);
@@ -79,6 +87,8 @@ public final class RequiemConfig {
             try (Writer writer = Files.newBufferedWriter(CONFIG_PATH)) {
                 ConfigData data = new ConfigData();
                 data.fancyDemonRender = graphics.fancyDemonRender;
+                data.reducedEffects = graphics.reducedEffects;
+                data.particleDensity = graphics.particleDensity;
                 GSON.toJson(data, writer);
             }
         } catch (Exception e) {

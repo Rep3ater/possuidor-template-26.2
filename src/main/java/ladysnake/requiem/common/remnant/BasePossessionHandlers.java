@@ -93,6 +93,16 @@ public final class BasePossessionHandlers {
             }
             return PossessionStartCallback.Result.PASS;
         });
+        // Locki is a special spirit with an intentionally narrow host list. Other players keep
+        // Requiem's normal possession rules; only entities tagged "locki" receive this restriction.
+        PossessionStartCallback.EVENT.register(Requiem.id("locki_host_filter"), (target, possessor, simulate) -> {
+            if (!possessor.entityTags().contains("locki")) return PossessionStartCallback.Result.PASS;
+            boolean construct = target instanceof ladysnake.requiem.common.construct.entity.RoboticConstructEntity;
+            String path = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()).getPath();
+            boolean treeOrPlant = target.getType().builtInRegistryHolder().is(ladysnake.requiem.common.tag.RequiemEntityTypeTags.LOCKI_POSSESSABLE_PLANTS)
+                || path.contains("tree") || path.contains("plant") || path.contains("root") || path.contains("sapling");
+            return construct || treeOrPlant ? PossessionStartCallback.Result.ALLOW : PossessionStartCallback.Result.DENY;
+        });
         PossessionEvents.POST_RESURRECTION.register(RequiemCriteria.PLAYER_RESURRECTED_AS_ENTITY::handle);
         PossessionStartCallback.EVENT.register(Requiem.id("base_mobs"), (target, possessor, simulate) -> {
             if (target.getType().builtInRegistryHolder().is(RequiemEntityTypeTags.POSSESSABLES)) {

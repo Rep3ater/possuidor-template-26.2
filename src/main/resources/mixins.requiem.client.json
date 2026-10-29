@@ -6,7 +6,12 @@
   "client": [
     "GameRendererAccessor",
     "GameRendererMixin",
-    "LocalPlayerMixin"
+    "LivingEntityRendererMixin",
+    "EntityRenderDispatcherMixin",
+    "LocalPlayerMixin",
+    "LockiAstralAudioMixin",
+    "LockiCameraMixin",
+    "CameraMixin"
   ],
   "injectors": {
     "defaultRequire": 1

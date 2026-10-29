@@ -5,6 +5,7 @@
     "#requiem:skeletons",
     "#requiem:zombies",
     "minecraft:phantom",
-    "minecraft:zoglin"
+    "minecraft:zoglin",
+    "requiem:robotic_construct"
   ]
 }

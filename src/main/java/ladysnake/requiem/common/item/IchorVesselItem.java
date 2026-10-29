@@ -29,6 +29,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -61,7 +63,23 @@ public class IchorVesselItem extends Item {
         }
 
         if (!world.isClientSide()) {
-            user.addEffect(new MobEffectInstance(this.effect));
+            Holder<MobEffect> eff = this.effect.getEffect();
+            if (eff.is(ladysnake.requiem.common.entity.effect.RequiemStatusEffects.ATTRITION.getKey())) {
+                ladysnake.requiem.common.entity.effect.AttritionStatusEffect.apply(user, 1, this.effect.getDuration());
+            } else if (eff.is(ladysnake.requiem.common.entity.effect.RequiemStatusEffects.RECLAMATION.getKey())) {
+                ladysnake.requiem.common.entity.effect.AttritionStatusEffect.reduce(user, 1);
+                user.addEffect(new MobEffectInstance(eff, this.effect.getDuration(), this.effect.getAmplifier(), false, false, true));
+            } else if (eff.is(ladysnake.requiem.common.entity.effect.RequiemStatusEffects.PENANCE.getKey())) {
+                user.addEffect(new MobEffectInstance(eff, this.effect.getDuration(), this.effect.getAmplifier(), false, false, true));
+                ladysnake.requiem.common.entity.effect.PenanceStatusEffect.applyPenance(user, 1);
+            } else if (eff.is(ladysnake.requiem.common.entity.effect.RequiemStatusEffects.EMANCIPATION.getKey())) {
+                user.addEffect(new MobEffectInstance(eff, this.effect.getDuration(), this.effect.getAmplifier(), false, false, true));
+                if (player instanceof ServerPlayer sp) {
+                    ladysnake.requiem.api.v1.event.requiem.InitiateFractureCallback.EVENT.invoker().performFracture(sp);
+                }
+            } else {
+                user.addEffect(new MobEffectInstance(eff, this.effect.getDuration(), this.effect.getAmplifier(), false, false, true));
+            }
         }
 
         if (player != null) {

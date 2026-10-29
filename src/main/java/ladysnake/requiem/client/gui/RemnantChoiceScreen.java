@@ -134,12 +134,35 @@ public class RemnantChoiceScreen extends Screen {
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
     }
 
+    private int getChoiceIndexAt(double mouseX, double mouseY) {
+        int boxWidth = Math.min(this.width - 40, 520);
+        int boxHeight = 155;
+        int boxLeft = (this.width - boxWidth) / 2;
+        int boxTop = this.height - boxHeight - 20;
+        int choiceY = boxTop + 65;
+
+        for (int i = 0; i < this.currentChoices.size(); i++) {
+            int itemTop = choiceY + i * 26;
+            int itemBottom = itemTop + 22;
+            int itemLeft = boxLeft + 14;
+            int itemRight = boxLeft + boxWidth - 14;
+
+            if (mouseX >= itemLeft && mouseX <= itemRight && mouseY >= itemTop && mouseY <= itemBottom) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0 && this.hoveredChoice >= 0 && this.hoveredChoice < this.currentChoices.size()) {
-            playSelectSound();
-            this.currentChoices.get(this.hoveredChoice).onSelect().run();
-            return true;
+        if (event.button() == 0) {
+            int clicked = getChoiceIndexAt(event.x(), event.y());
+            if (clicked >= 0 && clicked < this.currentChoices.size()) {
+                playSelectSound();
+                this.currentChoices.get(clicked).onSelect().run();
+                return true;
+            }
         }
         return super.mouseClicked(event, doubleClick);
     }
@@ -152,6 +175,28 @@ public class RemnantChoiceScreen extends Screen {
             if (index < this.currentChoices.size()) {
                 playSelectSound();
                 this.currentChoices.get(index).onSelect().run();
+                return true;
+            }
+        }
+        if (keyCode == GLFW.GLFW_KEY_UP) {
+            if (!this.currentChoices.isEmpty()) {
+                if (this.hoveredChoice <= 0) {
+                    this.hoveredChoice = this.currentChoices.size() - 1;
+                } else {
+                    this.hoveredChoice--;
+                }
+                playSelectSound();
+                return true;
+            }
+        }
+        if (keyCode == GLFW.GLFW_KEY_DOWN) {
+            if (!this.currentChoices.isEmpty()) {
+                if (this.hoveredChoice < 0 || this.hoveredChoice >= this.currentChoices.size() - 1) {
+                    this.hoveredChoice = 0;
+                } else {
+                    this.hoveredChoice++;
+                }
+                playSelectSound();
                 return true;
             }
         }
@@ -191,17 +236,20 @@ public class RemnantChoiceScreen extends Screen {
         int speakerTagHeight = 18;
         graphics.fill(boxLeft + 12, boxTop - 10, boxLeft + 12 + speakerTagWidth, boxTop + 8, 0xFF192130);
         graphics.fill(boxLeft + 12, boxTop - 10, boxLeft + 12 + speakerTagWidth, boxTop - 8, 0xFF5D789D);
-        graphics.text(this.font, Component.literal("§6§l✦ A Whispering Voice ✦"), boxLeft + 20, boxTop - 6, 0xFFFFFF);
+        graphics.text(this.font, Component.literal("§6§l✦ A Whispering Voice ✦"), boxLeft + 20, boxTop - 6, 0xFFFFFFFF, true);
 
         // Dialogue speech text wrapped
         int textLeft = boxLeft + 16;
         int textTop = boxTop + 16;
         int textWrapWidth = boxWidth - 32;
-        graphics.textWithWordWrap(this.font, this.currentDialogueText, textLeft, textTop, textWrapWidth, 0xE0E0E0);
+        graphics.textWithWordWrap(this.font, this.currentDialogueText, textLeft, textTop, textWrapWidth, 0xFFE0E0E0, true);
 
         // Choices section below
         int choiceY = boxTop + 65;
-        this.hoveredChoice = -1;
+        int mouseChoice = getChoiceIndexAt(mouseX, mouseY);
+        if (mouseChoice >= 0) {
+            this.hoveredChoice = mouseChoice;
+        }
 
         for (int i = 0; i < this.currentChoices.size(); i++) {
             DialogueChoice choice = this.currentChoices.get(i);
@@ -210,14 +258,11 @@ public class RemnantChoiceScreen extends Screen {
             int itemLeft = boxLeft + 14;
             int itemRight = boxRight - 14;
 
-            boolean isHovered = (mouseX >= itemLeft && mouseX <= itemRight && mouseY >= itemTop && mouseY <= itemBottom);
-            if (isHovered) {
-                this.hoveredChoice = i;
-            }
+            boolean isHovered = (this.hoveredChoice == i);
 
             // Choice button background
-            int bgColor = isHovered ? 0x40256880 : 0x25141E2B;
-            int borderColor = isHovered ? 0xFF36B3D6 : 0xFF2A3A4D;
+            int bgColor = isHovered ? 0x60256880 : 0x35141E2B;
+            int borderColor = isHovered ? 0xFF50D0FF : 0xFF2A3A4D;
 
             graphics.fill(itemLeft, itemTop, itemRight, itemBottom, bgColor);
             graphics.fill(itemLeft, itemTop, itemRight, itemTop + 1, borderColor);
@@ -227,8 +272,8 @@ public class RemnantChoiceScreen extends Screen {
 
             String hotkeyBadge = "§e[" + (i + 1) + "]§r ";
             Component label = Component.literal(hotkeyBadge).append(choice.text());
-            int textColor = isHovered ? 0xFFFFFF : 0xCCCCCC;
-            graphics.text(this.font, label, itemLeft + 10, itemTop + 7, textColor);
+            int textColor = isHovered ? 0xFFFFFFFF : 0xFFCCCCCC;
+            graphics.text(this.font, label, itemLeft + 10, itemTop + 7, textColor, true);
         }
 
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);

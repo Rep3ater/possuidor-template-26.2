@@ -158,7 +158,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
 
             boolean success;
 
-            if (remnantComponent.splitPlayer(false).isPresent()) {
+            if (remnantComponent.splitPlayer(true).isPresent()) {
                 success = true;
             } else if (host != null) {
                 Entity targetedEntity = RayHelper.getTargetedEntity(player);
@@ -186,7 +186,12 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
         HumanityCheckCallback.EVENT.register(possessedEntity -> possessedEntity.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(RequiemEnchantments.HUMANITY).map(holder -> EnchantmentHelper.getEnchantmentLevel(holder, possessedEntity)).orElse(0));
         ConsumableItemEvents.POST_CONSUMED.register(RequiemCriteria.USED_TOTEM::trigger);
         SoulCaptureEvents.BEFORE_ATTEMPT.register((stealer, target, captureType) -> Optional.ofNullable(stealer.getEffect(RequiemStatusEffects.ATTRITION)).map(MobEffectInstance::getAmplifier).orElse(-1) < 3);
-        SoulCaptureEvents.BEFORE_ATTEMPT.register((stealer, target, captureType) -> !SoulHolderComponent.isSoulless(target));
+        SoulCaptureEvents.BEFORE_ATTEMPT.register((stealer, target, captureType) -> {
+            if (stealer instanceof Player player && (player.isCreative() || player.getMainHandItem().getItem() instanceof ladysnake.requiem.common.item.CreativeSoulVesselItem || player.getOffhandItem().getItem() instanceof ladysnake.requiem.common.item.CreativeSoulVesselItem)) {
+                return true;
+            }
+            return !SoulHolderComponent.isSoulless(target);
+        });
     }
 
     private void registerEtherealEventHandlers() {

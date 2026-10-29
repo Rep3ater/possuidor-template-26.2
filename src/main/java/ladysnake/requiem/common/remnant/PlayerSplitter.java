@@ -81,12 +81,26 @@ public final class PlayerSplitter {
      * @see RemnantComponent#splitPlayer(boolean)
      */
     public static PlayerSplitResult doSplit(ServerPlayer whole) {
+        // Discard existing shell if one was already active to prevent duplicate shell accumulation
+        PlayerBodyTracker.get(whole).getAnchor()
+            .flatMap(record -> record.get(ladysnake.requiem.common.RequiemRecordTypes.ENTITY_REF))
+            .flatMap(ptr -> ptr.resolve(whole.level().getServer()))
+            .ifPresent(existingEntity -> {
+                if (existingEntity instanceof PlayerShellEntity oldShell && oldShell.isAlive()) {
+                    oldShell.discard();
+                }
+            });
+
         PlayerShellEntity shell = createShell(whole);
         Entity mount = whole.getVehicle();
         int experience = whole.totalExperience;
         EntityPositionClerk.transferRecord(whole, shell);
         ServerPlayer soul = performRespawn(whole);
-        RemnantComponent.get(soul).setVagrant(true);
+        RemnantComponent remnant = RemnantComponent.get(soul);
+        if (!remnant.getRemnantType().isDemon()) {
+            remnant.become(RemnantTypes.REMNANT, true);
+        }
+        remnant.setVagrant(true);
         // Respawning in some conditions can place us away from the shell
         soul.setShiftKeyDown(whole.isShiftKeyDown());
         soul.connection.teleport(shell.getX(), shell.getY(), shell.getZ(), shell.getYRot(), shell.getXRot());
@@ -99,7 +113,7 @@ public final class PlayerSplitter {
         return new PlayerSplitResult(soul, shell);
     }
 
-    private static void transferSoulboundItems(PlayerShellEntity shell, ServerPlayer soul) {
+    public static void transferSoulboundItems(PlayerShellEntity shell, ServerPlayer soul) {
         // Inverted because we are doing things backwards (moving items back to player)
         boolean transferAll = !PossessionEvents.INVENTORY_TRANSFER_CHECK.invoker().shouldTransfer(soul, shell).get();
 
@@ -119,10 +133,17 @@ public final class PlayerSplitter {
         shell.storePlayerData(whole, computeCopyNbt(whole));
         shell.setYHeadRot(whole.getYHeadRot());
         shell.setYBodyRot(whole.yBodyRot);
+        shell.setInvulnerable(false);
+        shell.getAbilities().invulnerable = false;
+        shell.getAbilities().flying = false;
+        shell.getAbilities().mayfly = false;
         GameType shellGm = whole.gameMode.isSurvival() ? whole.gameMode.getGameModeForPlayer() : GameType.SURVIVAL;
         shell.setGameMode(shellGm);
         // setGameMode has no effect when the gamemode stays the same, so we make sure abilities work as intended
         shellGm.updatePlayerAbilities(shell.getAbilities());
+        shell.getAbilities().invulnerable = false;
+        shell.getAbilities().flying = false;
+        shell.getAbilities().mayfly = false;
         RemnantComponent.get(shell).become(RemnantTypes.MORTAL, true);
         InventoryLimiter.instance().disable(shell);
         for (MobEffectInstance effect : List.copyOf(shell.getActiveEffects())) {
@@ -151,6 +172,18 @@ public final class PlayerSplitter {
 
         shell.remove(Entity.RemovalReason.DISCARDED);
         if (mount != null) soul.startRiding(mount);
+
+        var flightAttr = soul.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.CREATIVE_FLIGHT);
+        if (flightAttr != null) {
+            flightAttr.removeModifier(io.github.ladysnake.pal.VanillaAbilities.CREATIVE_FLIGHT_MODIFIER_ID);
+        }
+        io.github.ladysnake.pal.Pal.revokeAbility(soul, io.github.ladysnake.pal.VanillaAbilities.ALLOW_FLYING, ladysnake.requiem.core.movement.PlayerMovementAlterer.MOVEMENT_ALTERER_ABILITIES);
+        io.github.ladysnake.pal.Pal.revokeAbility(soul, io.github.ladysnake.pal.VanillaAbilities.ALLOW_FLYING, ladysnake.requiem.core.remnant.MutableRemnantState.SOUL_STATE);
+        if (!soul.isCreative() && !soul.isSpectator()) {
+            soul.getAbilities().mayfly = false;
+            soul.getAbilities().flying = false;
+            soul.onUpdateAbilities();
+        }
 
         GameProfile shellProfile = shell.getDisplayProfile();
         if (shellProfile != null && !Objects.equals(shellProfile.id(), soul.getUUID())) {
@@ -221,6 +254,7 @@ public final class PlayerSplitter {
 
     private static void deduplicateVanillaData(CompoundTag leftoverData) {
         leftoverData.remove("UUID");
+        leftoverData.remove("Invulnerable");
         leftoverData.remove("SpawnX");
         leftoverData.remove("SpawnY");
         leftoverData.remove("SpawnZ");
