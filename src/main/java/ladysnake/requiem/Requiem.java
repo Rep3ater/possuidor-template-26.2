@@ -123,7 +123,7 @@ public final class Requiem {
         SharedBodyManager.init();
         NeoForge.EVENT_BUS.addListener(RequiemPotions::onRegisterBrewingRecipes);
 
-        if (FMLEnvironment.getDist().isClient()) {
+        if (FMLEnvironment.dist.isClient()) {
             ladysnake.requiem.client.RequiemClient.init(modEventBus);
         }
 
