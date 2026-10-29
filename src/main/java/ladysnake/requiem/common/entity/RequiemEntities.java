@@ -35,19 +35,19 @@ public final class RequiemEntities {
         .sized(0.25f, 0.25f)
         .clientTrackingRange(4)
         .updateInterval(10)
-        .build("obelisk_soul");
+        .build(Requiem.id("obelisk_soul").toString());
 
     public static final EntityType<ReleasedSoulEntity> RELEASED_SOUL = EntityType.Builder.<ReleasedSoulEntity>of(ReleasedSoulEntity::new, MobCategory.MISC)
         .sized(0.25f, 0.25f)
         .clientTrackingRange(4)
         .updateInterval(10)
-        .build("released_soul");
+        .build(Requiem.id("released_soul").toString());
 
     public static final EntityType<CuredVillagerEntity> CURED_VILLAGER = EntityType.Builder.<CuredVillagerEntity>of(CuredVillagerEntity::new, MobCategory.MISC)
         .sized(0.6f, 1.95f)
         .clientTrackingRange(10)
         .updateInterval(3)
-        .build("cured_villager");
+        .build(Requiem.id("cured_villager").toString());
 
     public static final EntityType<Piglin> CURED_PIGLIN = EntityType.Builder.<Piglin>of((entityType, level) -> {
             Piglin ret = new Piglin(entityType, level);
@@ -57,7 +57,7 @@ public final class RequiemEntities {
         .sized(0.6f, 1.95f)
         .clientTrackingRange(8)
         .updateInterval(3)
-        .build("cured_piglin");
+        .build(Requiem.id("cured_piglin").toString());
 
     public static final EntityType<PiglinBrute> CURED_PIGLIN_BRUTE = EntityType.Builder.<PiglinBrute>of((entityType, level) -> {
             PiglinBrute ret = new PiglinBrute(entityType, level);
@@ -67,7 +67,7 @@ public final class RequiemEntities {
         .sized(0.6f, 1.95f)
         .clientTrackingRange(8)
         .updateInterval(3)
-        .build("cured_piglin_brute");
+        .build(Requiem.id("cured_piglin_brute").toString());
 
     public static final ImmutableMap<EntityType<? extends Mob>, EntityType<? extends Mob>> CURED_PIGLIN_VARIANTS =
         ImmutableMap.of(EntityType.PIGLIN, CURED_PIGLIN, EntityType.PIGLIN_BRUTE, CURED_PIGLIN_BRUTE);
@@ -77,25 +77,25 @@ public final class RequiemEntities {
         .clientTrackingRange(8)
         .updateInterval(1)
         .noSummon()
-        .build("player_shell");
+        .build(Requiem.id("player_shell").toString());
 
     public static final EntityType<MorticianEntity> MORTICIAN = EntityType.Builder.<MorticianEntity>of(MorticianEntity::new, MobCategory.CREATURE)
         .sized(0.6f, 1.95f)
-        .build("mortician");
+        .build(Requiem.id("mortician").toString());
 
     public static final EntityType<ladysnake.requiem.common.construct.entity.RoboticConstructEntity> ROBOTIC_CONSTRUCT = EntityType.Builder.<ladysnake.requiem.common.construct.entity.RoboticConstructEntity>of(ladysnake.requiem.common.construct.entity.RoboticConstructEntity::new, MobCategory.MISC)
         .sized(1.2f, 2.2f)
         .clientTrackingRange(10)
         .updateInterval(2)
-        .build("robotic_construct");
+        .build(Requiem.id("robotic_construct").toString());
 
     public static final EntityType<HomunculusEntity> HOMUNCULUS = EntityType.Builder.<HomunculusEntity>of(HomunculusEntity::new, MobCategory.CREATURE)
         .sized(0.6f, 1.8f).clientTrackingRange(8).updateInterval(3)
-        .build("homunculus");
+        .build(Requiem.id("homunculus").toString());
 
     public static final EntityType<ImmortalHomunculusEntity> IMMORTAL_HOMUNCULUS = EntityType.Builder.<ImmortalHomunculusEntity>of(ImmortalHomunculusEntity::new, MobCategory.MONSTER)
         .sized(0.7f, 2.05f).clientTrackingRange(8).updateInterval(2)
-        .build("immortal_homunculus");
+        .build(Requiem.id("immortal_homunculus").toString());
 
     public static void register(RegisterEvent.RegisterHelper<EntityType<?>> helper) {
         helper.register(Requiem.id("player_shell"), PLAYER_SHELL);
