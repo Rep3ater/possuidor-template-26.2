@@ -91,8 +91,7 @@ public final class NucleusManager {
         // Clean up the Warden placeholder left behind by older versions.
         AABB oldBossArea = new AABB(94, 80, -6, 106, 88, 6);
         for (Mob oldBoss : level.getEntitiesOfClass(Mob.class, oldBossArea,
-                entity -> entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false)
-                    || entity.getTags().contains("requiem_nucleus_boss"))) {
+                entity -> entity.getPersistentData().getBoolean(BOSS_KEY).orElse(false))) {
             oldBoss.discard();
         }
     }
