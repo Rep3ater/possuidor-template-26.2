@@ -151,7 +151,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
             GameProfile profile = ByteBufCodecs.GAME_PROFILE.decode(buf);
             this.impersonatedProfile = profile;
             GameProfile actual = this.getActualProfile();
-            this.editedProfile = new GameProfile(actual.getId(), profile.getName(), profile.getProperties());
+            this.editedProfile = copyWithActualId(actual, profile);
         } else {
             this.impersonatedProfile = null;
             this.editedProfile = null;
