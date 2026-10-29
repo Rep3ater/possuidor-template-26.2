@@ -122,7 +122,7 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
                 bookIn = EnchantmentHelper.createBook(new EnchantmentInstance(humanity, 1));
                 bookOut = EnchantmentHelper.createBook(new EnchantmentInstance(humanity, 2));
             } catch (Exception ignored) {}
-            return new MerchantOffer(new ItemCost(bookIn.getItem(), 1, DataComponentPredicate.allOf(bookIn.getComponents())), Optional.of(new ItemCost(Items.GOLD_INGOT, 20)), bookOut, 5, 1, 0.05F);
+            return new MerchantOffer(new ItemCost(Items.ENCHANTED_BOOK.builtInRegistryHolder(), 1, DataComponentPredicate.allOf(bookIn.getComponents())), Optional.of(new ItemCost(Items.GOLD_INGOT, 20)), bookOut, 5, 1, 0.05F);
         },
         (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(entity.level().dimension() == Level.NETHER ? EntityType.PIGLIN : EntityType.VILLAGER).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_EMANCIPATION), 10, 1, 0.05F),
         (entity, random) -> new MerchantOffer(new ItemCost(FilledSoulVesselItem.forEntityType(EntityType.AXOLOTL).getItem()), Optional.of(new ItemCost(Items.GOLD_INGOT, 5)), new ItemStack(RequiemItems.ICHOR_VESSEL_RECLAMATION), 10, 1, 0.05F),
@@ -362,7 +362,7 @@ public class MorticianEntity extends AbstractVillager implements NeutralMob {
     }
 
     @Override
-    protected void updateTrades(ServerLevel level) {
+    protected void updateTrades() {
         MerchantOffers offers = this.getOffers();
         for (TradeFactory factory : TRADES) {
             MerchantOffer offer = factory.create(this, this.random);

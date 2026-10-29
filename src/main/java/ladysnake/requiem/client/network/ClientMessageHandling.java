@@ -5,6 +5,7 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /**
  * Physical-client-only packet handlers. Keeping UI and client-shell references in this
@@ -14,18 +15,19 @@ public final class ClientMessageHandling {
     private ClientMessageHandling() {}
 
     public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
-        event.register(RequiemNetworking.AnchorDamagePayload.TYPE, (payload, context) -> {});
-        event.register(RequiemNetworking.DataSyncPayload.TYPE, (payload, context) -> {});
-        event.register(RequiemNetworking.OpusUsePayload.TYPE, (payload, context) -> {});
-        event.register(RequiemNetworking.EtherealAnimationPayload.TYPE, (payload, context) -> {});
-        event.register(RequiemNetworking.BodyCurePayload.TYPE, (payload, context) -> {});
-        event.register(RequiemNetworking.ObeliskPowerUpdatePayload.TYPE, (payload, context) -> {});
-        event.register(RequiemNetworking.RiftWitnessedPayload.TYPE, (payload, context) -> {});
-        event.register(RequiemNetworking.OpenDialoguePayload.TYPE, ClientMessageHandling::handleOpenDialogue);
-        event.register(RequiemNetworking.ShellProfileSyncPayload.TYPE, ClientMessageHandling::handleShellProfileSync);
-        event.register(RequiemNetworking.LockiStatePayload.TYPE,
+        PayloadRegistrar registrar = event.registrar("1.0.0");
+        registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.EtherealAnimationPayload.TYPE, RequiemNetworking.EtherealAnimationPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.BodyCurePayload.TYPE, RequiemNetworking.BodyCurePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.ObeliskPowerUpdatePayload.TYPE, RequiemNetworking.ObeliskPowerUpdatePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.RiftWitnessedPayload.TYPE, RequiemNetworking.RiftWitnessedPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.OpenDialoguePayload.TYPE, RequiemNetworking.OpenDialoguePayload.STREAM_CODEC, ClientMessageHandling::handleOpenDialogue);
+        registrar.playToClient(RequiemNetworking.ShellProfileSyncPayload.TYPE, RequiemNetworking.ShellProfileSyncPayload.STREAM_CODEC, ClientMessageHandling::handleShellProfileSync);
+        registrar.playToClient(RequiemNetworking.LockiStatePayload.TYPE, RequiemNetworking.LockiStatePayload.STREAM_CODEC,
             (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.locki.LockiClientState.accept(payload)));
-        event.register(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, ClientMessageHandling::handleHomunculusBrainOpen);
+        registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, ClientMessageHandling::handleHomunculusBrainOpen);
     }
 
     private static void handleOpenDialogue(RequiemNetworking.OpenDialoguePayload payload, net.neoforged.neoforge.network.handling.IPayloadContext context) {

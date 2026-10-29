@@ -218,11 +218,11 @@ public final class PlayerSplitter {
         try {
             rules.set(GameRules.KEEP_INVENTORY, false, player.level().getServer());
             ServerPlayer clone = player.level().getServer().getPlayerList().respawn(player, false, Entity.RemovalReason.DISCARDED);
-            clone.setRespawnPosition(config, false);
+            clone.setRespawnPosition(respawnDimension, respawnPosition, respawnAngle, respawnForced, false);
             player.connection.player = clone;
             return clone;
         } finally {
-            player.setRespawnPosition(config, false);
+            player.setRespawnPosition(respawnDimension, respawnPosition, respawnAngle, respawnForced, false);
             rules.set(GameRules.KEEP_INVENTORY, keepInv, player.level().getServer());
         }
     }

@@ -150,7 +150,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public boolean isInvulnerableTo(ServerLevel world, net.minecraft.world.damagesource.DamageSource source) {
+    public boolean isInvulnerableTo(net.minecraft.world.damagesource.DamageSource source) {
         return false;
     }
 
@@ -160,10 +160,10 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
         this.invulnerableTime = 0;
         this.getAbilities().invulnerable = false;
-        boolean hurt = super.hurtServer(level, source, amount);
+        boolean hurt = super.hurt(source, amount);
         if (!hurt && amount > 0.0F) {
             float health = this.getHealth() - amount;
             this.setHealth(Math.max(0.0F, health));
