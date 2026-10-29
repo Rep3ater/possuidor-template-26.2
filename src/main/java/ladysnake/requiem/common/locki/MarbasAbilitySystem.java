@@ -60,7 +60,6 @@ public final class MarbasAbilitySystem {
     private static final String NODE = "requiem:homunculus_node";
     private static final String TARGET_ID = "requiem:homunculus_target_id";
     private static final String STUN_UNTIL = "requiem:homunculus_stun_until";
-    private static final String FED_UNTIL = "requiem:homunculus_fed_until";
     private static final String TRAITS = "requiem:homunculus_traits";
     private static final String EMBRYO_MARKER = "requiem:homunculus_embryo_marker";
     private static final String EMBRYO_STARTED_AT = "requiem:homunculus_embryo_started_at";
@@ -865,60 +864,19 @@ public final class MarbasAbilitySystem {
     }
 
     private static void tickBerserk(ServerLevel level, Mob mob, long now) {
-        // Keep the entity mortal even if it was saved by an older version of the mod.
-        mob.setInvulnerable(false);
-        var speed = mob.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (speed != null) speed.setBaseValue(0.10D); // slow shambling speed while idle
-
+        // Survival damage is blocked, but native Entity.kill()/the /kill command still removes it.
+        mob.setInvulnerable(true);
         if (now < mob.getPersistentData().getLong(STUN_UNTIL).orElse(0L)) {
             mob.getNavigation().stop();
             mob.setTarget(null);
-            return;
         }
-        if (now < mob.getPersistentData().getLong(FED_UNTIL).orElse(0L)) {
-            mob.getNavigation().stop();
-            mob.setTarget(null);
-            return;
-        }
-
-        LivingEntity target = level.getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(28.0), e -> e != mob && e.isAlive()
-            && !(e instanceof ServerPlayer p && (p.isCreative() || p.isSpectator()))).stream()
-            .min((a, b) -> Double.compare(a.distanceToSqr(mob), b.distanceToSqr(mob))).orElse(null);
-        if (target == null) {
-            mob.setTarget(null);
-            return;
-        }
-
-        // Player-like walking speed only while in pursuit; idle never inherits chase speed.
-        mob.setTarget(target);
-        if (speed != null) speed.setBaseValue(0.13D);
-        var attack = mob.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attack != null) attack.setBaseValue(20.0D);
-        double reach = mob.getBbWidth() * 2.0D + target.getBbWidth();
-        if (mob.distanceToSqr(target) <= reach * reach) {
-            mob.getNavigation().stop();
-            if (now % 12L == 0L) {
-                float healthBefore = target.getHealth();
-                target.hurt(level.damageSources().mobAttack(mob), 20.0F);
-                if (target.getHealth() < healthBefore) {
-                    // Red flecks appear only when the strike actually removes health.
-                    level.sendParticles(net.minecraft.core.particles.ParticleTypes.DAMAGE_INDICATOR,
-                        target.getX(), target.getY() + target.getBbHeight() * 0.55D, target.getZ(),
-                        7, target.getBbWidth() * 0.25D, target.getBbHeight() * 0.25D,
-                        target.getBbWidth() * 0.25D, 0.08D);
-                    mob.getPersistentData().putLong(FED_UNTIL, now + 1200L);
-                }
-            }
-        } else {
-            mob.getNavigation().moveTo(target, 1.0D);
-        }
+        // Targeting, pursuit, and attacks are native goals on ImmortalHomunculusEntity.
+        // Do not pause the hunt for a minute after the first successful hit.
     }
 
     public static boolean onBerserkDamage(LivingIncomingDamageEvent event) {
         if (!(event.getEntity() instanceof ImmortalHomunculusEntity mob)) return false;
 
-        // This name means "special-case handled", not "damage canceled": the suffering form
-        // must take ordinary damage and must remain killable by commands.
         if (event.getSource().is(DamageTypes.LAVA)) {
             long now = mob.level().getGameTime();
             long until = mob.getPersistentData().getLong(STUN_UNTIL).orElse(0L);
@@ -930,6 +888,10 @@ public final class MarbasAbilitySystem {
             mob.getNavigation().stop();
             mob.setTarget(null);
         }
+
+        // Cancel damage from survival combat and environmental sources. /kill invokes the
+        // entity-removal API directly, so it still works rather than depending on damage.
+        event.setCanceled(true);
         return true;
     }
 
