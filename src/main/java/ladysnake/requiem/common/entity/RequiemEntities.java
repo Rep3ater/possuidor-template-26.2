@@ -85,6 +85,12 @@ public final class RequiemEntities {
         .sized(0.6f, 1.95f)
         .build(ResourceKey.create(Registries.ENTITY_TYPE, Requiem.id("mortician")));
 
+    public static final EntityType<NucleusSovereignEntity> NUCLEUS_SOVEREIGN = EntityType.Builder.<NucleusSovereignEntity>of(NucleusSovereignEntity::new, MobCategory.MONSTER)
+        .sized(0.6f, 1.95f)
+        .clientTrackingRange(10)
+        .updateInterval(2)
+        .build(ResourceKey.create(Registries.ENTITY_TYPE, Requiem.id("nucleus_sovereign")));
+
     public static final EntityType<ladysnake.requiem.common.construct.entity.RoboticConstructEntity> ROBOTIC_CONSTRUCT = EntityType.Builder.<ladysnake.requiem.common.construct.entity.RoboticConstructEntity>of(ladysnake.requiem.common.construct.entity.RoboticConstructEntity::new, MobCategory.MISC)
         .sized(1.2f, 2.2f)
         .clientTrackingRange(10)
@@ -99,6 +105,7 @@ public final class RequiemEntities {
         helper.register(Requiem.id("cured_piglin"), CURED_PIGLIN);
         helper.register(Requiem.id("cured_piglin_brute"), CURED_PIGLIN_BRUTE);
         helper.register(Requiem.id("mortician"), MORTICIAN);
+        helper.register(Requiem.id("nucleus_sovereign"), NUCLEUS_SOVEREIGN);
         helper.register(Requiem.id("robotic_construct"), ROBOTIC_CONSTRUCT);
     }
 
