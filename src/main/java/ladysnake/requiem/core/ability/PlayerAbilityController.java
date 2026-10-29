@@ -49,7 +49,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
@@ -137,7 +137,7 @@ public class PlayerAbilityController implements MobAbilityController, AutoSynced
     }
 
     @Override
-    public Identifier getIconTexture(AbilityType type) {
+    public ResourceLocation getIconTexture(AbilityType type) {
         return this.delegate.getIconTexture(type);
     }
 
