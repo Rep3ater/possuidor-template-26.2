@@ -10,7 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -269,8 +269,8 @@ public final class NucleusManager {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (!owner.equals(player.getPersistentData().getString(SESSION_OWNER).orElse(""))) continue;
             CompoundTag data = player.getPersistentData();
-            Identifier id = Identifier.tryParse(data.getString(RETURN_DIM).orElse("minecraft:overworld"));
-            if (id == null) id = Identifier.withDefaultNamespace("overworld");
+            ResourceLocation id = ResourceLocation.tryParse(data.getString(RETURN_DIM).orElse("minecraft:overworld"));
+            if (id == null) id = ResourceLocation.withDefaultNamespace("overworld");
             ServerLevel target = server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
             if (target == null) target = server.overworld();
             double x = data.getDouble(RETURN_X).orElse(0.0);

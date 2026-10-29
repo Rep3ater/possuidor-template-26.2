@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -55,8 +55,8 @@ public final class LockiSpiritSystem {
     private static final String MODE = DATA_PREFIX + "mode";
     private static final String SAVED_FLYING_SPEED = DATA_PREFIX + "saved_flying_speed";
     private static final String HAS_SAVED_FLYING_SPEED = DATA_PREFIX + "has_saved_flying_speed";
-    private static final Identifier ASTRAL_LAND_SLOWDOWN = Identifier.fromNamespaceAndPath("requiem", "locki_astral_land_slowdown");
-    private static final Identifier ASTRAL_ROOT_SPEED = Identifier.fromNamespaceAndPath("requiem", "locki_astral_root_speed");
+    private static final ResourceLocation ASTRAL_LAND_SLOWDOWN = ResourceLocation.fromNamespaceAndPath("requiem", "locki_astral_land_slowdown");
+    private static final ResourceLocation ASTRAL_ROOT_SPEED = ResourceLocation.fromNamespaceAndPath("requiem", "locki_astral_root_speed");
     private static final String TARGET_X = DATA_PREFIX + "target_x";
     private static final String TARGET_Y = DATA_PREFIX + "target_y";
     private static final String TARGET_Z = DATA_PREFIX + "target_z";
@@ -637,7 +637,7 @@ public final class LockiSpiritSystem {
         double z = hasDropSite ? data.getDouble(APPLE_DROP_Z).orElse(owner.getZ()) : data.getDouble(APPLE_Z).orElse(owner.getZ());
         ResourceKey<Level> destinationKey;
         try {
-            destinationKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(destinationDimension));
+            destinationKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(destinationDimension));
         } catch (Exception ignored) {
             destinationKey = eaterLevel.dimension();
         }
@@ -714,7 +714,7 @@ public final class LockiSpiritSystem {
         String dimension = data.getString(TREE_DIM).orElse(player.level().dimension().identifier().toString());
         ResourceKey<Level> dimensionKey;
         try {
-            dimensionKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(dimension));
+            dimensionKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimension));
         } catch (Exception ignored) {
             dimensionKey = player.level().dimension();
         }
@@ -726,7 +726,7 @@ public final class LockiSpiritSystem {
         String saplingName = data.getString(TREE_SAPLING).orElse("minecraft:oak_sapling");
         Block sapling;
         try {
-            sapling = BuiltInRegistries.BLOCK.getOptional(Identifier.parse(saplingName))
+            sapling = BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(saplingName))
                 .filter(block -> block instanceof SaplingBlock || block instanceof net.minecraft.world.level.block.BushBlock)
                 .orElse(net.minecraft.world.level.block.Blocks.OAK_SAPLING);
         } catch (Exception ignored) {

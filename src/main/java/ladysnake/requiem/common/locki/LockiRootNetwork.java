@@ -2,7 +2,7 @@ package ladysnake.requiem.common.locki;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -285,7 +285,7 @@ public final class LockiRootNetwork {
     }
 
     public static Block getMatchingSapling(Block logBlock) {
-        Identifier key = BuiltInRegistries.BLOCK.getKey(logBlock);
+        ResourceLocation key = BuiltInRegistries.BLOCK.getKey(logBlock);
         String path = key.getPath();
         if (path.contains("mangrove")) return net.minecraft.world.level.block.Blocks.MANGROVE_PROPAGULE;
         if (path.contains("crimson")) return net.minecraft.world.level.block.Blocks.CRIMSON_FUNGUS;
@@ -295,7 +295,7 @@ public final class LockiRootNetwork {
         else if (path.endsWith("_wood")) saplingPath = path.substring(0, path.length() - 5) + "_sapling";
         else if (path.endsWith("_stem")) saplingPath = path.substring(0, path.length() - 5) + "_fungus";
         else saplingPath = path + "_sapling";
-        Identifier saplingId = Identifier.fromNamespaceAndPath(key.getNamespace(), saplingPath);
+        ResourceLocation saplingId = ResourceLocation.fromNamespaceAndPath(key.getNamespace(), saplingPath);
         return BuiltInRegistries.BLOCK.getOptional(saplingId)
             .filter(block -> block instanceof net.minecraft.world.level.block.SaplingBlock || block instanceof BushBlock)
             .orElse(net.minecraft.world.level.block.Blocks.OAK_SAPLING);
