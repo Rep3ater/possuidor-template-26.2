@@ -1,6 +1,6 @@
 {
   "textures": {
-    "0": "requiem:item/suffering_head",
+    "suffering_head": "requiem:item/suffering_head",
     "particle": "requiem:item/suffering_head"
   },
   "elements": [
@@ -32,7 +32,7 @@
             6,
             2
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "east": {
           "uv": [
@@ -41,7 +41,7 @@
             6,
             4
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "south": {
           "uv": [
@@ -50,7 +50,7 @@
             6,
             6
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "west": {
           "uv": [
@@ -59,7 +59,7 @@
             8,
             2
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "up": {
           "uv": [
@@ -68,7 +68,7 @@
             8,
             4
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "down": {
           "uv": [
@@ -77,7 +77,7 @@
             6,
             8
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         }
       }
     },
@@ -109,7 +109,7 @@
             8,
             6
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "east": {
           "uv": [
@@ -118,7 +118,7 @@
             8,
             8
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "south": {
           "uv": [
@@ -127,7 +127,7 @@
             2,
             8.5
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "west": {
           "uv": [
@@ -136,7 +136,7 @@
             4,
             8.5
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "up": {
           "uv": [
@@ -145,7 +145,7 @@
             10,
             2
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "down": {
           "uv": [
@@ -154,7 +154,7 @@
             10,
             4
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         }
       }
     },
@@ -186,7 +186,7 @@
             6,
             10
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "east": {
           "uv": [
@@ -195,7 +195,7 @@
             10,
             6
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "south": {
           "uv": [
@@ -204,7 +204,7 @@
             8,
             10
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "west": {
           "uv": [
@@ -213,7 +213,7 @@
             10,
             8
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "up": {
           "uv": [
@@ -222,7 +222,7 @@
             10,
             10
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "down": {
           "uv": [
@@ -231,7 +231,7 @@
             2,
             10.5
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         }
       }
     },
@@ -263,7 +263,7 @@
             4,
             3.25
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "east": {
           "uv": [
@@ -272,7 +272,7 @@
             0,
             3.25
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "south": {
           "uv": [
@@ -281,7 +281,7 @@
             4,
             6.5
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "west": {
           "uv": [
@@ -290,7 +290,7 @@
             0,
             3.25
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "up": {
           "uv": [
@@ -299,7 +299,7 @@
             4,
             0
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         },
         "down": {
           "uv": [
@@ -308,7 +308,7 @@
             4,
             0
           ],
-          "texture": "#0"
+          "texture": "#suffering_head"
         }
       }
     }
