@@ -33,17 +33,17 @@ public class ImmortalHomunculusEntity extends PathfinderMob {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.WITHER_SKELETON_AMBIENT.value();
+        return SoundEvents.WITHER_SKELETON_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.WITHER_SKELETON_HURT.value();
+        return SoundEvents.WITHER_SKELETON_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.WITHER_SKELETON_DEATH.value();
+        return SoundEvents.WITHER_SKELETON_DEATH;
     }
 
     @Override
