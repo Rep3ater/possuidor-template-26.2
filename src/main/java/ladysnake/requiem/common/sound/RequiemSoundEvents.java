@@ -68,33 +68,33 @@ public final class RequiemSoundEvents {
     public static final SoundEvent ITEM_FILLED_VESSEL_USE = SoundEvent.createVariableRangeEvent(Requiem.id("item.filled_vessel.use"));
 
     public static void register(RegisterEvent.RegisterHelper<SoundEvent> helper) {
-        helper.register(BLOCK_OBELISK_ACTIVATE.location(), BLOCK_OBELISK_ACTIVATE);
-        helper.register(BLOCK_OBELISK_AMBIENT.location(), BLOCK_OBELISK_AMBIENT);
-        helper.register(BLOCK_OBELISK_CHARGE.location(), BLOCK_OBELISK_CHARGE);
-        helper.register(BLOCK_OBELISK_DEACTIVATE.location(), BLOCK_OBELISK_DEACTIVATE);
-        helper.register(BLOCK_RUNESTONE_CARVE.location(), BLOCK_RUNESTONE_CARVE);
-        helper.register(BLOCK_RUNESTONE_CLEAR.location(), BLOCK_RUNESTONE_CLEAR);
-        helper.register(EFFECT_BECOME_MORTAL.location(), EFFECT_BECOME_MORTAL);
-        helper.register(EFFECT_BECOME_REMNANT.location(), EFFECT_BECOME_REMNANT);
-        helper.register(EFFECT_DISSOCIATE.location(), EFFECT_DISSOCIATE);
-        helper.register(EFFECT_PHASE.location(), EFFECT_PHASE);
-        helper.register(EFFECT_POSSESSION_ATTEMPT.location(), EFFECT_POSSESSION_ATTEMPT);
-        helper.register(EFFECT_RECLAMATION_CLEAR.location(), EFFECT_RECLAMATION_CLEAR);
-        helper.register(EFFECT_TIME_STOP.location(), EFFECT_TIME_STOP);
-        helper.register(ENTITY_MORTICIAN_AMBIENT.location(), ENTITY_MORTICIAN_AMBIENT);
-        helper.register(ENTITY_MORTICIAN_CAST_SPELL.location(), ENTITY_MORTICIAN_CAST_SPELL);
-        helper.register(ENTITY_MORTICIAN_PREPARE_ATTACK.location(), ENTITY_MORTICIAN_PREPARE_ATTACK);
-        helper.register(ENTITY_MORTICIAN_DEATH.location(), ENTITY_MORTICIAN_DEATH);
-        helper.register(ENTITY_MORTICIAN_NO.location(), ENTITY_MORTICIAN_NO);
-        helper.register(ENTITY_MORTICIAN_TRADE.location(), ENTITY_MORTICIAN_TRADE);
-        helper.register(ENTITY_MORTICIAN_YES.location(), ENTITY_MORTICIAN_YES);
-        helper.register(ENTITY_MORTICIAN_HURT.location(), ENTITY_MORTICIAN_HURT);
-        helper.register(ENTITY_SOUL_TELEPORT.location(), ENTITY_SOUL_TELEPORT);
-        helper.register(ENTITY_SOUL_DISINTEGRATES.location(), ENTITY_SOUL_DISINTEGRATES);
-        helper.register(ENTITY_OBELISK_SOUL_DISINTEGRATES.location(), ENTITY_OBELISK_SOUL_DISINTEGRATES);
-        helper.register(ITEM_OPUS_USE.location(), ITEM_OPUS_USE);
-        helper.register(ITEM_EMPTY_VESSEL_USE.location(), ITEM_EMPTY_VESSEL_USE);
-        helper.register(ITEM_FILLED_VESSEL_USE.location(), ITEM_FILLED_VESSEL_USE);
+        helper.register(Requiem.id("block.obelisk.activate"), BLOCK_OBELISK_ACTIVATE);
+        helper.register(Requiem.id("block.obelisk.ambient"), BLOCK_OBELISK_AMBIENT);
+        helper.register(Requiem.id("block.obelisk.charge"), BLOCK_OBELISK_CHARGE);
+        helper.register(Requiem.id("block.obelisk.deactivate"), BLOCK_OBELISK_DEACTIVATE);
+        helper.register(Requiem.id("block.runestone.carve"), BLOCK_RUNESTONE_CARVE);
+        helper.register(Requiem.id("block.runestone.clear"), BLOCK_RUNESTONE_CLEAR);
+        helper.register(Requiem.id("effect.become.mortal"), EFFECT_BECOME_MORTAL);
+        helper.register(Requiem.id("effect.become.remnant"), EFFECT_BECOME_REMNANT);
+        helper.register(Requiem.id("effect.dissociate"), EFFECT_DISSOCIATE);
+        helper.register(Requiem.id("effect.phase"), EFFECT_PHASE);
+        helper.register(Requiem.id("effect.possession.attempt"), EFFECT_POSSESSION_ATTEMPT);
+        helper.register(Requiem.id("effect.reclamation.clear"), EFFECT_RECLAMATION_CLEAR);
+        helper.register(Requiem.id("effect.time.stop"), EFFECT_TIME_STOP);
+        helper.register(Requiem.id("entity.mortician.ambient"), ENTITY_MORTICIAN_AMBIENT);
+        helper.register(Requiem.id("entity.mortician.cast_spell"), ENTITY_MORTICIAN_CAST_SPELL);
+        helper.register(Requiem.id("entity.mortician.prepare_attack"), ENTITY_MORTICIAN_PREPARE_ATTACK);
+        helper.register(Requiem.id("entity.mortician.death"), ENTITY_MORTICIAN_DEATH);
+        helper.register(Requiem.id("entity.mortician.no"), ENTITY_MORTICIAN_NO);
+        helper.register(Requiem.id("entity.mortician.trade"), ENTITY_MORTICIAN_TRADE);
+        helper.register(Requiem.id("entity.mortician.yes"), ENTITY_MORTICIAN_YES);
+        helper.register(Requiem.id("entity.mortician.hurt"), ENTITY_MORTICIAN_HURT);
+        helper.register(Requiem.id("entity.soul.teleport"), ENTITY_SOUL_TELEPORT);
+        helper.register(Requiem.id("entity.soul.disintegrate"), ENTITY_SOUL_DISINTEGRATES);
+        helper.register(Requiem.id("entity.obelisk_soul.disintegrate"), ENTITY_OBELISK_SOUL_DISINTEGRATES);
+        helper.register(Requiem.id("item.opus.use"), ITEM_OPUS_USE);
+        helper.register(Requiem.id("item.empty_vessel.use"), ITEM_EMPTY_VESSEL_USE);
+        helper.register(Requiem.id("item.filled_vessel.use"), ITEM_FILLED_VESSEL_USE);
     }
 
     public static void init() {
