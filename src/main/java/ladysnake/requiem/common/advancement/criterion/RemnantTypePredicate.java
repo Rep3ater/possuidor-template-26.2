@@ -19,7 +19,7 @@ public abstract class RemnantTypePredicate {
         .xmap(
             id -> {
                 ResourceLocation identifier = ResourceLocation.tryParse(id);
-                return identifier != null ? new Single(RequiemRegistries.REMNANT_STATES.getValue(identifier)) : ANY;
+                return identifier != null ? new Single(RequiemRegistries.REMNANT_STATES.get(identifier)) : ANY;
             },
             pred -> pred instanceof Single s ? Optional.ofNullable(RequiemRegistries.REMNANT_STATES.getKey(s.type)).map(ResourceLocation::toString).orElse("") : ""
         );
