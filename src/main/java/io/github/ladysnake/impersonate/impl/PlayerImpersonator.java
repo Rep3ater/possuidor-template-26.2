@@ -15,7 +15,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.player.Player;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, CopyableComponent<PlayerImpersonator> {
     @NotNull
     private final Player player;
-    private final Map<Identifier, GameProfile> stackedImpersonations = new LinkedHashMap<>();
+    private final Map<ResourceLocation, GameProfile> stackedImpersonations = new LinkedHashMap<>();
     @Nullable
     private GameProfile impersonatedProfile;
     @Nullable
@@ -35,7 +35,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
     }
 
     @Override
-    public void impersonate(@NotNull Identifier key, @NotNull GameProfile profile) {
+    public void impersonate(@NotNull ResourceLocation key, @NotNull GameProfile profile) {
         Objects.requireNonNull(key, "key");
         Objects.requireNonNull(profile, "profile");
         this.stackedImpersonations.put(key, profile);
@@ -50,7 +50,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
 
     @Nullable
     @Override
-    public GameProfile stopImpersonation(@NotNull Identifier key) {
+    public GameProfile stopImpersonation(@NotNull ResourceLocation key) {
         if (this.isImpersonating()) {
             GameProfile ret = this.stackedImpersonations.remove(key);
             this.resetImpersonation();
@@ -101,7 +101,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
 
     @Nullable
     @Override
-    public GameProfile getImpersonatedProfile(@NotNull Identifier key) {
+    public GameProfile getImpersonatedProfile(@NotNull ResourceLocation key) {
         return this.stackedImpersonations.get(key);
     }
 
@@ -163,7 +163,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
         ListTag list = tag.getListOrEmpty("impersonations");
         for (Tag elem : list) {
             if (elem instanceof CompoundTag entry) {
-                Identifier key = Identifier.tryParse(entry.getStringOr("impersonation_key", ""));
+                ResourceLocation key = ResourceLocation.tryParse(entry.getStringOr("impersonation_key", ""));
                 if (key != null) {
                     entry.read(ExtraCodecs.STORED_GAME_PROFILE).ifPresent(profile ->
                         this.stackedImpersonations.put(key, profile)
@@ -185,7 +185,7 @@ public class PlayerImpersonator implements Impersonator, AutoSyncedComponent, Co
             return;
         }
         ListTag list = new ListTag();
-        for (Map.Entry<Identifier, GameProfile> entry : this.stackedImpersonations.entrySet()) {
+        for (Map.Entry<ResourceLocation, GameProfile> entry : this.stackedImpersonations.entrySet()) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putString("impersonation_key", entry.getKey().toString());
             entryTag.store(ExtraCodecs.STORED_GAME_PROFILE, entry.getValue());

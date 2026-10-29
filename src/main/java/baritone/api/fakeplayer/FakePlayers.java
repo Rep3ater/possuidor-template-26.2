@@ -1,7 +1,7 @@
 package baritone.api.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -9,8 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import java.util.UUID;
 
 public final class FakePlayers {
-    public static final Identifier SPAWN_PACKET_ID = Identifier.fromNamespaceAndPath("automatone", "spawn");
-    public static final Identifier PROFILE_UPDATE_PACKET_ID = Identifier.fromNamespaceAndPath("automatone", "profile_update");
+    public static final ResourceLocation SPAWN_PACKET_ID = ResourceLocation.fromNamespaceAndPath("automatone", "spawn");
+    public static final ResourceLocation PROFILE_UPDATE_PACKET_ID = ResourceLocation.fromNamespaceAndPath("automatone", "profile_update");
 
     public static GameProfile generateGameProfile() {
         return new GameProfile(UUID.randomUUID(), "Mortal Shell");

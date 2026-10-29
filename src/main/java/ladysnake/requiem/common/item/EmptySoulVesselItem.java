@@ -45,7 +45,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -160,7 +160,7 @@ public class EmptySoulVesselItem extends Item {
                 String soulTypeStr = ladysnake.requiem.common.construct.ai.SoulAiManager.getInjectedSoulType(mob);
                 ladysnake.requiem.common.construct.ai.SoulAiManager.extractSoul(mob);
                 net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(soulTypeStr);
-                EntityType<?> type = id != null ? net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(id).map(Holder::value).orElse(EntityTypes.ZOMBIE) : EntityTypes.ZOMBIE;
+                EntityType<?> type = id != null ? net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.get(id).map(Holder::value).orElse(EntityType.ZOMBIE) : EntityType.ZOMBIE;
                 ItemStack filled = FilledSoulVesselItem.forEntityType(type);
                 user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, filled));
             }
