@@ -52,9 +52,9 @@ public final class PhenexStructureSystem {
                 origin.south(2), origin.south(2).east(), origin.south(2).east(2)
             };
             BlockState[] expected = new BlockState[] {
-                Blocks.IRON_BLOCK.defaultBlockState(), Blocks.IRON_CHAIN.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState(),
-                Blocks.IRON_CHAIN.defaultBlockState(), Blocks.REDSTONE_BLOCK.defaultBlockState(), Blocks.IRON_CHAIN.defaultBlockState(),
-                Blocks.IRON_BLOCK.defaultBlockState(), Blocks.IRON_CHAIN.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState()
+                Blocks.IRON_BLOCK.defaultBlockState(), Blocks.CHAIN.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState(),
+                Blocks.CHAIN.defaultBlockState(), Blocks.REDSTONE_BLOCK.defaultBlockState(), Blocks.CHAIN.defaultBlockState(),
+                Blocks.IRON_BLOCK.defaultBlockState(), Blocks.CHAIN.defaultBlockState(), Blocks.IRON_BLOCK.defaultBlockState()
             };
             boolean valid = true;
             for (int i = 0; i < cells.length; i++) {
