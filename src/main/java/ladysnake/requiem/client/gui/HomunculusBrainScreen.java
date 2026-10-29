@@ -110,7 +110,7 @@ public final class HomunculusBrainScreen extends Screen {
     private int workspaceWidth() { return Math.max(230, this.width - workspaceX() - 16); }
     private int rowHeight() { return 34; }
     private int rowStep() { return 43; }
-    private int footerY() { return this.height - 48; }
+    private int footerY() { return this.height - 37; }
     private int visibleRows() { return Math.max(1, (footerY() - workspaceTop() - 8) / rowStep()); }
     private int workspaceRight() { return workspaceX() + workspaceWidth(); }
 
@@ -204,7 +204,7 @@ public final class HomunculusBrainScreen extends Screen {
                     int fieldX = Math.min(x + w - fieldWidth - 8, startX + arg * (fieldWidth + gap));
                     addArgumentField(blockIndex, arg, fieldX, y + 8, fieldWidth, "xyz".substring(arg, arg + 1));
                 }
-            } else if (block.inputCount == 1) {
+            } else if (block.kind.inputCount == 1) {
                 int labelWidth = switch (block.kind) {
                     case FIND_ITEM -> 92;
                     case PICKUP -> 71;
@@ -380,7 +380,6 @@ public final class HomunculusBrainScreen extends Screen {
         int target = Math.max(0, Math.min(scrollOffset + row, blocks.size() - 1));
         if (target == original) return;
         BrainBlock moved = blocks.remove(original);
-        if (target > original) target--;
         blocks.add(target, moved);
         selectedIndex = target;
         clampScroll();
@@ -440,12 +439,14 @@ public final class HomunculusBrainScreen extends Screen {
             cursor += widths[i] + gap;
         }
 
-        if (event.x() >= workspaceRight() - 74 && event.y() >= workspaceTop() - 22 && event.y() < workspaceTop()) {
+        if (event.x() >= workspaceRight() - 74 && event.x() < workspaceRight() - 38
+                && event.y() >= workspaceTop() - 22 && event.y() < workspaceTop()) {
             scrollOffset = Math.max(0, scrollOffset - 1);
             rebuildArgumentFields();
             return true;
         }
-        if (event.x() >= workspaceRight() - 34 && event.y() >= workspaceTop() - 22 && event.y() < workspaceTop()) {
+        if (event.x() >= workspaceRight() - 34 && event.x() <= workspaceRight() - 4
+                && event.y() >= workspaceTop() - 22 && event.y() < workspaceTop()) {
             scrollOffset = Math.min(Math.max(0, blocks.size() - visibleRows()), scrollOffset + 1);
             rebuildArgumentFields();
             return true;
@@ -591,7 +592,7 @@ public final class HomunculusBrainScreen extends Screen {
         String feedback = status == null || status.isBlank() ? validationMessage() : status;
         int feedbackColor = validationErrors().isEmpty() ? 0xFF8BFFB9 : 0xFFFFC0C0;
         if (feedback.length() > 100) feedback = feedback.substring(0, 97) + "...";
-        graphics.text(this.font, Component.literal(feedback), 18, footerY() + 8, feedbackColor, false);
+        graphics.text(this.font, Component.literal(feedback), 18, footerY() - 15, feedbackColor, false);
         graphics.text(this.font, Component.literal("Scroll to browse blocks. Ctrl+Enter saves · Ctrl+↑/↓ reorders · Delete removes selected block."),
             18, this.height - 17, MUTED, false);
 
