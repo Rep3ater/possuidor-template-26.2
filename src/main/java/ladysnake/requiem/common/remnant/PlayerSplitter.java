@@ -229,9 +229,8 @@ public final class PlayerSplitter {
 
     private static CompoundTag computeCopyNbt(Entity template) {
         //Player keeps everything that goes through death
-        TagValueOutput out = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, template.registryAccess());
-        template.saveWithoutId(out);
-        CompoundTag templateNbt = out.buildResult();
+        CompoundTag templateNbt = new CompoundTag();
+        template.saveWithoutId(templateNbt);
         deduplicateVanillaData(templateNbt);
         deduplicateComponents(templateNbt, ComponentProvider.fromEntity(template).getComponentContainer().keys());
         return templateNbt;
@@ -269,10 +268,9 @@ public final class PlayerSplitter {
     }
 
     public static void performNbtCopy(CompoundTag from, Entity to) {
-        TagValueOutput out = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, to.registryAccess());
-        to.saveWithoutId(out);
-        CompoundTag serialized = out.buildResult();
+        CompoundTag serialized = new CompoundTag();
+        to.saveWithoutId(serialized);
         serialized.merge(from);
-        to.load(TagValueInput.create(ProblemReporter.DISCARDING, to.registryAccess(), serialized));
+        to.load(serialized);
     }
 }

@@ -176,7 +176,7 @@ public final class MarbasAbilitySystem {
             // Day time advances when players sleep, unlike gameTime (which counts server ticks).
             marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getOverworldClockTime());
             marker.getPersistentData().putBoolean(EMBRYO_CLOCK_DAY_TIME, true);
-            marker.getPersistentData().putString(OWNER, readItemData(stack).getString(OWNER).orElse(player.getUUID().toString()));
+            marker.getPersistentData().putString(OWNER, (readItemData(stack).getString(OWNER).isEmpty() ? player.getUUID().toString() : readItemData(stack).getString(OWNER)));
             if (!level.addFreshEntity(marker)) {
                 player.sendSystemMessage(Component.literal("The embryo could not be placed in the cauldron."));
                 return true;
@@ -230,7 +230,7 @@ public final class MarbasAbilitySystem {
         if (stack.is(RequiemItems.HOMUNCULUS) && isMobHead(player.getOffhandItem())) {
             String headName = player.getOffhandItem().getHoverName().getString();
             String traits = traitsForHead(player.getOffhandItem());
-            String program = readItemData(stack).getString(BRAIN).orElse("return home");
+            String program = (readItemData(stack).getString(BRAIN).isEmpty() ? "return home" : readItemData(stack).getString(BRAIN));
             Mob mob = growHomunculus(level, pos, player, program, traits);
             if (mob != null) mob.getPersistentData().putString(TRAITS, traits);
             if (!player.getAbilities().instabuild) { stack.shrink(1); player.getOffhandItem().shrink(1); }
@@ -246,12 +246,12 @@ public final class MarbasAbilitySystem {
                 if (!booleanOr(incubationData, EMBRYO_CLOCK_DAY_TIME, false)) {
                     // Migrate embryos created by the prior build, which measured only server ticks
                     // and therefore ignored most of the day skipped when players slept.
-                    long legacyStarted = incubationData.getLong(EMBRYO_STARTED_AT).orElse(level.getGameTime());
+                    long legacyStarted = (incubationData.contains(EMBRYO_STARTED_AT) ? incubationData.getLong(EMBRYO_STARTED_AT) : level.getGameTime());
                     long legacyElapsed = Math.max(0L, level.getGameTime() - legacyStarted);
                     incubationData.putLong(EMBRYO_STARTED_AT, level.getOverworldClockTime() - legacyElapsed);
                     incubationData.putBoolean(EMBRYO_CLOCK_DAY_TIME, true);
                 }
-                long started = incubationData.getLong(EMBRYO_STARTED_AT).orElse(level.getOverworldClockTime());
+                long started = (incubationData.contains(EMBRYO_STARTED_AT) ? incubationData.getLong(EMBRYO_STARTED_AT) : level.getOverworldClockTime());
                 long elapsed = Math.max(0L, level.getOverworldClockTime() - started);
                 if (elapsed < EMBRYO_GESTATION_TICKS) {
                     long remainingDays = (EMBRYO_GESTATION_TICKS - elapsed + 23_999L) / 24_000L;
@@ -267,7 +267,7 @@ public final class MarbasAbilitySystem {
                     player.sendSystemMessage(Component.literal("The homunculus could not be formed; the embryo remains intact."));
                     return true;
                 }
-                String originalOwner = embryoMarker.getPersistentData().getString(OWNER).orElse(player.getUUID().toString());
+                String originalOwner = (embryoMarker.getPersistentData().getString(OWNER).isEmpty() ? player.getUUID().toString() : embryoMarker.getPersistentData().getString(OWNER));
                 homunculus.getPersistentData().putString(OWNER, originalOwner);
                 embryoMarker.discard();
                 consumeSulfurIngredient(player, stack);
@@ -275,7 +275,7 @@ public final class MarbasAbilitySystem {
                 player.sendSystemMessage(Component.literal("Sulfur completes the incubation. The homunculus awakens."));
                 // Successful incubation opens the program editor immediately.
                 RequiemNetworking.sendHomunculusBrainOpen(player, homunculus.getId(),
-                    homunculus.getPersistentData().getString(BRAIN).orElse("return home"));
+                    (homunculus.getPersistentData().getString(BRAIN).isEmpty() ? "return home" : homunculus.getPersistentData().getString(BRAIN)));
                 return true;
             }
 
@@ -286,7 +286,7 @@ public final class MarbasAbilitySystem {
                 player.sendSystemMessage(Component.literal("No programmable brain is nearby. Incubate an Embryo in water, or use sulfur on a homunculus / body carrying a transferred brain to edit its commands."));
                 return true;
             }
-            String program = homunculus.getPersistentData().getString(BRAIN).orElse("return home");
+            String program = (homunculus.getPersistentData().getString(BRAIN).isEmpty() ? "return home" : homunculus.getPersistentData().getString(BRAIN));
             consumeSulfurIngredient(player, stack);
             RequiemNetworking.sendHomunculusBrainOpen(player, homunculus.getId(), program);
             return true;
@@ -326,7 +326,7 @@ public final class MarbasAbilitySystem {
     private static ItemEntity findEmbryoMarker(ServerLevel level, BlockPos cauldron) {
         AABB area = new AABB(cauldron).inflate(0.45, 0.8, 0.45);
         return level.getEntitiesOfClass(ItemEntity.class, area, item ->
-            item.getPersistentData().getBoolean(EMBRYO_MARKER).orElse(false)
+            (item.getPersistentData().contains(EMBRYO_MARKER) ? item.getPersistentData().getBoolean(EMBRYO_MARKER) : false)
                 && item.getItem().is(RequiemItems.EMBRYO))
             .stream().findFirst().orElse(null);
     }
@@ -397,7 +397,7 @@ public final class MarbasAbilitySystem {
         data.putString(OWNER, stringOr(oldData, OWNER, ""));
         data.putString(HOME, stringOr(oldData, HOME, 
             original.blockPosition().getX() + " " + original.blockPosition().getY() + " " + original.blockPosition().getZ()));
-        data.putLong(BORN_AT, oldData.getLong(BORN_AT).orElse(level.getGameTime()));
+        data.putLong(BORN_AT, (oldData.contains(BORN_AT) ? oldData.getLong(BORN_AT) : level.getGameTime()));
         data.putLong(STUN_UNTIL, 0L);
         if (!level.addFreshEntity(immortal)) return null;
         original.discard();
@@ -424,7 +424,7 @@ public final class MarbasAbilitySystem {
             return true;
         }
         if (target instanceof Mob homunculus && isHomunculus(homunculus) && held.is(Items.GOLD_INGOT)
-                && homunculus.getPersistentData().getString(TRAITS).orElse("").contains("trade_gold")) {
+                && (homunculus.getPersistentData().getString(TRAITS).isEmpty() ? "" : homunculus.getPersistentData().getString(TRAITS)).contains("trade_gold")) {
             if (!serverPlayer.getAbilities().instabuild) held.shrink(1);
             ItemStack trade = switch (serverPlayer.getRandom().nextInt(5)) {
                 case 0 -> new ItemStack(Items.QUARTZ, 2 + serverPlayer.getRandom().nextInt(4));
@@ -439,8 +439,8 @@ public final class MarbasAbilitySystem {
         }
         if (!isMarbas(player)) return false;
         if (held.is(RequiemItems.VESSEL_SHARD) && target instanceof Mob mob && isHomunculus(mob)) {
-            long born = mob.getPersistentData().getLong(BORN_AT).orElse(level.getGameTime());
-            int sleeps = player.getPersistentData().getInt("requiem:marbas_sleep_count").orElse(0);
+            long born = (mob.getPersistentData().contains(BORN_AT) ? mob.getPersistentData().getLong(BORN_AT) : level.getGameTime());
+            int sleeps = (player.getPersistentData().contains("requiem:marbas_sleep_count") ? player.getPersistentData().getInt("requiem:marbas_sleep_count") : 0);
             if (level.getGameTime() - born > 48000L && sleeps < 2) {
                 player.sendSystemMessage(Component.literal("The homunculus soul has settled. It can be extracted during its first two days, or after two nights of sleep."));
                 return true;
@@ -452,7 +452,7 @@ public final class MarbasAbilitySystem {
                 tag.putString(BRAIN, stringOr(data, BRAIN, "return home"));
                 tag.putString(HOME, stringOr(data, HOME, 
                     mob.blockPosition().getX() + " " + mob.blockPosition().getY() + " " + mob.blockPosition().getZ()));
-                tag.putInt(NODE, Math.max(0, data.getInt(NODE).orElse(0)));
+                tag.putInt(NODE, Math.max(0, (data.contains(NODE) ? data.getInt(NODE) : 0)));
                 tag.putString(TRAITS, stringOr(data, TRAITS, ""));
                 tag.putString(OWNER, stringOr(data, OWNER, serverPlayer.getUUID().toString()));
             });
@@ -470,7 +470,7 @@ public final class MarbasAbilitySystem {
             CompoundTag data = readItemData(held);
             CompoundTag bodyData = body.getPersistentData();
             bodyData.putString(BRAIN, stringOr(data, BRAIN, "return home"));
-            bodyData.putInt(NODE, Math.max(0, data.getInt(NODE).orElse(0)));
+            bodyData.putInt(NODE, Math.max(0, (data.contains(NODE) ? data.getInt(NODE) : 0)));
             if (isHomunculus(body)) {
                 // A native homunculus keeps its own body and traits; only its program changes.
                 bodyData.remove(TRANSFERRED_BRAIN);
@@ -501,9 +501,8 @@ public final class MarbasAbilitySystem {
             body.set(DataComponents.CUSTOM_NAME, Component.literal("Homunculus"));
             CompoundTag data = mob.getPersistentData().copy();
             // saveWithoutId retains native entity data and PersistentData, but not the old runtime UUID.
-            TagValueOutput snapshotOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, level.registryAccess());
-            mob.saveWithoutId(snapshotOutput);
-            CompoundTag fullEntitySnapshot = snapshotOutput.buildResult();
+            CompoundTag fullEntitySnapshot = new CompoundTag();
+            mob.saveWithoutId(fullEntitySnapshot);
             CustomData.update(DataComponents.CUSTOM_DATA, body, tag -> {
                 tag.putString(BRAIN, stringOr(data, BRAIN, "return home"));
                 tag.putString(TRAITS, stringOr(data, TRAITS, ""));
@@ -536,11 +535,11 @@ public final class MarbasAbilitySystem {
             player.sendSystemMessage(Component.literal("The brain program is unchanged; its current task progress is preserved."));
             return;
         }
-        int previousNode = Math.max(0, mobData.getInt(NODE).orElse(0));
+        int previousNode = Math.max(0, (mobData.contains(NODE) ? mobData.getInt(NODE) : 0));
         int newNodeCount = Math.max(1, normalized.split(";").length);
         mobData.putString(BRAIN, normalized);
         mobData.putInt(NODE, Math.min(previousNode, newNodeCount - 1));
-        int damage = Math.min(10, player.getPersistentData().getInt("requiem:marbas_brain_damage").orElse(0) + 1);
+        int damage = Math.min(10, (player.getPersistentData().contains("requiem:marbas_brain_damage") ? player.getPersistentData().getInt("requiem:marbas_brain_damage") : 0) + 1);
         player.getPersistentData().putInt("requiem:marbas_brain_damage", damage);
         player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
             ladysnake.requiem.common.entity.effect.RequiemStatusEffects.BRAIN_DAMAGE, 1200, damage - 1, false, false, false));
@@ -551,7 +550,7 @@ public final class MarbasAbilitySystem {
     public static void onPlayerTick(ServerPlayer player) {
         CompoundTag data = player.getPersistentData();
         // Older builds could store more than two nights; normalize that data on login/tick.
-        int storedSleepCount = data.getInt("requiem:marbas_sleep_count").orElse(0);
+        int storedSleepCount = (data.contains("requiem:marbas_sleep_count") ? data.getInt("requiem:marbas_sleep_count") : 0);
         int normalizedSleepCount = Math.max(0, Math.min(2, storedSleepCount));
         if (normalizedSleepCount != storedSleepCount) {
             data.putInt("requiem:marbas_sleep_count", normalizedSleepCount);
@@ -564,11 +563,11 @@ public final class MarbasAbilitySystem {
                 data.putLong("requiem:marbas_sleep_started", now);
             }
         } else if (wasSleeping) {
-            long started = data.getLong("requiem:marbas_sleep_started").orElse(now);
+            long started = (data.contains("requiem:marbas_sleep_started") ? data.getLong("requiem:marbas_sleep_started") : now);
             data.remove("requiem:marbas_was_sleeping");
             data.remove("requiem:marbas_sleep_started");
             if (now - started >= 100L) {
-                int previousCount = data.getInt("requiem:marbas_sleep_count").orElse(0);
+                int previousCount = (data.contains("requiem:marbas_sleep_count") ? data.getInt("requiem:marbas_sleep_count") : 0);
                 int count = Math.min(2, previousCount + 1);
                 if (count > previousCount) {
                     data.putInt("requiem:marbas_sleep_count", count);
@@ -586,10 +585,10 @@ public final class MarbasAbilitySystem {
             center.getX() + 128.0, level.getMaxY(), center.getZ() + 128.0);
         for (Mob mob : level.getEntitiesOfClass(Mob.class, activeArea, MarbasAbilitySystem::hasProgrammableBrain)) {
             try {
-                if (mob.getPersistentData().getLong("requiem:homunculus_last_tick").orElse(Long.MIN_VALUE) == now) continue;
+                if ((mob.getPersistentData().contains("requiem:homunculus_last_tick") ? mob.getPersistentData().getLong("requiem:homunculus_last_tick") : Long.MIN_VALUE) == now) continue;
                 mob.getPersistentData().putLong("requiem:homunculus_last_tick", now);
                 if (isHomunculus(mob)) {
-                    int mentalLevel = mob.getPersistentData().getBoolean(BERSERK).orElse(false) ? 10 : 1;
+                    int mentalLevel = (mob.getPersistentData().contains(BERSERK) ? mob.getPersistentData().getBoolean(BERSERK) : false) ? 10 : 1;
                     mob.addEffect(new net.minecraft.world.effect.MobEffectInstance(
                         ladysnake.requiem.common.entity.effect.RequiemStatusEffects.HOMUNCULUS_MENTAL_HEALTH,
                         40, mentalLevel - 1, false, false, false));
@@ -600,7 +599,7 @@ public final class MarbasAbilitySystem {
                             && ladysnake.requiem.common.construct.ai.SoulAiManager.hasInjectedSoul(pathfinder)) {
                         continue;
                     }
-                    if (mob.getPersistentData().getBoolean(BERSERK).orElse(false)) {
+                    if ((mob.getPersistentData().contains(BERSERK) ? mob.getPersistentData().getBoolean(BERSERK) : false)) {
                         tickBerserk(level, mob, now);
                     } else {
                         runBrain(level, mob, now);
@@ -616,11 +615,11 @@ public final class MarbasAbilitySystem {
     }
 
     private static boolean isHomunculus(Mob mob) {
-        return mob.getPersistentData().getBoolean(HOMUNCULUS).orElse(false);
+        return (mob.getPersistentData().contains(HOMUNCULUS) ? mob.getPersistentData().getBoolean(HOMUNCULUS) : false);
     }
 
     public static boolean hasTransferredBrain(Mob mob) {
-        return mob.getPersistentData().getBoolean(TRANSFERRED_BRAIN).orElse(false);
+        return (mob.getPersistentData().contains(TRANSFERRED_BRAIN) ? mob.getPersistentData().getBoolean(TRANSFERRED_BRAIN) : false);
     }
 
     private static boolean hasProgrammableBrain(Mob mob) {
@@ -646,14 +645,14 @@ public final class MarbasAbilitySystem {
     }
 
     private static void applyInheritedTraits(ServerLevel level, Mob mob, long now) {
-        String traits = mob.getPersistentData().getString(TRAITS).orElse("").toLowerCase(Locale.ROOT);
+        String traits = (mob.getPersistentData().getString(TRAITS).isEmpty() ? "" : mob.getPersistentData().getString(TRAITS)).toLowerCase(Locale.ROOT);
         if (traits.contains("fire_resistance")) mob.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, 40, 0, false, false, false));
         LivingEntity target = mob.getTarget();
         if (target == null || !target.isAlive() || target == mob) return;
         if (traits.contains("fire")) target.igniteForSeconds(3.0F);
         if (traits.contains("wither")) target.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WITHER, 60, 0, false, false, true));
         if (traits.contains("explode") && mob.distanceToSqr(target) < 5.0 && now % 20 == 0
-                && mob.getPersistentData().getLong("requiem:homunculus_trait_explosion_cooldown").orElse(0L) <= now) {
+                && (mob.getPersistentData().contains("requiem:homunculus_trait_explosion_cooldown") ? mob.getPersistentData().getLong("requiem:homunculus_trait_explosion_cooldown") : 0L) <= now) {
             for (LivingEntity victim : level.getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(3.5), e -> e != mob && e.isAlive())) {
                 victim.hurt(level.damageSources().explosion(mob, mob), 12.0F);
             }
@@ -663,10 +662,10 @@ public final class MarbasAbilitySystem {
     }
 
     private static void runBrain(ServerLevel level, Mob mob, long now) {
-        String program = mob.getPersistentData().getString(BRAIN).orElse("return home");
+        String program = (mob.getPersistentData().getString(BRAIN).isEmpty() ? "return home" : mob.getPersistentData().getString(BRAIN));
         String[] nodes = program.split(";");
         if (nodes.length == 0) return;
-        int node = Math.max(0, Math.min(nodes.length - 1, mob.getPersistentData().getInt(NODE).orElse(0)));
+        int node = Math.max(0, Math.min(nodes.length - 1, (mob.getPersistentData().contains(NODE) ? mob.getPersistentData().getInt(NODE) : 0)));
         String rawCommand = nodes[node].trim();
         String command = rawCommand.toLowerCase(Locale.ROOT);
         if (command.isBlank()) { nextNode(mob, nodes.length); return; }
@@ -678,7 +677,7 @@ public final class MarbasAbilitySystem {
                 return;
             }
             CompoundTag data = mob.getPersistentData();
-            if (now >= data.getLong(SAY_COOLDOWN_UNTIL).orElse(0L)) {
+            if (now >= (data.contains(SAY_COOLDOWN_UNTIL) ? data.getLong(SAY_COOLDOWN_UNTIL) : 0L)) {
                 Component speech = Component.literal("<" + mob.getName().getString() + "> " + message);
                 for (ServerPlayer listener : level.players()) {
                     if (listener.distanceToSqr(mob) <= 48.0D * 48.0D) {
@@ -702,7 +701,7 @@ public final class MarbasAbilitySystem {
             return;
         }
         if (command.equals("return home") || command.equals("home")) {
-            int[] xyz = parseXYZ(mob.getPersistentData().getString(HOME).orElse("0 64 0"));
+            int[] xyz = parseXYZ((mob.getPersistentData().getString(HOME).isEmpty() ? "0 64 0" : mob.getPersistentData().getString(HOME)));
             if (xyz == null) { nextNode(mob, nodes.length); return; }
             mob.getNavigation().moveTo(xyz[0] + 0.5, xyz[1], xyz[2] + 0.5, 1.0);
             if (mob.distanceToSqr(xyz[0] + 0.5, xyz[1], xyz[2] + 0.5) < 4.0) nextNode(mob, nodes.length);
@@ -723,7 +722,7 @@ public final class MarbasAbilitySystem {
         if (command.equals("take item") || command.equals("take")
                 || command.equals("pickup") || command.equals("pickup item")
                 || command.startsWith("pickup:") || command.startsWith("pickup ")) {
-            Entity targetItem = level.getEntity(mob.getPersistentData().getInt(TARGET_ID).orElse(-1));
+            Entity targetItem = level.getEntity((mob.getPersistentData().contains(TARGET_ID) ? mob.getPersistentData().getInt(TARGET_ID) : -1));
             String filter = "";
             if (command.startsWith("pickup:")) filter = command.substring("pickup:".length()).trim();
             else if (command.startsWith("pickup ") && !command.equals("pickup item")) filter = command.substring("pickup ".length()).trim();
@@ -784,7 +783,7 @@ public final class MarbasAbilitySystem {
             return;
         }
         if (command.equals("kill entity") || command.equals("kill") || command.startsWith("kill:") || command.startsWith("kill ")) {
-            Entity target = level.getEntity(mob.getPersistentData().getInt(TARGET_ID).orElse(-1));
+            Entity target = level.getEntity((mob.getPersistentData().contains(TARGET_ID) ? mob.getPersistentData().getInt(TARGET_ID) : -1));
             String filter = command.startsWith("kill:") ? command.substring("kill:".length()).trim()
                 : (command.startsWith("kill ") && !command.equals("kill entity") ? command.substring("kill ".length()).trim() : "");
             LivingEntity living = target instanceof LivingEntity found ? found : null;
@@ -800,7 +799,7 @@ public final class MarbasAbilitySystem {
             mob.setTarget(living);
             mob.getNavigation().moveTo(living, 1.0);
             if (mob.distanceToSqr(living) < 3.0
-                    && now >= mob.getPersistentData().getLong(ATTACK_COOLDOWN_UNTIL).orElse(0L)) {
+                    && now >= (mob.getPersistentData().contains(ATTACK_COOLDOWN_UNTIL) ? mob.getPersistentData().getLong(ATTACK_COOLDOWN_UNTIL) : 0L)) {
                 float damage = bodyAttackDamage(mob);
                 if (damage > 0.0F) living.hurt(level.damageSources().mobAttack(mob), damage);
                 mob.getPersistentData().putLong(ATTACK_COOLDOWN_UNTIL, now + 20L);
@@ -865,14 +864,14 @@ public final class MarbasAbilitySystem {
     }
 
     private static void nextNode(Mob mob, int nodeCount) {
-        int current = mob.getPersistentData().getInt(NODE).orElse(0);
+        int current = (mob.getPersistentData().contains(NODE) ? mob.getPersistentData().getInt(NODE) : 0);
         mob.getPersistentData().putInt(NODE, (current + 1) % Math.max(1, nodeCount));
     }
 
     private static void tickBerserk(ServerLevel level, Mob mob, long now) {
         // Survival damage is blocked, but native Entity.kill()/the /kill command still removes it.
         mob.setInvulnerable(true);
-        if (now < mob.getPersistentData().getLong(STUN_UNTIL).orElse(0L)) {
+        if (now < (mob.getPersistentData().contains(STUN_UNTIL) ? mob.getPersistentData().getLong(STUN_UNTIL) : 0L)) {
             mob.getNavigation().stop();
             mob.setTarget(null);
         }
@@ -885,7 +884,7 @@ public final class MarbasAbilitySystem {
 
         if (event.getSource().is(DamageTypes.LAVA)) {
             long now = mob.level().getGameTime();
-            long until = mob.getPersistentData().getLong(STUN_UNTIL).orElse(0L);
+            long until = (mob.getPersistentData().contains(STUN_UNTIL) ? mob.getPersistentData().getLong(STUN_UNTIL) : 0L);
             if (now >= until) {
                 mob.getPersistentData().putFloat("requiem:immortal_stun_base_yaw", mob.getYRot());
                 mob.playSound(net.minecraft.sounds.SoundEvents.ALLAY_HURT, 1.0F, 0.52F);
