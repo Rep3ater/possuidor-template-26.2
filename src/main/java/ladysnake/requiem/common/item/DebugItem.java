@@ -21,9 +21,10 @@ import ladysnake.requiem.api.v1.remnant.DeathSuspender;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class DebugItem extends Item {
@@ -34,7 +35,7 @@ public class DebugItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         if (player.isShiftKeyDown()) {
             if (!world.isClientSide()) {
                 debugMode = (debugMode + 1) % 2;
@@ -61,6 +62,6 @@ public class DebugItem extends Item {
                     break;
             }
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
     }
 }
