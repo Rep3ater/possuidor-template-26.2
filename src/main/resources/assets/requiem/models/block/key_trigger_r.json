@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "minecraft:block/comparator"
-  }
-}
+{"parent":"minecraft:block/cube_all","textures":{"all":"requiem:block/key_trigger_r"}}
