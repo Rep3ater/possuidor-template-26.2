@@ -75,7 +75,7 @@ public final class MarbasAbilitySystem {
     }
 
     public static boolean isMarbas(Player player) {
-        return player != null && (player.entityTags().contains(TAG) || player.entityTags().contains("Marbas"));
+        return player != null && (player.getTags().contains(TAG) || player.getTags().contains("Marbas"));
     }
 
     public static void onChat(ServerChatEvent event) {
