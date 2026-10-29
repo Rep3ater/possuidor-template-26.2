@@ -117,8 +117,8 @@ public final class RequiemClient {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(RequiemEntities.CURED_VILLAGER, VillagerRenderer::new);
-        event.registerEntityRenderer(RequiemEntities.CURED_PIGLIN, context -> new PiglinRenderer(context));
-        event.registerEntityRenderer(RequiemEntities.CURED_PIGLIN_BRUTE, context -> new net.minecraft.client.renderer.entity.PiglinBruteRenderer(context));
+        event.registerEntityRenderer(RequiemEntities.CURED_PIGLIN, context -> new PiglinRenderer(context, ModelLayers.PIGLIN, ModelLayers.PIGLIN_INNER_ARMOR, ModelLayers.PIGLIN_OUTER_ARMOR, false));
+        event.registerEntityRenderer(RequiemEntities.CURED_PIGLIN_BRUTE, context -> new PiglinRenderer(context, ModelLayers.PIGLIN_BRUTE, ModelLayers.PIGLIN_BRUTE_INNER_ARMOR, ModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, false));
         event.registerEntityRenderer(RequiemEntities.MORTICIAN, MorticianEntityRenderer::new);
         event.registerEntityRenderer(RequiemEntities.RELEASED_SOUL, NoopRenderer::new);
         event.registerEntityRenderer(RequiemEntities.OBELISK_SOUL, NoopRenderer::new);
