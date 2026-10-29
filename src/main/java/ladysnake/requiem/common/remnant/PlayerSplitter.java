@@ -183,7 +183,7 @@ public final class PlayerSplitter {
         }
 
         GameProfile shellProfile = shell.getDisplayProfile();
-        if (shellProfile != null && !Objects.equals(shellProfile.id(), soul.getUUID())) {
+        if (shellProfile != null && !Objects.equals(shellProfile.getId(), soul.getUUID())) {
             Impersonator.get(soul).impersonate(BODY_IMPERSONATION, shellProfile);
         }
 
@@ -237,7 +237,8 @@ public final class PlayerSplitter {
     }
 
     private static void deduplicateComponents(CompoundTag leftoverData, Set<ComponentKey<?>> keys) {
-        leftoverData.getCompound(AbstractComponentContainer.NBT_KEY).ifPresent(leftoverComponents -> {
+        if (leftoverData.contains(AbstractComponentContainer.NBT_KEY, CompoundTag.TAG_COMPOUND)) {
+            CompoundTag leftoverComponents = leftoverData.getCompound(AbstractComponentContainer.NBT_KEY);
             for (ComponentKey<?> key : keys) {
                 String keyId = key.getId().toString();
                 if (RespawnCopyStrategy.get(key) == RespawnCopyStrategy.ALWAYS_COPY) {
@@ -245,7 +246,7 @@ public final class PlayerSplitter {
                     leftoverComponents.remove(keyId);
                 }
             }
-        });
+        }
     }
 
     private static void deduplicateVanillaData(CompoundTag leftoverData) {
