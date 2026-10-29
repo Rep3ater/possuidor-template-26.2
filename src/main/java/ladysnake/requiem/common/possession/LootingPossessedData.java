@@ -95,7 +95,7 @@ public class LootingPossessedData extends PossessedDataBase {
         super.readFromNbt(tag);
 
         if (tag.contains("previously_possessed")) {
-            this.previouslyPossessed = tag.getBoolean("previously_possessed);
+            this.previouslyPossessed = tag.getBoolean("previously_possessed");
         }
     }
 
