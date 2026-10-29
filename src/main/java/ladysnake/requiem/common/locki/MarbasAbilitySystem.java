@@ -222,6 +222,17 @@ public final class MarbasAbilitySystem {
 
     public static boolean onEntityInteract(Player player, Entity target, ItemStack held, boolean shift) {
         if (!(player instanceof ServerPlayer serverPlayer) || !(player.level() instanceof ServerLevel level)) return false;
+        if (shift && target instanceof Mob homunculus && isHomunculus(homunculus)
+                && held.is(RequiemItems.SUFFERING_HEAD)) {
+            homunculus.getPersistentData().putBoolean(BERSERK, true);
+            homunculus.getPersistentData().putString(BRAIN, "");
+            homunculus.getPersistentData().putLong(STUN_UNTIL, level.getGameTime() + 30L);
+            homunculus.getNavigation().stop();
+            homunculus.setTarget(null);
+            if (!serverPlayer.getAbilities().instabuild) held.shrink(1);
+            serverPlayer.sendSystemMessage(Component.literal("The Suffering Head fuses with the homunculus. It is immortal, unstable, and will ignore its programmed brain."));
+            return true;
+        }
         if (target instanceof Mob homunculus && isHomunculus(homunculus) && held.is(Items.GOLD_INGOT)
                 && homunculus.getPersistentData().getString(TRAITS).orElse("").contains("trade_gold")) {
             if (!serverPlayer.getAbilities().instabuild) held.shrink(1);
@@ -405,9 +416,20 @@ public final class MarbasAbilitySystem {
             nextNode(mob, nodes.length);
             return;
         }
-        if (command.equals("take item") || command.equals("take")) {
+        if (command.equals("take item") || command.equals("take")
+                || command.equals("pickup") || command.equals("pickup item") || command.startsWith("pickup:")) {
             Entity targetItem = level.getEntity(mob.getPersistentData().getInt(TARGET_ID).orElse(-1));
-            if (!(targetItem instanceof ItemEntity item) || item.getItem().isEmpty()) { nextNode(mob, nodes.length); return; }
+            String filter = "";
+            if (command.startsWith("pickup:")) filter = command.substring("pickup:".length()).trim();
+            else if (command.startsWith("pickup ") && !command.equals("pickup item")) filter = command.substring("pickup ".length()).trim();
+            if (!(targetItem instanceof ItemEntity item) || item.getItem().isEmpty()
+                    || (!filter.isBlank() && !matchesItemFilter(item.getItem(), filter))) {
+                item = level.getEntitiesOfClass(ItemEntity.class, mob.getBoundingBox().inflate(18.0), e ->
+                    !e.getItem().isEmpty() && (filter.isBlank() || matchesItemFilter(e.getItem(), filter)))
+                    .stream().min((a, b) -> Double.compare(a.distanceToSqr(mob), b.distanceToSqr(mob))).orElse(null);
+                if (item == null) { mob.getNavigation().stop(); nextNode(mob, nodes.length); return; }
+                mob.getPersistentData().putInt(TARGET_ID, item.getId());
+            }
             if (mob.distanceToSqr(item) >= 2.25) { mob.getNavigation().moveTo(item, 1.1); return; }
             ItemStack held = mob.getItemBySlot(EquipmentSlot.MAINHAND);
             if (!held.isEmpty()) mob.spawnAtLocation(level, held.copy());
@@ -453,17 +475,39 @@ public final class MarbasAbilitySystem {
             nextNode(mob, nodes.length);
             return;
         }
-        if (command.equals("kill entity") || command.equals("kill")) {
+        if (command.equals("kill entity") || command.equals("kill") || command.startsWith("kill:")) {
             Entity target = level.getEntity(mob.getPersistentData().getInt(TARGET_ID).orElse(-1));
-            if (target instanceof LivingEntity living && living.isAlive()) {
-                mob.setTarget(living);
-                mob.getNavigation().moveTo(living, 1.15);
-                if (mob.distanceToSqr(living) < 3.0) living.hurt(level.damageSources().mobAttack(mob), 6.0F);
-            } else nextNode(mob, nodes.length);
+            String filter = command.startsWith("kill:") ? command.substring("kill:".length()).trim() : "";
+            if (!(target instanceof LivingEntity living) || !living.isAlive() || living == mob
+                    || (!filter.isBlank() && !matchesEntityFilter(living, filter))) {
+                living = level.getEntitiesOfClass(LivingEntity.class, mob.getBoundingBox().inflate(24.0), e ->
+                    e != mob && e.isAlive() && !(e instanceof Player p && (p.isCreative() || p.isSpectator()))
+                        && (filter.isBlank() || matchesEntityFilter(e, filter)))
+                    .stream().min((a, b) -> Double.compare(a.distanceToSqr(mob), b.distanceToSqr(mob))).orElse(null);
+                if (living == null) { mob.getNavigation().stop(); nextNode(mob, nodes.length); return; }
+                mob.getPersistentData().putInt(TARGET_ID, living.getId());
+            }
+            mob.setTarget(living);
+            mob.getNavigation().moveTo(living, 1.15);
+            if (mob.distanceToSqr(living) < 3.0) living.hurt(level.damageSources().mobAttack(mob), 6.0F);
             return;
         }
         if (command.equals("wait") || command.equals("guard")) { mob.getNavigation().stop(); return; }
         nextNode(mob, nodes.length);
+    }
+
+    private static boolean matchesItemFilter(ItemStack stack, String filter) {
+        String normalized = filter.toLowerCase(Locale.ROOT);
+        String id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().toLowerCase(Locale.ROOT);
+        return id.equals(normalized) || id.endsWith(":" + normalized)
+            || stack.getHoverName().getString().equalsIgnoreCase(filter);
+    }
+
+    private static boolean matchesEntityFilter(LivingEntity entity, String filter) {
+        String normalized = filter.toLowerCase(Locale.ROOT);
+        String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString().toLowerCase(Locale.ROOT);
+        return id.equals(normalized) || id.endsWith(":" + normalized)
+            || entity.getName().getString().equalsIgnoreCase(filter);
     }
 
     private static int[] parseXYZ(String text) {
