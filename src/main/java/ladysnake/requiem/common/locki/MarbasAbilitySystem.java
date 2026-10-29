@@ -422,11 +422,12 @@ public final class MarbasAbilitySystem {
             String filter = "";
             if (command.startsWith("pickup:")) filter = command.substring("pickup:".length()).trim();
             else if (command.startsWith("pickup ") && !command.equals("pickup item")) filter = command.substring("pickup ".length()).trim();
+            final String itemFilter = filter;
             ItemEntity item = targetItem instanceof ItemEntity found ? found : null;
             if (item == null || item.getItem().isEmpty()
-                    || (!filter.isBlank() && !matchesItemFilter(item.getItem(), filter))) {
+                    || (!itemFilter.isBlank() && !matchesItemFilter(item.getItem(), itemFilter))) {
                 item = level.getEntitiesOfClass(ItemEntity.class, mob.getBoundingBox().inflate(18.0), e ->
-                    !e.getItem().isEmpty() && (filter.isBlank() || matchesItemFilter(e.getItem(), filter)))
+                    !e.getItem().isEmpty() && (itemFilter.isBlank() || matchesItemFilter(e.getItem(), itemFilter)))
                     .stream().min((a, b) -> Double.compare(a.distanceToSqr(mob), b.distanceToSqr(mob))).orElse(null);
                 if (item == null) { mob.getNavigation().stop(); nextNode(mob, nodes.length); return; }
                 mob.getPersistentData().putInt(TARGET_ID, item.getId());
