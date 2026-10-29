@@ -2,10 +2,8 @@ package ladysnake.requiem.client.gui;
 
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -40,9 +38,9 @@ public final class LockiPlantDialogueScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
-            int choice = choiceAt(event.x(), event.y());
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
+            int choice = choiceAt(mouseX, mouseY);
             if (choice >= 0) {
                 choose(choice);
                 return true;
@@ -52,24 +50,24 @@ public final class LockiPlantDialogueScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        if (event.key() == GLFW.GLFW_KEY_1 || event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_SPACE) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_1 || keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE) {
             choose(1);
             return true;
         }
-        if (event.key() == GLFW.GLFW_KEY_2 || event.key() == GLFW.GLFW_KEY_BACKSPACE) {
+        if (keyCode == GLFW.GLFW_KEY_2 || keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             choose(0);
             return true;
         }
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fill(0, 0, this.width, this.height, 0xFF000000);
         int center = this.width / 2;
-        graphics.text(this.font, Component.literal("A voice answers from somewhere inside the plant."), center - 170, this.height / 2 - 76, 0xFFE5EDE9, false);
-        graphics.textWithWordWrap(this.font, Component.literal("You feel the roots remembering a thousand springs. The plant's spirit asks what you would become if it lent you one of its children."), center - 170, this.height / 2 - 50, 340, 0xFFB9C8C4, false);
+        graphics.drawString(this.font, Component.literal("A voice answers from somewhere inside the plant."), center - 170, this.height / 2 - 76, 0xFFE5EDE9, false);
+        graphics.drawWordWrap(this.font, Component.literal("You feel the roots remembering a thousand springs. The plant's spirit asks what you would become if it lent you one of its children."), center - 170, this.height / 2 - 50, 340, 0xFFB9C8C4);
 
         int top = this.height / 2 + 42;
         boolean first = choiceAt(mouseX, mouseY) == 1;
@@ -78,10 +76,10 @@ public final class LockiPlantDialogueScreen extends Screen {
             Component.literal("[1]  Ask to become one of its children"));
         drawChoice(graphics, center - 170, top + 42, center + 170, top + 74, second,
             Component.literal("[2]  Refuse and return to the roots"));
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        super.render(graphics, mouseX, mouseY, partialTick);
     }
 
-    private void drawChoice(GuiGraphicsExtractor graphics, int left, int top, int right, int bottom, boolean hovered, Component text) {
+    private void drawChoice(GuiGraphics graphics, int left, int top, int right, int bottom, boolean hovered, Component text) {
         int border = hovered ? 0xFFBDEFF5 : 0xFF34514C;
         int fill = hovered ? 0xFF183B37 : 0xFF090F0E;
         graphics.fill(left, top, right, bottom, fill);
@@ -89,6 +87,6 @@ public final class LockiPlantDialogueScreen extends Screen {
         graphics.fill(left, bottom - 1, right, bottom, border);
         graphics.fill(left, top, left + 1, bottom, border);
         graphics.fill(right - 1, top, right, bottom, border);
-        graphics.text(this.font, text, left + 10, top + 11, hovered ? 0xFFFFFFFF : 0xFFCAD8D4, false);
+        graphics.drawString(this.font, text, left + 10, top + 11, hovered ? 0xFFFFFFFF : 0xFFCAD8D4, false);
     }
 }
