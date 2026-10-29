@@ -2,7 +2,6 @@ package ladysnake.requiem.common.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.permissions.Permissions;
 
 import java.util.Collection;
 import java.util.function.Consumer;

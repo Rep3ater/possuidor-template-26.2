@@ -170,7 +170,7 @@ public final class RequiemClient {
         event.registerSpriteSet(RequiemParticleTypes.ENTITY_DUST, GenericRequiemParticle.EntityDustProvider::new);
     }
 
-    public static void onRenderPlayerPre(RenderPlayerEvent.Pre<?> event) {
+    public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
         if (ladysnake.requiem.client.locki.LockiClientState.isInvisibleMode(player.getId())
                 || PossessionComponent.get(player).isPossessionOngoing()) {
@@ -187,7 +187,7 @@ public final class RequiemClient {
         }
     }
 
-    public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?, ?> event) {
+    public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.getCameraType().isFirstPerson()
                 && SharedBodyClientState.isControlled(event.getEntity().getId())) {

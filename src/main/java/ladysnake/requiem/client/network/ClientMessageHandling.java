@@ -4,7 +4,7 @@ import baritone.api.fakeplayer.ClientPlayerShellEntity;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
+import net.neoforged.neoforge.client.network.RegisterClientPayloadHandlersEvent;
 
 /**
  * Physical-client-only packet handlers. Keeping UI and client-shell references in this
@@ -29,7 +29,7 @@ public final class ClientMessageHandling {
     }
 
     private static void handleOpenDialogue(RequiemNetworking.OpenDialoguePayload payload, net.neoforged.neoforge.network.handling.IPayloadContext context) {
-        context.enqueueWork(() -> Minecraft.getInstance().setScreenAndShow(new ladysnake.requiem.client.gui.RemnantChoiceScreen()));
+        context.enqueueWork(() -> Minecraft.getInstance().setScreen(new ladysnake.requiem.client.gui.RemnantChoiceScreen()));
     }
 
     private static void handleShellProfileSync(RequiemNetworking.ShellProfileSyncPayload payload, net.neoforged.neoforge.network.handling.IPayloadContext context) {
@@ -37,7 +37,7 @@ public final class ClientMessageHandling {
     }
 
     private static void handleHomunculusBrainOpen(RequiemNetworking.HomunculusBrainOpenPayload payload, net.neoforged.neoforge.network.handling.IPayloadContext context) {
-        context.enqueueWork(() -> Minecraft.getInstance().setScreenAndShow(
+        context.enqueueWork(() -> Minecraft.getInstance().setScreen(
             new ladysnake.requiem.client.gui.HomunculusBrainScreen(payload.entityId(), payload.program())));
     }
 }
