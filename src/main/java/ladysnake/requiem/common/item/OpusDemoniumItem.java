@@ -20,7 +20,7 @@ package ladysnake.requiem.common.item;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -37,14 +37,14 @@ public class OpusDemoniumItem extends WritableBookItem {
     }
 
     @Override
-    public InteractionResult use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         player.awardStat(Stats.ITEM_USED.get(this));
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), world.isClientSide());
     }
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, java.util.List<Component> tooltip, TooltipFlag flag) {
-        addTooltipLine(tooltipAdder, RequiemItems.SEALED_REMNANT_VESSEL);
+        addTooltipLine(tooltip, RequiemItems.SEALED_REMNANT_VESSEL);
         addTooltipLine(tooltipAdder, RequiemItems.PURE_SOUL_VESSEL);
     }
 
