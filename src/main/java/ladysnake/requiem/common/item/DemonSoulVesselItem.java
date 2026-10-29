@@ -31,6 +31,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -77,11 +78,11 @@ public class DemonSoulVesselItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         if (world.isClientSide()) {
-            return InteractionResult.SUCCESS;
+            return InteractionResultHolder.sidedSuccess(stack, world.isClientSide());
         }
 
         if (player instanceof ServerPlayer serverPlayer && stack.getItem() == this) {
