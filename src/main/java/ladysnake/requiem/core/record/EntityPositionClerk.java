@@ -161,7 +161,7 @@ public final class EntityPositionClerk implements ServerTickingComponent {
             ListTag refs = tag.getList("refs", net.minecraft.nbt.Tag.TAG_COMPOUND);
 
             if (!refs.isEmpty()) {
-                CompoundTag refNbt = refs.getCompoundOrEmpty(0);
+                CompoundTag refNbt = refs.getCompound(0);
                 NbtCompat.getUuid(refNbt, "uuid").flatMap(this.recordKeeper::getRecord).ifPresent(this::linkWith);
             }
         }
