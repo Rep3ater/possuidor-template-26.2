@@ -187,7 +187,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public java.util.UUID getOwnerUuid() {
         com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
-        return profile != null ? profile.id() : null;
+        return profile != null ? profile.getId() : null;
     }
 
     @Override
@@ -234,7 +234,7 @@ public class PlayerShellEntity extends FakeServerPlayerEntity {
     @Override
     public net.minecraft.network.chat.Component getName() {
         com.mojang.authlib.GameProfile profile = this.getDisplayProfile();
-        if (profile != null && profile.name() != null && !profile.name().isEmpty() && !profile.name().startsWith("[") && !profile.name().equals("Mortal Shell")) {
+        if (profile != null && profile.getName() != null && !profile.name().isEmpty() && !profile.name().startsWith("[") && !profile.name().equals("Mortal Shell")) {
             return net.minecraft.network.chat.Component.literal(profile.name() + "'s Shell");
         }
         return net.minecraft.network.chat.Component.translatable("entity.requiem.player_shell");
