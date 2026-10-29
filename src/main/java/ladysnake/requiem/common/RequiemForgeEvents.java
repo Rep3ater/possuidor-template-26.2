@@ -324,6 +324,12 @@ public final class RequiemForgeEvents {
                 event.setCanceled(true);
                 return;
             }
+            if (MarbasAbilitySystem.tryPlaceStoredHomunculus(
+                    serverPlayer, event.getItemStack(), event.getPos().relative(event.getFace()))) {
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+                return;
+            }
             if (NucleusManager.tryEnter(serverPlayer, event.getPos())) {
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
