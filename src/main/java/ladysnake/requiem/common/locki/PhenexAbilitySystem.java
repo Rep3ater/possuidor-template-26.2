@@ -54,7 +54,7 @@ public final class PhenexAbilitySystem {
     private PhenexAbilitySystem() {}
 
     public static boolean isPhenex(Player player) {
-        return player != null && (player.entityTags().contains(TAG) || player.entityTags().contains("Phenex"));
+        return player != null && (player.getTags().contains(TAG) || player.getTags().contains("Phenex"));
     }
 
     public static boolean isAbilityActive(Player player, String ability) {
