@@ -45,6 +45,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -115,18 +116,9 @@ public final class ServerMessageHandling {
             ServerMessageHandling::handleHomunculusBrainSave
         );
 
-        // Clientbound payloads
-        registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, ServerMessageHandling::handleAnchorDamage);
-        registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC, ServerMessageHandling::handleDataSync);
-        registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC, ServerMessageHandling::handleOpusUse);
-        registrar.playToClient(RequiemNetworking.EtherealAnimationPayload.TYPE, RequiemNetworking.EtherealAnimationPayload.STREAM_CODEC, ServerMessageHandling::handleEtherealAnimation);
-        registrar.playToClient(RequiemNetworking.BodyCurePayload.TYPE, RequiemNetworking.BodyCurePayload.STREAM_CODEC, ServerMessageHandling::handleBodyCure);
-        registrar.playToClient(RequiemNetworking.ObeliskPowerUpdatePayload.TYPE, RequiemNetworking.ObeliskPowerUpdatePayload.STREAM_CODEC, ServerMessageHandling::handleObeliskPowerUpdate);
-        registrar.playToClient(RequiemNetworking.RiftWitnessedPayload.TYPE, RequiemNetworking.RiftWitnessedPayload.STREAM_CODEC, ServerMessageHandling::handleRiftWitnessed);
-        registrar.playToClient(RequiemNetworking.OpenDialoguePayload.TYPE, RequiemNetworking.OpenDialoguePayload.STREAM_CODEC, ServerMessageHandling::handleOpenDialogue);
-        registrar.playToClient(RequiemNetworking.ShellProfileSyncPayload.TYPE, RequiemNetworking.ShellProfileSyncPayload.STREAM_CODEC, ServerMessageHandling::handleShellProfileSync);
-        registrar.playToClient(RequiemNetworking.LockiStatePayload.TYPE, RequiemNetworking.LockiStatePayload.STREAM_CODEC, ServerMessageHandling::handleLockiState);
-        registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, ServerMessageHandling::handleHomunculusBrainOpen);
+        // Clientbound codecs are declared here, but actual client handlers are registered
+        // in RegisterClientPayloadHandlersEvent to keep client-only classes off the server.
+        registerClientboundPayloads(registrar);
     }
 
     private static void handleConsumeResurrectionItem(RequiemCoreNetworking.ConsumeResurrectionItemPayload payload, IPayloadContext context) {
@@ -164,6 +156,24 @@ public final class ServerMessageHandling {
     public static void init() {
         // Event bus handles registration
     }
+
+    private static void registerClientboundPayloads(PayloadRegistrar registrar) {
+        // Keep the payload IDs/codecs available to the physical server. The client installs
+        // the real handlers via RegisterClientPayloadHandlersEvent.
+        registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.EtherealAnimationPayload.TYPE, RequiemNetworking.EtherealAnimationPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.BodyCurePayload.TYPE, RequiemNetworking.BodyCurePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.ObeliskPowerUpdatePayload.TYPE, RequiemNetworking.ObeliskPowerUpdatePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.RiftWitnessedPayload.TYPE, RequiemNetworking.RiftWitnessedPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.OpenDialoguePayload.TYPE, RequiemNetworking.OpenDialoguePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.ShellProfileSyncPayload.TYPE, RequiemNetworking.ShellProfileSyncPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.LockiStatePayload.TYPE, RequiemNetworking.LockiStatePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, (payload, context) -> {});
+    }
+
+
 
     private static void handleUseDirectAbility(RequiemCoreNetworking.UseDirectAbilityPayload payload, IPayloadContext context) {
         if (context.player() instanceof ServerPlayer player) {
@@ -213,18 +223,6 @@ public final class ServerMessageHandling {
         }
     }
 
-    private static void handleOpenDialogue(RequiemNetworking.OpenDialoguePayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            net.minecraft.client.Minecraft.getInstance().setScreenAndShow(new ladysnake.requiem.client.gui.RemnantChoiceScreen());
-        });
-    }
-
-    private static void handleShellProfileSync(RequiemNetworking.ShellProfileSyncPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            baritone.api.fakeplayer.ClientPlayerShellEntity.handleProfileSync(payload.entityId(), payload.profile());
-        });
-    }
-
     private static void handleDialogueAction(RequiemNetworking.DialogueActionPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player) {
@@ -247,15 +245,6 @@ public final class ServerMessageHandling {
                 ladysnake.requiem.common.locki.LockiSpiritSystem.handlePlantChoice(player, payload.choice());
             }
         });
-    }
-
-    private static void handleLockiState(RequiemNetworking.LockiStatePayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> ladysnake.requiem.client.locki.LockiClientState.accept(payload));
-    }
-
-    private static void handleHomunculusBrainOpen(RequiemNetworking.HomunculusBrainOpenPayload payload, IPayloadContext context) {
-        context.enqueueWork(() -> net.minecraft.client.Minecraft.getInstance().setScreenAndShow(
-            new ladysnake.requiem.client.gui.HomunculusBrainScreen(payload.entityId(), payload.program())));
     }
 
     private static void handleHomunculusBrainSave(RequiemNetworking.HomunculusBrainSavePayload payload, IPayloadContext context) {
