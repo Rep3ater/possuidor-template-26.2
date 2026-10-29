@@ -210,7 +210,7 @@ public final class PlayerSplitter {
 
     public static ServerPlayer performRespawn(ServerPlayer player) {
         GameRules rules = player.level().getGameRules();
-        boolean keepInv = rules.get(GameRules.RULE_KEEPINVENTORY);
+        boolean keepInv = rules.getRule(GameRules.RULE_KEEPINVENTORY).get();
         ResourceKey<Level> respawnDimension = player.getRespawnDimension();
         BlockPos respawnPosition = player.getRespawnPosition();
         float respawnAngle = player.getRespawnAngle();
@@ -218,7 +218,7 @@ public final class PlayerSplitter {
 
         player.setRespawnPosition(null, null, 0.0F, false, false);
         try {
-            rules.set(GameRules.RULE_KEEPINVENTORY, false, player.level().getServer());
+            rules.getRule(GameRules.RULE_KEEPINVENTORY).set(false, player.level().getServer());
             ServerPlayer clone = player.level().getServer().getPlayerList()
                 .respawn(player, false, Entity.RemovalReason.DISCARDED);
             clone.setRespawnPosition(respawnDimension, respawnPosition, respawnAngle, respawnForced, false);
@@ -226,7 +226,7 @@ public final class PlayerSplitter {
             return clone;
         } finally {
             player.setRespawnPosition(respawnDimension, respawnPosition, respawnAngle, respawnForced, false);
-            rules.set(GameRules.RULE_KEEPINVENTORY, keepInv, player.level().getServer());
+            rules.getRule(GameRules.RULE_KEEPINVENTORY).set(keepInv, player.level().getServer());
         }
     }
 
