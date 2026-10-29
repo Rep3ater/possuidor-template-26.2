@@ -29,7 +29,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -89,7 +89,7 @@ public class FilledSoulVesselItem extends Item {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         java.util.Optional<EntityType<?>> entityType = tag.getCompound(SOUL_FRAGMENT_NBT)
             .flatMap(c -> c.getString("type"))
-            .map(Identifier::tryParse)
+            .map(ResourceLocation::tryParse)
             .flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional);
         if (entityType.isPresent()) {
             return Component.translatable("item.requiem.filled_soul_vessel.entity", entityType.get().getDescription());
@@ -102,7 +102,7 @@ public class FilledSoulVesselItem extends Item {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         tag.getCompound(SOUL_FRAGMENT_NBT).ifPresent(fragmentData -> {
             fragmentData.getString("type")
-                .map(Identifier::tryParse)
+                .map(ResourceLocation::tryParse)
                 .flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional)
                 .ifPresent(contained -> tooltipAdder.accept(Component.translatable("requiem:tooltip.filled_vessel", contained.getDescription()).withStyle(ChatFormatting.GRAY)));
         });

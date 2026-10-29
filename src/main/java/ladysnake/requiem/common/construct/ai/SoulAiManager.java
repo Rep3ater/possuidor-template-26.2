@@ -4,7 +4,7 @@ import ladysnake.requiem.core.entity.SoulHolderComponent;
 import ladysnake.requiem.core.util.NbtCompat;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.server.level.ServerLevel;
@@ -85,7 +85,7 @@ public class SoulAiManager {
         // Souls supply behavior, not the donor's attributes. Keep each vessel body's own
         // health, speed, armor, attack damage and dimensions intact.
         String lower = soulTypeStr == null ? "" : soulTypeStr.toLowerCase(Locale.ROOT);
-        Identifier parsedType = Identifier.tryParse(lower);
+        ResourceLocation parsedType = ResourceLocation.tryParse(lower);
         EntityType<?> sourceType = parsedType == null
             ? null
             : BuiltInRegistries.ENTITY_TYPE.getOptional(parsedType).orElse(null);

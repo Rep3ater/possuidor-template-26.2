@@ -38,7 +38,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ConversionParams;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
@@ -89,7 +89,7 @@ public class CurableZombifiedPiglinComponent extends SimpleCurableEntityComponen
     public void readFromNbt(CompoundTag tag) {
         super.readFromNbt(tag);
         if (tag.contains("original_piglin_type")) {
-            this.originalPiglinType = tag.getString("original_piglin_type").map(Identifier::tryParse).flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional).orElse(null);
+            this.originalPiglinType = tag.getString("original_piglin_type").map(ResourceLocation::tryParse).flatMap(BuiltInRegistries.ENTITY_TYPE::getOptional).orElse(null);
         }
     }
 

@@ -21,7 +21,7 @@ import ladysnake.requiem.Requiem;
 import ladysnake.requiem.core.entity.ability.DirectAbilityBase;
 import ladysnake.requiem.core.entity.ability.MeleeAbility;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -49,7 +49,7 @@ import java.util.function.ToIntFunction;
 
 public class GoatRamAbility<O extends PathfinderMob> extends DirectAbilityBase<O, Entity> {
     private static final long RAM_DURATION = 40;
-    private static final Identifier SPEED_MODIFIER_ID = Requiem.id("ram_speed_bonus");
+    private static final ResourceLocation SPEED_MODIFIER_ID = Requiem.id("ram_speed_bonus");
 
     public static <O extends PathfinderMob> GoatRamAbility<O> create(O owner) {
         Function<? super O, SoundEvent> prepareRamSound = o -> o instanceof Goat g && g.isScreamingGoat() ? SoundEvents.GOAT_SCREAMING_PREPARE_RAM : SoundEvents.GOAT_PREPARE_RAM;
