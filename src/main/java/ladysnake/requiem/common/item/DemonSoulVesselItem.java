@@ -37,14 +37,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.function.Consumer;
 
 public class DemonSoulVesselItem extends Item {
     private final RemnantType remnantType;
@@ -145,8 +143,8 @@ public class DemonSoulVesselItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltipAdder, TooltipFlag flag) {
-        tooltipAdder.accept(Component.translatable(tooltip).withStyle(this.getTooltipColor()));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, java.util.List<Component> tooltipComponents, TooltipFlag flag) {
+        tooltipComponents.add(Component.translatable(this.tooltip).withStyle(this.getTooltipColor()));
     }
 
     @Override

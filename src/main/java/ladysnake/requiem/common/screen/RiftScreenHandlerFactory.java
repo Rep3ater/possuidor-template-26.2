@@ -50,7 +50,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public final class RiftScreenHandlerFactory implements MenuProvider, IMenuProviderExtension {
+public final class RiftScreenHandlerFactory implements MenuProvider {
     public static final StreamCodec<RegistryFriendlyByteBuf, ObeliskDescriptor> DESCRIPTOR_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(ObeliskDescriptor.CODEC);
     public static final StreamCodec<RegistryFriendlyByteBuf, Set<ObeliskDescriptor>> SET_STREAM_CODEC = ByteBufCodecs.collection(LinkedHashSet::new, DESCRIPTOR_STREAM_CODEC);
 
@@ -62,7 +62,6 @@ public final class RiftScreenHandlerFactory implements MenuProvider, IMenuProvid
         this.useCheck = useCheck;
     }
 
-    @Override
     public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buf) {
         DESCRIPTOR_STREAM_CODEC.encode(buf, this.source);
         SET_STREAM_CODEC.encode(buf, new LinkedHashSet<>(((RiftScreenHandler) menu).getObeliskPositions()));

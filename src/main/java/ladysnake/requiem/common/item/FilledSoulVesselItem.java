@@ -38,18 +38,15 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.List;
 
 public class FilledSoulVesselItem extends Item {
     public static final String SOUL_FRAGMENT_NBT = "requiem:soul_fragment";
@@ -72,8 +69,8 @@ public class FilledSoulVesselItem extends Item {
     }
 
     @Override
-    public ItemStackTemplate getCraftingRemainder(ItemInstance instance) {
-        return new ItemStackTemplate(this.emptySoulVessel);
+    public ItemStack getCraftingRemainingItem(ItemStack stack) {
+        return new ItemStack(this.emptySoulVessel);
     }
 
     public void registerCallbacks() {
@@ -98,7 +95,7 @@ public class FilledSoulVesselItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltipAdder, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         tag.getCompound(SOUL_FRAGMENT_NBT).ifPresent(fragmentData -> {
             fragmentData.getString("type")
