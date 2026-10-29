@@ -895,11 +895,14 @@ public final class MarbasAbilitySystem {
         var attack = mob.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attack != null) attack.setBaseValue(20.0D);
         double reach = mob.getBbWidth() * 2.0D + target.getBbWidth();
-        if (mob.distanceToSqr(target) <= reach * reach && now % 12L == 0L) {
-            if (target.hurt(level.damageSources().mobAttack(mob), 20.0F)) {
+        if (mob.distanceToSqr(target) <= reach * reach) {
+            mob.getNavigation().stop();
+            if (now % 12L == 0L) {
+                target.hurt(level.damageSources().mobAttack(mob), 20.0F);
+                // A strike consumes the feeding window even on targets with hurt immunity.
                 mob.getPersistentData().putLong(FED_UNTIL, now + 1200L);
             }
-        } else if (mob.distanceToSqr(target) > reach * reach) {
+        } else {
             mob.getNavigation().moveTo(target, 1.0D);
         }
     }
