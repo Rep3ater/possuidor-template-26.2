@@ -162,12 +162,12 @@ public final class HomunculusBrainScreen extends Screen {
             boolean known = lower.equals("return home") || lower.equals("home")
                 || lower.equals("wait") || lower.equals("guard")
                 || lower.equals("take") || lower.equals("take item")
-                || lower.equals("pickup") || lower.equals("pickup item") || lower.startsWith("pickup:")
+                || lower.equals("pickup") || lower.equals("pickup item") || lower.startsWith("pickup:") || lower.startsWith("pickup ")
                 || lower.equals("drop") || lower.equals("drop item")
                 || lower.equals("store chest") || lower.startsWith("store chest")
                 || lower.equals("find item") || lower.startsWith("find item:")
                 || lower.equals("find entity") || lower.startsWith("find entity:")
-                || lower.equals("kill") || lower.equals("kill entity") || lower.startsWith("kill:");
+                || lower.equals("kill") || lower.equals("kill entity") || lower.startsWith("kill:") || lower.startsWith("kill ");
             if (lower.startsWith("goto ")) {
                 String[] coords = lower.substring(5).trim().split("\\s+");
                 known = coords.length == 3;
