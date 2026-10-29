@@ -167,6 +167,8 @@ public final class Requiem {
         event.put(RequiemEntities.PLAYER_SHELL, PlayerShellEntity.createPlayerShellAttributes().build());
         event.put(RequiemEntities.MORTICIAN, MorticianEntity.createMorticianAttributes().build());
         event.put(RequiemEntities.ROBOTIC_CONSTRUCT, ladysnake.requiem.common.construct.entity.RoboticConstructEntity.createAttributes().build());
+        event.put(RequiemEntities.HOMUNCULUS, ladysnake.requiem.common.entity.HomunculusEntity.createAttributes().build());
+        event.put(RequiemEntities.IMMORTAL_HOMUNCULUS, ladysnake.requiem.common.entity.ImmortalHomunculusEntity.createAttributes().build());
     }
 
     private void onEntityAttributeModification(EntityAttributeModificationEvent event) {

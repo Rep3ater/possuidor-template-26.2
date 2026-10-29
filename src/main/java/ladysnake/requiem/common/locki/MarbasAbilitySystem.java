@@ -1,6 +1,9 @@
 package ladysnake.requiem.common.locki;
 
 import ladysnake.requiem.common.item.RequiemItems;
+import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.entity.HomunculusEntity;
+import ladysnake.requiem.common.entity.ImmortalHomunculusEntity;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -17,6 +20,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +37,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.Locale;
 
-/** Marbas' embryo, homunculus soul/program, and cauldron rituals. The default body uses the vanilla wolf model until custom assets arrive. */
+/** Marbas' embryo, homunculus brain, cauldron rituals, and immortal transmutation. */
 public final class MarbasAbilitySystem {
     public static final String TAG = "marbas";
     public static final String HOMUNCULUS = "requiem:homunculus";
@@ -177,10 +181,14 @@ public final class MarbasAbilitySystem {
                 consumeSulfurIngredient(player, stack);
                 level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
                 player.sendSystemMessage(Component.literal("Sulfur completes the incubation. The homunculus awakens."));
+                // Successful incubation opens the program editor immediately.
+                RequiemNetworking.sendHomunculusBrainOpen(player, homunculus.getId(),
+                    homunculus.getPersistentData().getString(BRAIN).orElse("return home"));
                 return true;
             }
 
-            Mob homunculus = level.getEntitiesOfClass(Mob.class, new AABB(pos).inflate(5.0), MarbasAbilitySystem::isHomunculus)
+            Mob homunculus = level.getEntitiesOfClass(Mob.class, new AABB(pos).inflate(5.0),
+                    mob -> isHomunculus(mob) && !(mob instanceof ImmortalHomunculusEntity))
                 .stream().findFirst().orElse(null);
             if (homunculus == null) {
                 player.sendSystemMessage(Component.literal("This cauldron has no incubated embryo. Place an Embryo in water and wait three in-game days, or use sulfur on a nearby homunculus to edit its brain."));
@@ -198,8 +206,10 @@ public final class MarbasAbilitySystem {
         return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
     }
 
-    private static boolean isSulfurBucket(ItemStack stack) {
-        return "sulfur_cube_bucket".equals(BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath());
+    /** Match the special bucket by path so both configured namespaces work. */
+    public static boolean isSulfurBucket(ItemStack stack) {
+        return stack != null && !stack.isEmpty()
+            && "sulfur_cube_bucket".equals(BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath());
     }
 
     private static boolean isSulfurIngredient(ItemStack stack) {
@@ -230,16 +240,19 @@ public final class MarbasAbilitySystem {
     }
 
     private static Mob growHomunculus(ServerLevel level, BlockPos cauldron, ServerPlayer owner, String brain, String traits) {
-        // Husk is a humanoid base rather than the old wolf-shaped placeholder.
-        Entity entity = EntityTypes.HUSK.create(level, EntitySpawnReason.TRIGGERED);
-        if (!(entity instanceof Mob mob)) return null;
+        // Both bodies are registered Requiem entities, not vanilla Husk/Wolf entities.
+        boolean immortal = traits != null && traits.toLowerCase(Locale.ROOT).contains("suffering");
+        Entity created = (immortal ? RequiemEntities.IMMORTAL_HOMUNCULUS : RequiemEntities.HOMUNCULUS)
+            .create(level, EntitySpawnReason.TRIGGERED);
+        if (!(created instanceof Mob mob)) return null;
         mob.setPos(cauldron.getX() + 0.5, cauldron.getY() + 1.0, cauldron.getZ() + 0.5);
-        mob.setCustomName(Component.literal("Homunculus"));
+        mob.setCustomName(Component.literal(immortal ? "Immortal Homunculus" : "Homunculus"));
         mob.setCustomNameVisible(true);
         mob.setPersistenceRequired();
         CompoundTag data = mob.getPersistentData();
         data.putBoolean(HOMUNCULUS, true);
-        data.putString(BRAIN, brain == null || brain.isBlank() ? "return home" : brain);
+        data.putBoolean(BERSERK, immortal);
+        data.putString(BRAIN, immortal ? "" : (brain == null || brain.isBlank() ? "return home" : brain));
         data.putString(TRAITS, traits == null ? "" : traits);
         data.putString(OWNER, owner.getUUID().toString());
         data.putLong(BORN_AT, level.getGameTime());
@@ -251,17 +264,50 @@ public final class MarbasAbilitySystem {
         return mob;
     }
 
+    /** Replace the normal entity with the immortal type, keeping its origin and program metadata. */
+    private static Mob transmuteToImmortal(ServerLevel level, Mob original) {
+        if (original instanceof ImmortalHomunculusEntity) return original;
+        Entity created = RequiemEntities.IMMORTAL_HOMUNCULUS.create(level, EntitySpawnReason.TRIGGERED);
+        if (!(created instanceof Mob immortal)) return null;
+        immortal.setPos(original.getX(), original.getY(), original.getZ());
+        immortal.setYRot(original.getYRot());
+        immortal.setXRot(original.getXRot());
+        immortal.setYBodyRot(original.yBodyRot);
+        immortal.setCustomName(Component.literal("Immortal Homunculus"));
+        immortal.setCustomNameVisible(true);
+        immortal.setPersistenceRequired();
+
+        CompoundTag oldData = original.getPersistentData();
+        CompoundTag data = immortal.getPersistentData();
+        data.putBoolean(HOMUNCULUS, true);
+        data.putBoolean(BERSERK, true);
+        data.putString(BRAIN, "");
+        data.putString(TRAITS, oldData.getString(TRAITS).orElse(""));
+        data.putString(OWNER, oldData.getString(OWNER).orElse(""));
+        data.putString(HOME, oldData.getString(HOME).orElse(
+            original.blockPosition().getX() + " " + original.blockPosition().getY() + " " + original.blockPosition().getZ()));
+        data.putLong(BORN_AT, oldData.getLong(BORN_AT).orElse(level.getGameTime()));
+        data.putLong(STUN_UNTIL, 0L);
+        if (!level.addFreshEntity(immortal)) return null;
+        original.discard();
+        return immortal;
+    }
+
     public static boolean onEntityInteract(Player player, Entity target, ItemStack held, boolean shift) {
         if (!(player instanceof ServerPlayer serverPlayer) || !(player.level() instanceof ServerLevel level)) return false;
         if (shift && target instanceof Mob homunculus && isHomunculus(homunculus)
                 && held.is(RequiemItems.SUFFERING_HEAD)) {
-            homunculus.getPersistentData().putBoolean(BERSERK, true);
-            homunculus.getPersistentData().putString(BRAIN, "");
-            homunculus.getPersistentData().putLong(STUN_UNTIL, level.getGameTime() + 30L);
-            homunculus.getNavigation().stop();
-            homunculus.setTarget(null);
+            if (homunculus instanceof ImmortalHomunculusEntity) {
+                serverPlayer.sendSystemMessage(Component.literal("This homunculus has already been transmuted."));
+                return true;
+            }
+            Mob immortal = transmuteToImmortal(level, homunculus);
+            if (immortal == null) {
+                serverPlayer.sendSystemMessage(Component.literal("The transmutation failed; the head was not consumed."));
+                return true;
+            }
             if (!serverPlayer.getAbilities().instabuild) held.shrink(1);
-            serverPlayer.sendSystemMessage(Component.literal("The Suffering Head fuses with the homunculus. It is immortal, unstable, and will ignore its programmed brain."));
+            serverPlayer.sendSystemMessage(Component.literal("The Suffering Head transmutates the homunculus into a separate immortal creature."));
             return true;
         }
         if (target instanceof Mob homunculus && isHomunculus(homunculus) && held.is(Items.GOLD_INGOT)
@@ -311,10 +357,14 @@ public final class MarbasAbilitySystem {
             return true;
         }
         if (target instanceof Mob mob && isHomunculus(mob) && held.is(Items.BONE)) {
-            // The wolf-like body remains normally tamable by Marbas with a bone.
-            return false;
+            // No vanilla wolf taming mechanic is applied.
+            return true;
         }
         if (shift && target instanceof Mob mob && isHomunculus(mob)) {
+            if (mob instanceof ImmortalHomunculusEntity) {
+                serverPlayer.sendSystemMessage(Component.literal("The immortal homunculus cannot be harvested back into an embryo."));
+                return true;
+            }
             ItemStack body = new ItemStack(RequiemItems.HOMUNCULUS);
             body.set(DataComponents.CUSTOM_NAME, Component.literal("Homunculus Body"));
             CompoundTag data = mob.getPersistentData().copy();
@@ -333,8 +383,9 @@ public final class MarbasAbilitySystem {
 
     public static void applyBrainProgram(ServerPlayer player, int entityId, String program) {
         Entity entity = player.level().getEntity(entityId);
-        if (!(entity instanceof Mob mob) || !isHomunculus(mob) || mob.distanceTo(player) > 12.0) {
-            player.sendSystemMessage(Component.literal("The selected homunculus is no longer nearby."));
+        if (!(entity instanceof Mob mob) || !isHomunculus(mob)
+                || mob instanceof ImmortalHomunculusEntity || mob.distanceTo(player) > 12.0) {
+            player.sendSystemMessage(Component.literal("The homunculus is unavailable or cannot use a programmable brain."));
             return;
         }
         String safe = program == null ? "" : program.trim();
@@ -643,22 +694,19 @@ public final class MarbasAbilitySystem {
     }
 
     public static boolean onBerserkDamage(LivingIncomingDamageEvent event) {
-        if (!(event.getEntity() instanceof Mob mob) || !mob.getPersistentData().getBoolean(BERSERK).orElse(false)) return false;
+        if (!(event.getEntity() instanceof ImmortalHomunculusEntity mob)) return false;
+        // Cancel ordinary damage; lava briefly interrupts the immortal hunt.
         event.setCanceled(true);
-        mob.getPersistentData().putLong(STUN_UNTIL, mob.level().getGameTime() + 30L);
-        mob.getNavigation().stop();
-        mob.setTarget(null);
+        if (event.getSource().type().is(DamageTypes.LAVA)) {
+            mob.getPersistentData().putLong(STUN_UNTIL, mob.level().getGameTime() + 100L);
+            mob.getNavigation().stop();
+            mob.setTarget(null);
+        }
         return true;
     }
 
+    /** Player attacks alone cannot stun it; lava is the only stun source. */
     public static boolean onAttackEntity(Player attacker, Entity target) {
-        if (target instanceof Mob mob && mob.getPersistentData().getBoolean(BERSERK).orElse(false)) {
-            mob.getPersistentData().putLong(STUN_UNTIL, mob.level().getGameTime() + 30L);
-            mob.getNavigation().stop();
-            mob.setTarget(null);
-            attacker.sendSystemMessage(Component.literal("The Suffering Head's creature staggers, but cannot be killed."));
-            return true;
-        }
         return false;
     }
 

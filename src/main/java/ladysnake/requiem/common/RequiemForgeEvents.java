@@ -314,6 +314,16 @@ public final class RequiemForgeEvents {
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         Player player = event.getEntity();
         if (!event.getLevel().isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            // This ritual bucket must never fall through to vanilla fluid/block placement.
+            if (MarbasAbilitySystem.isSulfurBucket(event.getItemStack())) {
+                boolean handled = MarbasAbilitySystem.onUseBlock(
+                    serverPlayer, event.getItemStack(), event.getPos(), player.isShiftKeyDown());
+                if (!handled) serverPlayer.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                    "The sulfur cube bucket cannot place a block. Use it on the prepared water cauldron as Marbas."));
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+                return;
+            }
             if (NucleusManager.tryEnter(serverPlayer, event.getPos())) {
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
