@@ -136,17 +136,17 @@ public class InventoryKeeperBase implements Component, InventoryKeeper {
         if (tag.contains("locks")) {
             this.clearCache();
             this.getLocks().clear();
-            CompoundTag dict = tag.getCompoundOrEmpty("locks");
-            for (String key : new TreeSet<>(dict.keySet())) {
+            CompoundTag dict = tag.getCompound("locks");
+            for (String key : new TreeSet<>(dict.getAllKeys())) {
                 InventoryNode node = Locki.getNode(key);
                 if (node != null) {
-                    ListTag list = dict.getListOrEmpty(key);
+                    ListTag list = dict.getList(key, net.minecraft.nbt.Tag.TAG_COMPOUND);
                     for (Tag elem : list) {
                         if (elem instanceof CompoundTag lockInfo) {
-                            ResourceLocation id = ResourceLocation.tryParse(lockInfo.getStringOr("id", ""));
+                            ResourceLocation id = ResourceLocation.tryParse(lockInfo.getString("id"));
                             InventoryLock lock = Locki.getLock(id);
                             if (lock != null) {
-                                this.updateLock(lock, node, lockInfo.getBooleanOr("locking", false));
+                                this.updateLock(lock, node, lockInfo.getBoolean("locking"));
                             } else {
                                 Locki.LOGGER.error("Dropping unregistered inventory lock {}", lockInfo);
                             }
