@@ -31,16 +31,16 @@ public class HomunculusEntity extends PathfinderMob {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ALLAY_AMBIENT_WITHOUT_ITEM;
+        return SoundEvents.VILLAGER_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ALLAY_HURT;
+        return SoundEvents.SPONGE_HIT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ALLAY_DEATH;
+        return SoundEvents.VILLAGER_DEATH;
     }
 }
