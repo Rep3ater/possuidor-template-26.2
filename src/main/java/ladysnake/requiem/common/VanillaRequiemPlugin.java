@@ -337,7 +337,7 @@ public final class VanillaRequiemPlugin implements RequiemPlugin {
             return null;
         });
         PossessionEvents.DETECTION_ATTEMPT.register((sensed, sensor, reason) -> {
-            PossessionDetection cfg = sensed.level().getServer() != null ? sensed.level().getServer().getGameRules().get(RequiemGamerules.POSSESSION_DETECTION) : PossessionDetection.NORMAL;
+            PossessionDetection cfg = sensed.level().getServer() != null ? RequiemGamerules.possessionDetection(sensed.level().getServer().getGameRules()) : PossessionDetection.NORMAL;
             return switch (reason) {
                 case BUMP, ATTACKING -> switch (cfg) {
                     case DISABLED -> PossessionEvents.DetectionAttempt.DetectionResult.UNDETECTED;

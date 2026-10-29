@@ -78,7 +78,7 @@ public final class BasePossessionHandlers {
             }
         });
         PossessionEvents.INVENTORY_TRANSFER_CHECK.register(
-            (possessor, host) -> possessor.level().getGameRules().get(RequiemGamerules.POSSESSION_KEEP_INVENTORY).shouldTransfer(host.isAlive()) ? TriState.TRUE : TriState.DEFAULT
+            (possessor, host) -> RequiemGamerules.possessionKeepInventory(possessor.level().getGameRules()).shouldTransfer(host.isAlive()) ? TriState.TRUE : TriState.DEFAULT
         );
         PossessionEvents.HOST_DEATH.register((player, host, deathCause) -> {
             if (player.level().getLevelData().isHardcore()) {
