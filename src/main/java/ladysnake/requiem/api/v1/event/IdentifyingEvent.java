@@ -18,7 +18,7 @@
 package ladysnake.requiem.api.v1.event;
 
 import net.fabricmc.fabric.api.event.Event;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import java.util.function.Function;
  */
 public class IdentifyingEvent<T> extends Event<T> {
     private final Class<T> type;
-    private final Map<Identifier, T> handlers = new HashMap<>();
+    private final Map<ResourceLocation, T> handlers = new HashMap<>();
     private final Function<T[], T> invokerFactory;
 
     public IdentifyingEvent(Class<T> type, Function<T[], T> invokerFactory) {
@@ -50,7 +50,7 @@ public class IdentifyingEvent<T> extends Event<T> {
     }
 
     /**
-     * @deprecated use {@link #register(Identifier, Object)}
+     * @deprecated use {@link #register(ResourceLocation, Object)}
      */
     @Override
     @Deprecated
@@ -58,7 +58,7 @@ public class IdentifyingEvent<T> extends Event<T> {
         throw new UnsupportedOperationException("Identifying events require an identifier");
     }
 
-    public void register(Identifier id, T listener) {
+    public void register(ResourceLocation id, T listener) {
         handlers.put(id, listener);
         update();
     }
@@ -67,7 +67,7 @@ public class IdentifyingEvent<T> extends Event<T> {
      * Unregisters a listener using its id
      * @param id the identifier of the listener to unregister
      */
-    public void unregister(Identifier id) {
+    public void unregister(ResourceLocation id) {
         handlers.remove(id);
         update();
     }
