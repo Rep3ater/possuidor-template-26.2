@@ -75,8 +75,8 @@ public class ClientPlayerShellEntity extends RemotePlayer implements AutomatoneF
     @Override
     public net.minecraft.network.chat.Component getName() {
         GameProfile profile = this.getDisplayProfile();
-        if (profile != null && profile.name() != null && !profile.name().isEmpty() && !profile.name().startsWith("[") && !profile.name().equals("Mortal Shell")) {
-            return net.minecraft.network.chat.Component.literal(profile.name() + "'s Shell");
+        if (profile != null && profile.getName() != null && !profile.getName().isEmpty() && !profile.getName().startsWith("[") && !profile.getName().equals("Mortal Shell")) {
+            return net.minecraft.network.chat.Component.literal(profile.getName() + "'s Shell");
         }
         return net.minecraft.network.chat.Component.translatable("entity.requiem.player_shell");
     }
