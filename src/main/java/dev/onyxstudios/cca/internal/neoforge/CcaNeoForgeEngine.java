@@ -536,7 +536,7 @@ public final class CcaNeoForgeEngine {
         boolean sameCharacter = !switchingCharacter;
         boolean keepInventory = false;
         if (clone instanceof ServerPlayer serverClone) {
-            keepInventory = serverClone.level().getGameRules().get(GameRules.RULE_KEEPINVENTORY);
+            keepInventory = serverClone.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
         }
 
         AbstractComponentContainer fromContainer = getEntityContainer(original);
