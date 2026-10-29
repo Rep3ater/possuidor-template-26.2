@@ -116,14 +116,13 @@ public class SimpleAbilityTracker implements AbilityTracker {
             return;
         }
         this.abilitySources.clear();
-        ListTag list = tag.getListOrEmpty("ability_sources");
+        ListTag list = tag.getList("ability_sources", Tag.TAG_STRING);
         for (Tag element : list) {
-            element.asString().ifPresent(str -> {
-                ResourceLocation id = ResourceLocation.tryParse(str);
-                if (id != null) {
-                    this.abilitySources.add(Pal.getAbilitySource(id));
-                }
-            });
+            String str = element.getAsString();
+            ResourceLocation id = ResourceLocation.tryParse(str);
+            if (id != null) {
+                this.abilitySources.add(Pal.getAbilitySource(id));
+            }
         }
     }
 }
