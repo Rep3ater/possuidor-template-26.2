@@ -8,6 +8,9 @@ import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -44,6 +47,9 @@ public final class MarbasAbilitySystem {
     public static final String BRAIN = "requiem:homunculus_brain";
     private static final String TRANSFERRED_BRAIN = "requiem:homunculus_souled";
     private static final String ATTACK_COOLDOWN_UNTIL = "requiem:homunculus_attack_cooldown_until";
+    private static final String SAY_COOLDOWN_UNTIL = "requiem:homunculus_say_cooldown_until";
+    private static final String STORED_ENTITY_NBT = "requiem:homunculus_full_entity_nbt";
+    private static final String STORED_ENTITY_TYPE = "requiem:homunculus_body_type";
     public static final String BORN_AT = "requiem:homunculus_born_at";
     public static final String HOME = "requiem:homunculus_home";
     public static final String OWNER = "requiem:homunculus_owner";
@@ -126,6 +132,39 @@ public final class MarbasAbilitySystem {
             if (!player.getAbilities().instabuild) stack.shrink(1);
             player.sendSystemMessage(Component.literal("The embryo is incubating in the water cauldron. It needs three in-game days before sulfur can complete the homunculus."));
             return true;
+        }
+
+        // A harvested homunculus carries a full entity snapshot. Restore it before checking the
+        // head-fusion recipes so simply placing it back preserves health, attributes, inventory,
+        // custom name, brain program/progress, traits, owner, home, and other persistent NBT.
+        if (stack.is(RequiemItems.HOMUNCULUS)) {
+            CompoundTag itemData = readItemData(stack);
+            CompoundTag savedEntity = itemData.getCompound(STORED_ENTITY_NBT).orElse(null);
+            if (savedEntity != null) {
+                Entity created = RequiemEntities.HOMUNCULUS.create(level, EntitySpawnReason.TRIGGERED);
+                if (!(created instanceof Mob restored)) {
+                    player.sendSystemMessage(Component.literal("The stored homunculus body could not be reconstructed."));
+                    return true;
+                }
+                try {
+                    restored.load(savedEntity.copy());
+                } catch (RuntimeException invalidSnapshot) {
+                    player.sendSystemMessage(Component.literal("The stored homunculus data could not be read. The item was not consumed."));
+                    return true;
+                }
+                restored.setPos(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5);
+                restored.setDeltaMovement(Vec3.ZERO);
+                restored.setPersistenceRequired();
+                if (!level.addFreshEntity(restored)) {
+                    player.sendSystemMessage(Component.literal("The homunculus could not be placed. The item was not consumed."));
+                    return true;
+                }
+                if (!player.getAbilities().instabuild) stack.shrink(1);
+                level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
+                playSoulTransferEffect(level, restored, true);
+                player.sendSystemMessage(Component.literal("The homunculus has been reconstituted with its previous body data and brain progress intact."));
+                return true;
+            }
         }
 
         if (stack.is(RequiemItems.HOMUNCULUS) && player.getOffhandItem().is(RequiemItems.SUFFERING_HEAD)) {
@@ -263,7 +302,20 @@ public final class MarbasAbilitySystem {
         if (health != null && traits != null && traits.contains("health")) health.setBaseValue(80.0);
         mob.setHealth(mob.getMaxHealth());
         if (!level.addFreshEntity(mob)) return null;
+        playSoulTransferEffect(level, mob, true);
         return mob;
+    }
+
+    /** Gives soul/body transitions a readable particle cue and a restrained chime. */
+    private static void playSoulTransferEffect(ServerLevel level, Entity entity, boolean restored) {
+        double x = entity.getX();
+        double y = entity.getY() + entity.getBbHeight() * 0.55D;
+        double z = entity.getZ();
+        level.sendParticles(ParticleTypes.SOUL, x, y, z, restored ? 24 : 12, 0.35, 0.45, 0.35, 0.04);
+        level.sendParticles(restored ? ParticleTypes.REVERSE_PORTAL : ParticleTypes.POOF,
+            x, y, z, restored ? 18 : 10, 0.28, 0.38, 0.28, 0.06);
+        level.playSound(null, x, y, z, SoundEvents.AMETHYST_BLOCK_CHIME.value(),
+            SoundSource.NEUTRAL, 0.75F, restored ? 0.82F : 0.62F);
     }
 
     /** Replace the normal entity with the immortal type, keeping its origin and program metadata. */
@@ -373,6 +425,7 @@ public final class MarbasAbilitySystem {
                 activateTransferredBrain(body);
             }
             if (!serverPlayer.getAbilities().instabuild) held.shrink(1);
+            playSoulTransferEffect(level, body, true);
             serverPlayer.sendSystemMessage(Component.literal("The homunculus brain program now controls " + body.getName().getString() + ". Its body attributes remain unchanged."));
             return true;
         }
@@ -386,16 +439,21 @@ public final class MarbasAbilitySystem {
                 return true;
             }
             ItemStack body = new ItemStack(RequiemItems.HOMUNCULUS);
-            body.set(DataComponents.CUSTOM_NAME, Component.literal("Homunculus Body"));
+            body.set(DataComponents.CUSTOM_NAME, Component.literal("Homunculus"));
             CompoundTag data = mob.getPersistentData().copy();
+            // saveWithoutId retains native entity data and PersistentData, but not the old runtime UUID.
+            CompoundTag fullEntitySnapshot = mob.saveWithoutId(new CompoundTag());
             CustomData.update(DataComponents.CUSTOM_DATA, body, tag -> {
                 tag.putString(BRAIN, data.getString(BRAIN).orElse("return home"));
                 tag.putString(TRAITS, data.getString(TRAITS).orElse(""));
                 tag.putBoolean(BERSERK, data.getBoolean(BERSERK).orElse(false));
+                tag.putString(STORED_ENTITY_TYPE, BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()).toString());
+                tag.put(STORED_ENTITY_NBT, fullEntitySnapshot.copy());
             });
+            playSoulTransferEffect(level, mob, false);
             if (!serverPlayer.getInventory().add(body)) serverPlayer.drop(body, false);
             mob.discard();
-            serverPlayer.sendSystemMessage(Component.literal("Homunculus collected as an item. Place it in a water cauldron to regrow it."));
+            serverPlayer.sendSystemMessage(Component.literal("Homunculus collected. Place this body in a water cauldron to restore its saved brain, traits, attributes and other entity data."));
             return true;
         }
         return false;
@@ -542,8 +600,33 @@ public final class MarbasAbilitySystem {
         String[] nodes = program.split(";");
         if (nodes.length == 0) return;
         int node = Math.max(0, Math.min(nodes.length - 1, mob.getPersistentData().getInt(NODE).orElse(0)));
-        String command = nodes[node].trim().toLowerCase(Locale.ROOT);
+        String rawCommand = nodes[node].trim();
+        String command = rawCommand.toLowerCase(Locale.ROOT);
         if (command.isBlank()) { nextNode(mob, nodes.length); return; }
+        if (command.startsWith("say:") || command.startsWith("say ")) {
+            int separator = rawCommand.indexOf(':') >= 0 ? rawCommand.indexOf(':') : rawCommand.indexOf(' ');
+            String message = separator >= 0 ? rawCommand.substring(separator + 1).trim() : "";
+            if (message.isBlank()) {
+                nextNode(mob, nodes.length);
+                return;
+            }
+            CompoundTag data = mob.getPersistentData();
+            if (now >= data.getLong(SAY_COOLDOWN_UNTIL).orElse(0L)) {
+                Component speech = Component.literal("<" + mob.getName().getString() + "> " + message);
+                for (ServerPlayer listener : level.players()) {
+                    if (listener.distanceToSqr(mob) <= 48.0D * 48.0D) {
+                        listener.sendSystemMessage(speech);
+                    }
+                }
+                level.sendParticles(ParticleTypes.NOTE, mob.getX(), mob.getY() + mob.getBbHeight() + 0.12D,
+                    mob.getZ(), 1, 0.18, 0.04, 0.18, 1.0D);
+                level.playSound(null, mob.getX(), mob.getY(), mob.getZ(),
+                    SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.NEUTRAL, 0.35F, 1.3F);
+                data.putLong(SAY_COOLDOWN_UNTIL, now + 100L);
+            }
+            nextNode(mob, nodes.length);
+            return;
+        }
         if (command.startsWith("goto ")) {
             int[] xyz = parseXYZ(command.substring(5));
             if (xyz == null) { nextNode(mob, nodes.length); return; }
