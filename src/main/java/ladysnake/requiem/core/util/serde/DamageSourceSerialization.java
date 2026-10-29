@@ -63,21 +63,26 @@ public final class DamageSourceSerialization {
         return tag;
     }
 
+    private static Entity entityFromTag(ServerLevel world, CompoundTag tag, String key) {
+        if (!tag.contains(key, net.minecraft.nbt.Tag.TAG_STRING)) return null;
+        try {
+            return world.getEntity(UUID.fromString(tag.getString(key)));
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
+    }
+
     public static DamageSource fromTag(CompoundTag tag, @Nullable ServerLevel world) {
         if (world == null) {
             return null;
         }
-        String typeId = tag.getStringOr("type", "minecraft:generic");
+        String typeId = tag.contains("type", net.minecraft.nbt.Tag.TAG_STRING) ? tag.getString("type") : "minecraft:generic";
         ResourceKey<DamageType> key = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.parse(typeId));
         Holder<DamageType> holder = world.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).get(key).orElseGet(() -> world.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.GENERIC));
 
-        Entity source = tag.getString("sourceUuid").map(s -> {
-            try { return world.getEntity(UUID.fromString(s)); } catch (Exception e) { return null; }
-        }).orElse(null);
+        Entity source = entityFromTag(world, tag, "sourceUuid");
 
-        Entity attacker = tag.getString("attackerUuid").map(s -> {
-            try { return world.getEntity(UUID.fromString(s)); } catch (Exception e) { return null; }
-        }).orElse(null);
+        Entity attacker = entityFromTag(world, tag, "attackerUuid");
 
         return new DamageSource(holder, source, attacker);
     }

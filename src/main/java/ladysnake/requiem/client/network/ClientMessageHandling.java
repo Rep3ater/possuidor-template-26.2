@@ -13,7 +13,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 public final class ClientMessageHandling {
     private ClientMessageHandling() {}
 
-    public static void registerPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
+    public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
         event.register(RequiemNetworking.AnchorDamagePayload.TYPE, (payload, context) -> {});
         event.register(RequiemNetworking.DataSyncPayload.TYPE, (payload, context) -> {});
         event.register(RequiemNetworking.OpusUsePayload.TYPE, (payload, context) -> {});

@@ -50,11 +50,11 @@ public final class NbtCompat {
     private NbtCompat() { throw new AssertionError(); }
 
     public static void putUuid(CompoundTag tag, String key, UUID uuid) {
-        tag.store(key, UUIDUtil.CODEC, uuid);
+        tag.putUUID(key, uuid);
     }
 
     public static Optional<UUID> getUuid(CompoundTag tag, String key) {
-        return tag.read(key, UUIDUtil.CODEC);
+        return tag.hasUUID(key) ? Optional.of(tag.getUUID(key)) : Optional.empty();
     }
 
     public static boolean containsUuid(CompoundTag tag, String key) {

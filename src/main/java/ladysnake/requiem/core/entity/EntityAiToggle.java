@@ -148,13 +148,11 @@ public class EntityAiToggle implements AutoSyncedComponent {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        tag.getList("inhibitors")
-            .ifPresent(list -> list.stream()
-                .map(elem -> elem.asString().orElse(null))
-                .filter(Objects::nonNull)
-                .map(ResourceLocation::tryParse)
-                .filter(Objects::nonNull)
-                .forEach(id -> this.aiInhibitors.put(id, true)));
+        tag.getList("inhibitors", Tag.TAG_STRING).stream()
+            .map(elem -> elem.getAsString())
+            .map(ResourceLocation::tryParse)
+            .filter(Objects::nonNull)
+            .forEach(id -> this.aiInhibitors.put(id, true));
         this.refresh(!this.aiInhibitors.isEmpty());
     }
 

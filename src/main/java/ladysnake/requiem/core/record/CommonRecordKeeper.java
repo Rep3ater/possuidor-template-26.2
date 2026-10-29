@@ -116,7 +116,7 @@ public class CommonRecordKeeper implements GlobalRecordKeeper {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        tag.getListOrEmpty("records").stream()
+        tag.getList("records", net.minecraft.nbt.Tag.TAG_COMPOUND).stream()
             .mapMulti(MoreStreams.instanceOf(CompoundTag.class))
             .forEach(nbt -> DataResults.ifPresentOrElse(
                 this.deserialize(nbt),
@@ -129,7 +129,7 @@ public class CommonRecordKeeper implements GlobalRecordKeeper {
         return DataResult.unbox(DataResult.instance().apply2(
             (uuid, data) -> new GlobalRecordImpl(this, uuid, data),
             DataResults.tryGet(() -> NbtCompat.getUuid(anchorTag, GlobalRecordImpl.ANCHOR_UUID_NBT).orElseThrow()),
-            this.deserializeRawData(anchorTag.getCompoundOrEmpty("data"))
+            this.deserializeRawData(anchorTag.getCompound("data"))
         ));
     }
 

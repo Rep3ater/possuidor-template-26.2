@@ -215,7 +215,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
                     }
 
                     // Smooth ghost glide forward through the wall
-                    if (mainPlayer.input.keyPresses.forward()) {
+                    if (mainPlayer.input.up) {
                         Vec3 look = this.player.getLookAngle();
                         this.player.setDeltaMovement(look.x * 0.18, this.player.getDeltaMovement().y * 0.5, look.z * 0.18);
                     }
@@ -243,7 +243,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
             if (getActualWalkMode(this.config, getCurrentBody(player)) == WalkMode.JUMPY && this.player.onGround() && !getIntendedMovement(player).equals(Vec3.ZERO)) {
                 this.player.jumpFromGround();
             }
-            if (this.underwaterJumpAscending && !mainPlayer.input.keyPresses.jump()) {
+            if (this.underwaterJumpAscending && !mainPlayer.input.jumping) {
                 this.underwaterJumpAscending = false;
             }
         }
@@ -253,7 +253,7 @@ public abstract class PlayerMovementAlterer implements MovementAlterer {
     @NotNull
     protected static Vec3 getIntendedMovement(Player player) {
         if (player instanceof LocalPlayer localPlayer) {
-            float verticalMovement = (localPlayer.input.keyPresses.jump() ? 1 : 0) - (localPlayer.input.keyPresses.shift() ? 1 : 0);
+            float verticalMovement = (localPlayer.input.jumping ? 1 : 0) - (localPlayer.input.shiftKeyDown ? 1 : 0);
             return EntityAccessor.requiem$invokeGetInputVector(new Vec3(player.xxa, verticalMovement, player.zza), 1, player.getYRot());
         } else {
             return Vec3.ZERO;

@@ -96,7 +96,7 @@ public class SoulHolderComponent implements AutoSyncedComponent {
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        this.setSoulRemoved(tag.getBooleanOr("removed_soul", false));
+        this.setSoulRemoved(tag.getBoolean("removed_soul"));
     }
 
     @Override

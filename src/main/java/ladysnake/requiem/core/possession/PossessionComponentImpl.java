@@ -168,8 +168,8 @@ public final class PossessionComponentImpl implements PossessionComponent {
             }
             if (host.getType().builtInRegistryHolder().is(RequiemCoreTags.Entity.EATERS)) {
                 CompoundTag hungerData = PossessedData.KEY.get(host).getHungerData();
-                player.getFoodData().setFoodLevel(hungerData.getIntOr("foodLevel", 20));
-                player.getFoodData().setSaturation(hungerData.getFloatOr("foodSaturationLevel", 5.0F));
+                player.getFoodData().setFoodLevel((hungerData.contains("foodLevel") ? hungerData.getInt("foodLevel") : 20));
+                player.getFoodData().setSaturation((hungerData.contains("foodSaturationLevel") ? hungerData.getFloat("foodSaturationLevel") : 5.0F));
             }
 
             host.setTarget(null);
@@ -451,7 +451,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             RandomSource rand = this.player.getRandom();
             this.conversionTimer = rand.nextInt(1201) + 2400;  // a bit shorter than villager
             this.player.removeEffect(MobEffects.WEAKNESS);
-            this.player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, conversionTimer, 0));
+            this.player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, conversionTimer, 0));
             this.player.level().playSound(null, this.player.getX() + 0.5D, this.player.getY() + 0.5D, this.player.getZ() + 0.5D, SoundEvents.ZOMBIE_VILLAGER_CURE, this.player.getSoundSource(), 1.0F + rand.nextFloat(), rand.nextFloat() * 0.7F + 0.3F);
         }
     }
