@@ -130,10 +130,10 @@ public class FilledSoulVesselItem extends Item {
             UUID uuid = tag.contains(SOUL_FRAGMENT_NBT, net.minecraft.nbt.Tag.TAG_COMPOUND) ? NbtCompat.getUuid(tag.getCompound(SOUL_FRAGMENT_NBT), "uuid").orElse(null) : null;
             releaseSoul(user, uuid);
             user.setItemInHand(hand, ItemUtils.createFilledResult(stack, user, this.getEmptiedStack()));
-            return InteractionResult.SUCCESS;
+            return InteractionResultHolder.sidedSuccess(user.getItemInHand(hand), world.isClientSide());
         }
         user.playSound(RequiemSoundEvents.ITEM_FILLED_VESSEL_USE, 3f, 0.6F + user.getRandom().nextFloat() * 0.4F);
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.sidedSuccess(user.getItemInHand(hand), world.isClientSide());
     }
 
     public ItemStack getEmptiedStack() {
