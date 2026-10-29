@@ -6,7 +6,7 @@ import net.minecraft.advancements.predicates.ContextAwarePredicate;
 import net.minecraft.advancements.predicates.DamageSourcePredicate;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -15,13 +15,13 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import java.util.Optional;
 
 public class OnDeathAfterPossessionCriterion extends SimpleCriterionTrigger<OnDeathAfterPossessionCriterion.Conditions> {
-    private final Identifier id;
+    private final ResourceLocation id;
 
-    public OnDeathAfterPossessionCriterion(Identifier id) {
+    public OnDeathAfterPossessionCriterion(ResourceLocation id) {
         this.id = id;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 

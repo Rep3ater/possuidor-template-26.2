@@ -6,19 +6,19 @@ import ladysnake.requiem.api.v1.remnant.RemnantType;
 import net.minecraft.advancements.predicates.ContextAwarePredicate;
 import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Optional;
 
 public class OnRemnantChoiceCriterion extends SimpleCriterionTrigger<OnRemnantChoiceCriterion.Conditions> {
-    private final Identifier id;
+    private final ResourceLocation id;
 
-    public OnRemnantChoiceCriterion(Identifier id) {
+    public OnRemnantChoiceCriterion(ResourceLocation id) {
         this.id = id;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 
