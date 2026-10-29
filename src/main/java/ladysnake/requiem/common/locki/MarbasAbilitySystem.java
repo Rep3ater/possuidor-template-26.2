@@ -47,6 +47,9 @@ public final class MarbasAbilitySystem {
     private static final String STUN_UNTIL = "requiem:homunculus_stun_until";
     private static final String FED_UNTIL = "requiem:homunculus_fed_until";
     private static final String TRAITS = "requiem:homunculus_traits";
+    private static final String EMBRYO_MARKER = "requiem:homunculus_embryo_marker";
+    private static final String EMBRYO_STARTED_AT = "requiem:homunculus_embryo_started_at";
+    private static final long EMBRYO_GESTATION_TICKS = 3L * 24_000L;
 
     private MarbasAbilitySystem() {}
 
@@ -93,10 +96,26 @@ public final class MarbasAbilitySystem {
         if (!clicked.is(Blocks.WATER_CAULDRON)) return false;
 
         if (stack.is(RequiemItems.EMBRYO)) {
-            growHomunculus(level, pos, player, readItemData(stack).getString(BRAIN).orElse("return home"), readItemData(stack).getString(TRAITS).orElse(""));
+            if (findEmbryoMarker(level, pos) != null) {
+                player.sendSystemMessage(Component.literal("This cauldron already contains an embryo."));
+                return true;
+            }
+            ItemStack embryoStack = stack.copy();
+            embryoStack.setCount(1);
+            ItemEntity marker = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.25, pos.getZ() + 0.5, embryoStack);
+            marker.setNoGravity(true);
+            marker.setDeltaMovement(Vec3.ZERO);
+            marker.setPickUpDelay(32767);
+            marker.setUnlimitedLifetime();
+            marker.getPersistentData().putBoolean(EMBRYO_MARKER, true);
+            marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getGameTime());
+            marker.getPersistentData().putString(OWNER, readItemData(stack).getString(OWNER).orElse(player.getUUID().toString()));
+            if (!level.addFreshEntity(marker)) {
+                player.sendSystemMessage(Component.literal("The embryo could not be placed in the cauldron."));
+                return true;
+            }
             if (!player.getAbilities().instabuild) stack.shrink(1);
-            level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
-            player.sendSystemMessage(Component.literal("The embryo develops into a homunculus."));
+            player.sendSystemMessage(Component.literal("The embryo is incubating in the water cauldron. It needs three in-game days before sulfur can complete the homunculus."));
             return true;
         }
 
@@ -121,14 +140,40 @@ public final class MarbasAbilitySystem {
             return true;
         }
 
-        if (stack.is(RequiemItems.SULFUR_CUBE)) {
+        if (isSulfurIngredient(stack)) {
+            ItemEntity embryoMarker = findEmbryoMarker(level, pos);
+            if (embryoMarker != null) {
+                long started = embryoMarker.getPersistentData().getLong(EMBRYO_STARTED_AT).orElse(level.getGameTime());
+                long elapsed = Math.max(0L, level.getGameTime() - started);
+                if (elapsed < EMBRYO_GESTATION_TICKS) {
+                    long remainingDays = (EMBRYO_GESTATION_TICKS - elapsed + 23_999L) / 24_000L;
+                    player.sendSystemMessage(Component.literal("The embryo is still developing. Wait " + remainingDays + " more in-game day(s) before adding sulfur."));
+                    return true;
+                }
+                ItemStack embryoStack = embryoMarker.getItem();
+                CompoundTag embryoData = readItemData(embryoStack);
+                Mob homunculus = growHomunculus(level, pos, player,
+                    embryoData.getString(BRAIN).orElse("return home"),
+                    embryoData.getString(TRAITS).orElse(""));
+                if (homunculus == null) {
+                    player.sendSystemMessage(Component.literal("The homunculus could not be formed; the embryo remains intact."));
+                    return true;
+                }
+                String originalOwner = embryoMarker.getPersistentData().getString(OWNER).orElse(player.getUUID().toString());
+                homunculus.getPersistentData().putString(OWNER, originalOwner);
+                embryoMarker.discard();
+                if (!player.getAbilities().instabuild && stack.is(RequiemItems.SULFUR_CUBE)) stack.shrink(1);
+                level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
+                player.sendSystemMessage(Component.literal("Sulfur completes the incubation. The homunculus awakens."));
+                return true;
+            }
+
             Mob homunculus = level.getEntitiesOfClass(Mob.class, new AABB(pos).inflate(5.0), MarbasAbilitySystem::isHomunculus)
                 .stream().findFirst().orElse(null);
             if (homunculus == null) {
-                player.sendSystemMessage(Component.literal("Put an Embryo in this water cauldron first, or bring a homunculus close to it."));
+                player.sendSystemMessage(Component.literal("This cauldron has no incubated embryo. Place an Embryo in water and wait three in-game days, or use sulfur on a nearby homunculus to edit its brain."));
                 return true;
             }
-            if (!player.getAbilities().instabuild) stack.shrink(1);
             String program = homunculus.getPersistentData().getString(BRAIN).orElse("return home");
             RequiemNetworking.sendHomunculusBrainOpen(player, homunculus.getId(), program);
             return true;
@@ -140,8 +185,22 @@ public final class MarbasAbilitySystem {
         return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
     }
 
+    private static boolean isSulfurIngredient(ItemStack stack) {
+        return stack.is(RequiemItems.SULFUR_CUBE)
+            || "minecraft:sulfur_cube_bucket".equals(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+    }
+
+    private static ItemEntity findEmbryoMarker(ServerLevel level, BlockPos cauldron) {
+        AABB area = new AABB(cauldron).inflate(0.45, 0.8, 0.45);
+        return level.getEntitiesOfClass(ItemEntity.class, area, item ->
+            item.getPersistentData().getBoolean(EMBRYO_MARKER).orElse(false)
+                && item.getItem().is(RequiemItems.EMBRYO))
+            .stream().findFirst().orElse(null);
+    }
+
     private static Mob growHomunculus(ServerLevel level, BlockPos cauldron, ServerPlayer owner, String brain, String traits) {
-        Entity entity = EntityTypes.WOLF.create(level, EntitySpawnReason.TRIGGERED);
+        // Husk is a humanoid base rather than the old wolf-shaped placeholder.
+        Entity entity = EntityTypes.HUSK.create(level, EntitySpawnReason.TRIGGERED);
         if (!(entity instanceof Mob mob)) return null;
         mob.setPos(cauldron.getX() + 0.5, cauldron.getY() + 1.0, cauldron.getZ() + 0.5);
         mob.setCustomName(Component.literal("Homunculus"));
