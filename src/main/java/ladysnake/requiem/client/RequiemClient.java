@@ -20,6 +20,7 @@ import ladysnake.requiem.core.possession.PossessionComponentImpl;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.entity.effect.RequiemStatusEffects;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import ladysnake.requiem.client.network.ClientMessageHandling;
 import ladysnake.requiem.common.particle.RequiemParticleTypes;
 import ladysnake.requiem.common.particle.WispTrailParticleEffect;
 import ladysnake.requiem.common.sharedbody.SharedBodyClientState;
@@ -109,6 +110,7 @@ public final class RequiemClient {
     public static KeyMapping CONSTRUCT_SECONDARY_KEY;
 
     public static void init(IEventBus modEventBus) {
+        modEventBus.addListener(ClientMessageHandling::registerPayloadHandlers);
         modEventBus.addListener(RequiemClient::onRegisterRenderers);
         modEventBus.addListener(RequiemClient::onRegisterLayerDefinitions);
         modEventBus.addListener(RequiemClient::onRegisterKeyMappings);
