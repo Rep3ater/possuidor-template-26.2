@@ -108,7 +108,8 @@ public final class MarbasAbilitySystem {
             marker.setPickUpDelay(32767);
             marker.setUnlimitedLifetime();
             marker.getPersistentData().putBoolean(EMBRYO_MARKER, true);
-            marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getGameTime());
+            // Day time advances when players sleep, unlike gameTime (which counts server ticks).
+            marker.getPersistentData().putLong(EMBRYO_STARTED_AT, level.getDayTime());
             marker.getPersistentData().putString(OWNER, readItemData(stack).getString(OWNER).orElse(player.getUUID().toString()));
             if (!level.addFreshEntity(marker)) {
                 player.sendSystemMessage(Component.literal("The embryo could not be placed in the cauldron."));
@@ -143,8 +144,8 @@ public final class MarbasAbilitySystem {
         if (isSulfurIngredient(stack)) {
             ItemEntity embryoMarker = findEmbryoMarker(level, pos);
             if (embryoMarker != null) {
-                long started = embryoMarker.getPersistentData().getLong(EMBRYO_STARTED_AT).orElse(level.getGameTime());
-                long elapsed = Math.max(0L, level.getGameTime() - started);
+                long started = embryoMarker.getPersistentData().getLong(EMBRYO_STARTED_AT).orElse(level.getDayTime());
+                long elapsed = Math.max(0L, level.getDayTime() - started);
                 if (elapsed < EMBRYO_GESTATION_TICKS) {
                     long remainingDays = (EMBRYO_GESTATION_TICKS - elapsed + 23_999L) / 24_000L;
                     player.sendSystemMessage(Component.literal("The embryo is still developing. Wait " + remainingDays + " more in-game day(s) before adding sulfur."));
@@ -162,7 +163,7 @@ public final class MarbasAbilitySystem {
                 String originalOwner = embryoMarker.getPersistentData().getString(OWNER).orElse(player.getUUID().toString());
                 homunculus.getPersistentData().putString(OWNER, originalOwner);
                 embryoMarker.discard();
-                if (!player.getAbilities().instabuild && stack.is(RequiemItems.SULFUR_CUBE)) stack.shrink(1);
+                consumeSulfurIngredient(player, stack);
                 level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
                 player.sendSystemMessage(Component.literal("Sulfur completes the incubation. The homunculus awakens."));
                 return true;
@@ -175,6 +176,7 @@ public final class MarbasAbilitySystem {
                 return true;
             }
             String program = homunculus.getPersistentData().getString(BRAIN).orElse("return home");
+            consumeSulfurIngredient(player, stack);
             RequiemNetworking.sendHomunculusBrainOpen(player, homunculus.getId(), program);
             return true;
         }
@@ -185,9 +187,27 @@ public final class MarbasAbilitySystem {
         return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
     }
 
+    private static boolean isSulfurBucket(ItemStack stack) {
+        return "sulfur_cube_bucket".equals(BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath());
+    }
+
     private static boolean isSulfurIngredient(ItemStack stack) {
-        return stack.is(RequiemItems.SULFUR_CUBE)
-            || "minecraft:sulfur_cube_bucket".equals(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+        return stack.is(RequiemItems.SULFUR_CUBE) || isSulfurBucket(stack);
+    }
+
+    /**
+     * Sulfur cube buckets behave like a container: on a successful ritual the sulfur is consumed
+     * and an empty vanilla bucket is returned. On an incubation-time error nothing is consumed.
+     */
+    private static void consumeSulfurIngredient(ServerPlayer player, ItemStack stack) {
+        if (player.getAbilities().instabuild) return;
+        if (isSulfurBucket(stack)) {
+            stack.shrink(1);
+            ItemStack emptyBucket = new ItemStack(Items.BUCKET);
+            if (!player.getInventory().add(emptyBucket)) player.drop(emptyBucket, false);
+            return;
+        }
+        if (stack.is(RequiemItems.SULFUR_CUBE)) stack.shrink(1);
     }
 
     private static ItemEntity findEmbryoMarker(ServerLevel level, BlockPos cauldron) {
@@ -332,10 +352,13 @@ public final class MarbasAbilitySystem {
             data.remove("requiem:marbas_was_sleeping");
             data.remove("requiem:marbas_sleep_started");
             if (now - started >= 100L) {
-                int count = data.getInt("requiem:marbas_sleep_count").orElse(0) + 1;
-                data.putInt("requiem:marbas_sleep_count", count);
-                if (isMarbas(player)) {
-                    player.sendSystemMessage(Component.literal("A completed night's sleep has settled your homunculus research (" + count + "/2 nights)."));
+                int previousCount = data.getInt("requiem:marbas_sleep_count").orElse(0);
+                int count = Math.min(2, previousCount + 1);
+                if (count > previousCount) {
+                    data.putInt("requiem:marbas_sleep_count", count);
+                    if (isMarbas(player)) {
+                        player.sendSystemMessage(Component.literal("A completed night's sleep has settled your homunculus research (" + count + "/2 nights)."));
+                    }
                 }
             }
         }
