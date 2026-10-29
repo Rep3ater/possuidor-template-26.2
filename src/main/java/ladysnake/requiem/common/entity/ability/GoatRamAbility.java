@@ -144,7 +144,7 @@ public class GoatRamAbility<O extends PathfinderMob> extends DirectAbilityBase<O
                 if (!list.isEmpty()) {
                     LivingEntity livingEntity = list.get(0);
                     livingEntity.hurt(this.owner.damageSources().mobAttack(this.owner), (float) this.owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
-                    int speedAmount = this.owner.hasEffect(MobEffects.SPEED) ? this.owner.getEffect(MobEffects.SPEED).getAmplifier() + 1 : 0;
+                    int speedAmount = this.owner.hasEffect(MobEffects.MOVEMENT_SPEED) ? this.owner.getEffect(MobEffects.MOVEMENT_SPEED).getAmplifier() + 1 : 0;
                     int slownessAmount = this.owner.hasEffect(MobEffects.MOVEMENT_SLOWDOWN) ? this.owner.getEffect(MobEffects.MOVEMENT_SLOWDOWN).getAmplifier() + 1 : 0;
                     float multiplier = 0.25F * (float) (speedAmount - slownessAmount);
                     float knockbackSpeed = (float) Mth.clamp(owner.getAttributeValue(Attributes.MOVEMENT_SPEED) * 2.4, 0.2F, 3.0F) + multiplier;
