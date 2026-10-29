@@ -55,7 +55,7 @@ public class FakeServerPlayerEntity extends FakePlayer implements AutomatoneFake
     }
 
     public void selectHotbarSlot(int slot) {
-        this.getInventory().setSelectedSlot(slot);
+        this.getInventory().selected = slot;
     }
 
     public void swapHands() {
