@@ -23,7 +23,7 @@ public abstract class BlockRenderDispatcherMixin {
     private void requiem$hideReplacedDimension(BlockState state, BlockPos pos, BlockAndTintGetter level,
                                                PoseStack poseStack, VertexConsumer consumer,
                                                boolean checkSides, RandomSource random, CallbackInfo ci) {
-        if (ParmenidesClientState.shouldHideOriginalBlock(pos)) {
+        if (ParmenidesClientState.shouldHideOriginalBlock(pos, level)) {
             ci.cancel();
         }
     }
