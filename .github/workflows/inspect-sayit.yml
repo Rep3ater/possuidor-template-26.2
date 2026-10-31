@@ -1,0 +1,37 @@
+name: Inspect SayIt dependency
+
+on:
+  push:
+    branches: [feature/sayit-english-compat]
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Inspect Say It English JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          JAR="sayitenglish-neoforge-1.21.1-1.1.0.jar"
+          echo "=== ARCHIVE ENTRIES ==="
+          unzip -Z1 "$JAR" | grep -E '(^META-INF/|\.class$|\.json$|\.toml$)' | head -250
+          echo "=== MOD METADATA ==="
+          for f in META-INF/neoforge.mods.toml META-INF/mods.toml META-INF/MANIFEST.MF; do
+            if unzip -Z1 "$JAR" | grep -qx "$f"; then
+              echo "--- $f ---"
+              unzip -p "$JAR" "$f" | head -150
+            fi
+          done
+          echo "=== STRINGS FOR RELEVANT APIs ==="
+          strings "$JAR" | grep -iE 'say.?it|translation|translator|language|chat|command|speak|pronounc|item' | head -250 || true
+          echo "=== DECOMPILE ==="
+          curl -fsSL https://repo.maven.apache.org/maven2/org/benf/cfr/0.152/cfr-0.152.jar -o /tmp/cfr.jar
+          mkdir -p /tmp/sayit-dec
+          java -jar /tmp/cfr.jar "$JAR" --outputdir /tmp/sayit-dec --silent true
+          echo "=== DECOMPILED API HOOKS ==="
+          grep -RInE 'ServerChatEvent|ChatEvent|PlayerChat|ClientChat|translation|translator|language|RegisterCommandsEvent|Commands\.literal|addEventListener|EventBus|ItemStack|Component\.literal|setMessage' /tmp/sayit-dec | head -300 || true
