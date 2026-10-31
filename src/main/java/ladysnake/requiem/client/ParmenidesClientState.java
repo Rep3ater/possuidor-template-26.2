@@ -130,13 +130,16 @@ public final class ParmenidesClientState {
     private static void markSectionsDirty(int centerX, int centerZ) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.levelRenderer == null) return;
-        int minSection = mc.level.getMinSection();
-        int maxSection = mc.level.getMaxSection();
+        int minY = mc.level.getMinBuildHeight();
+        int maxY = mc.level.getMaxBuildHeight() - 1;
+        // Public LevelRenderer API: invalidate each affected chunk column in one call.
+        // setSectionDirty is private in this Minecraft version.
         for (int z = centerZ - 1; z <= centerZ + 1; z++) {
             for (int x = centerX - 1; x <= centerX + 1; x++) {
-                for (int section = minSection; section < maxSection; section++) {
-                    mc.levelRenderer.setSectionDirty(x << 4, section << 4, z << 4, false);
-                }
+                mc.levelRenderer.setBlocksDirty(
+                    x << 4, minY, z << 4,
+                    (x << 4) + 15, maxY, (z << 4) + 15
+                );
             }
         }
     }
