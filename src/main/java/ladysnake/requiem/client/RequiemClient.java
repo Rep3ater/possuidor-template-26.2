@@ -82,6 +82,7 @@ public final class RequiemClient {
     private static int parmenidesPreviewRequestCooldown;
     private static int parmenidesPreviewRequestedChunkX = Integer.MIN_VALUE;
     private static int parmenidesPreviewRequestedChunkZ = Integer.MIN_VALUE;
+    private static int parmenidesPreviewDimension = -1;
 
     public static ResourceLocation activePostEffect() {
         return activePostEffect;
@@ -306,6 +307,7 @@ public final class RequiemClient {
         parmenidesPreviewRequestCooldown = 0;
         parmenidesPreviewRequestedChunkX = Integer.MIN_VALUE;
         parmenidesPreviewRequestedChunkZ = Integer.MIN_VALUE;
+        parmenidesPreviewDimension = -1;
         ParmenidesClientState.clearPreview();
         activePostEffect = null;
         ladysnake.requiem.client.locki.LockiClientState.reset();
@@ -321,13 +323,16 @@ public final class RequiemClient {
             if (previewHeld) {
                 int chunkX = mc.player.chunkPosition().x;
                 int chunkZ = mc.player.chunkPosition().z;
+                int dimension = mc.level.dimension() == net.minecraft.world.level.Level.NETHER ? 1 : 0;
                 boolean changedChunk = chunkX != parmenidesPreviewRequestedChunkX
-                    || chunkZ != parmenidesPreviewRequestedChunkZ;
+                    || chunkZ != parmenidesPreviewRequestedChunkZ
+                    || dimension != parmenidesPreviewDimension;
                 if (!parmenidesPreviewKeyDown || changedChunk) {
                     ParmenidesClientState.clearPreview();
                     PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
                     parmenidesPreviewRequestedChunkX = chunkX;
                     parmenidesPreviewRequestedChunkZ = chunkZ;
+                    parmenidesPreviewDimension = dimension;
                     parmenidesPreviewRequestCooldown = 20;
                 } else if (!ParmenidesClientState.hasPreview() && parmenidesPreviewRequestCooldown-- <= 0) {
                     PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
@@ -342,6 +347,7 @@ public final class RequiemClient {
                 parmenidesPreviewRequestCooldown = 0;
                 parmenidesPreviewRequestedChunkX = Integer.MIN_VALUE;
                 parmenidesPreviewRequestedChunkZ = Integer.MIN_VALUE;
+                parmenidesPreviewDimension = -1;
                 ParmenidesClientState.clearPreview();
             }
             // Let the server know which keys are held, so controlled mobs can mimic attacking and using
