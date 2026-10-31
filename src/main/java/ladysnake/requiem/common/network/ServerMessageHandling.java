@@ -42,6 +42,11 @@ import ladysnake.requiem.common.screen.RiftScreenHandler;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.RequiemCoreNetworking;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.block.Block;
+import java.util.ArrayList;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.Blocks;
@@ -84,6 +89,11 @@ public final class ServerMessageHandling {
             RequiemNetworking.EtherealFracturePayload.TYPE,
             RequiemNetworking.EtherealFracturePayload.STREAM_CODEC,
             ServerMessageHandling::handleEtherealFracture
+        );
+        registrar.playToServer(
+            RequiemNetworking.ParmenidesPreviewRequestPayload.TYPE,
+            RequiemNetworking.ParmenidesPreviewRequestPayload.STREAM_CODEC,
+            ServerMessageHandling::handleParmenidesPreviewRequest
         );
         registrar.playToServer(
             RequiemNetworking.ParmenidesSwitchPayload.TYPE,
@@ -209,6 +219,38 @@ public final class ServerMessageHandling {
                 InitiateFractureCallback.EVENT.invoker().performFracture(player);
             }
         }
+    }
+
+    private static void handleParmenidesPreviewRequest(RequiemNetworking.ParmenidesPreviewRequestPayload payload, IPayloadContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) return;
+        context.enqueueWork(() -> {
+            if (!payload.active() || !ladysnake.requiem.common.ghost.ParmenidesRole.isParmenides(player)) return;
+            ServerLevel current = (ServerLevel) player.level();
+            ServerLevel counterpart = current.dimension() == Level.NETHER
+                ? current.getServer().getLevel(Level.OVERWORLD)
+                : current.dimension() == Level.OVERWORLD
+                    ? current.getServer().getLevel(Level.NETHER) : null;
+            if (counterpart == null) return;
+            int chunkX = player.chunkPosition().x;
+            int chunkZ = player.chunkPosition().z;
+            if (payload.chunkX() != chunkX || payload.chunkZ() != chunkZ) return;
+            if (!counterpart.getChunkSource().hasChunk(chunkX, chunkZ)) return;
+            LevelChunk chunk = counterpart.getChunk(chunkX, chunkZ);
+            int minY = counterpart.getMinBuildHeight();
+            int height = counterpart.getMaxBuildHeight() - minY;
+            List<Integer> states = new ArrayList<>(16 * 16 * height);
+            for (int y = 0; y < height; y++) {
+                int worldY = minY + y;
+                for (int z = 0; z < 16; z++) {
+                    for (int x = 0; x < 16; x++) {
+                        states.add(Block.BLOCK_STATE_REGISTRY.getId(chunk.getBlockState(
+                            new net.minecraft.core.BlockPos((chunkX << 4) + x, worldY, (chunkZ << 4) + z))));
+                    }
+                }
+            }
+            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
+                new RequiemNetworking.ParmenidesPreviewDataPayload(chunkX, chunkZ, minY, height, states));
+        });
     }
 
     private static void handleParmenidesSwitch(RequiemNetworking.ParmenidesSwitchPayload payload, IPayloadContext context) {
