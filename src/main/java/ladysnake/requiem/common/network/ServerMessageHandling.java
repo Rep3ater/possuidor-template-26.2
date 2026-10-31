@@ -257,7 +257,7 @@ public final class ServerMessageHandling {
                 }
             }
             net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
-                new RequiemNetworking.ParmenidesPreviewDataPayload(chunkX, chunkZ, minY, height, states));
+                new RequiemNetworking.ParmenidesPreviewDataPayload(chunkX, chunkZ, current.dimension() == Level.NETHER, minY, height, states));
         });
     }
 
