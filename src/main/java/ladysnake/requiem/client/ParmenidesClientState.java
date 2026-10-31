@@ -136,6 +136,10 @@ public final class ParmenidesClientState {
     }
 
     public static void clearPreview() {
+        if (terrainWasHidden) {
+            markSectionsDirty(previewCenterChunkX, previewCenterChunkZ);
+            terrainWasHidden = false;
+        }
         netherPreview = false;
         PREVIEW_CHUNKS.clear();
         previewStartedAt = -1L;
