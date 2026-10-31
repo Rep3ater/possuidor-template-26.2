@@ -38,8 +38,7 @@ public final class ParmenidesChunkPreviewRenderer {
         for (PreviewChunk chunk : ParmenidesClientState.previewChunks().values()) {
             int baseX = chunk.chunkX() << 4;
             int baseZ = chunk.chunkZ() << 4;
-            // Reveal complete counterpart chunks as the domain reaches their edges.
-            // The original chunk is hidden by the same threshold, so the two swap together.
+            // Keep the counterpart reveal gradual inside each chunk.
             double nearestX = Math.max(baseX, Math.min(px, baseX + 16.0D));
             double nearestZ = Math.max(baseZ, Math.min(pz, baseZ + 16.0D));
             double ndx = nearestX - px;
@@ -58,6 +57,10 @@ public final class ParmenidesChunkPreviewRenderer {
                 int worldX = baseX + x;
                 int worldY = chunk.minY() + y;
                 int worldZ = baseZ + z;
+                double dx = worldX + 0.5D - px;
+                double dz = worldZ + 0.5D - pz;
+                if (dx * dx + dz * dz > radiusSquared) continue;
+
                 lightPos.set(worldX, worldY, worldZ);
                 // The counterpart dimension has its own lighting; using Nether light values
                 // for an Overworld preview (or vice versa) makes much of it nearly invisible.
