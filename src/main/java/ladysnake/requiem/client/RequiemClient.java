@@ -332,7 +332,11 @@ public final class RequiemClient {
                     PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
                     parmenidesPreviewRequestCooldown = 20;
                 } else if (changedChunk) {
-                    ParmenidesClientState.movePreviewCenter(chunkX, chunkZ, dimension == 1);
+                    if (dimension != parmenidesPreviewDimension) {
+                        ParmenidesClientState.beginPreview(mc.level.getGameTime(), chunkX, chunkZ, dimension == 1);
+                    } else {
+                        ParmenidesClientState.movePreviewCenter(chunkX, chunkZ, dimension == 1);
+                    }
                     PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
                     parmenidesPreviewRequestCooldown = 20;
                 } else if (parmenidesPreviewRequestCooldown-- <= 0) {
