@@ -7,14 +7,16 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import java.util.List;
 
 /**
- * Renders a speech bubble from the player's own render pass. Using RenderPlayerEvent.Post
- * keeps the bubble attached to the exact interpolated player position and avoids the
- * translucent-level render stage, which is unreliable with Fabulous/shader pipelines.
+ * Renders active speech bubbles in the world pass after entities have been drawn.
+ *
+ * Rendering from a dedicated level stage avoids depending on the per-player renderer's
+ * post-render pose stack, which can be affected by renderer and shader integrations.
  */
 public final class SpeechBubbleRenderer {
     private static final int MAX_LINE_WIDTH = 164;
@@ -22,41 +24,75 @@ public final class SpeechBubbleRenderer {
     private static final int OUTLINE = 0xFF77D7E7;
     private static final int TEXT = 0xFFFFF6E9;
     private static final int FULL_BRIGHT = 0x00F000F0;
+    private static final double MAX_RENDER_DISTANCE_SQR = 128.0D * 128.0D;
 
     private SpeechBubbleRenderer() { }
 
-    public static void renderPlayerBubble(RenderPlayerEvent.Post event) {
-        Player player = event.getEntity();
-        String text = SpeechBubbleClientState.visibleText(player.getId());
-        if (text.isEmpty() || player.isRemoved()) return;
+    public static void renderWorldBubbles(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
 
         Minecraft minecraft = Minecraft.getInstance();
-        List<FormattedCharSequence> lines = minecraft.font.split(Component.literal(text), MAX_LINE_WIDTH);
-        if (lines.isEmpty()) return;
+        if (minecraft.level == null) return;
 
         PoseStack pose = event.getPoseStack();
-        pose.pushPose();
-        // RenderPlayerEvent is fired with the dispatcher’s camera-relative entity matrix.
-        pose.translate(0.0D, player.getBbHeight() + 0.38D, 0.0D);
-        pose.mulPose(minecraft.getEntityRenderDispatcher().cameraOrientation());
-        pose.scale(-0.025F, -0.025F, 0.025F);
+        if (pose == null) return;
 
+        Vec3 cameraPosition = event.getCamera().getPosition();
         Font font = minecraft.font;
-        int y = -(lines.size() * 10) - 5;
-        for (FormattedCharSequence line : lines) {
-            float x = -font.width(line) / 2.0F;
-            font.drawInBatch(line, x - 1.0F, y, OUTLINE, false, pose.last().pose(),
-                event.getMultiBufferSource(), Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
-            font.drawInBatch(line, x + 1.0F, y, OUTLINE, false, pose.last().pose(),
-                event.getMultiBufferSource(), Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
-            font.drawInBatch(line, x, y - 1.0F, OUTLINE, false, pose.last().pose(),
-                event.getMultiBufferSource(), Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
-            font.drawInBatch(line, x, y + 1.0F, OUTLINE, false, pose.last().pose(),
-                event.getMultiBufferSource(), Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
-            font.drawInBatch(line, x, y, TEXT, false, pose.last().pose(),
-                event.getMultiBufferSource(), Font.DisplayMode.NORMAL, DARK_BACKGROUND, FULL_BRIGHT);
-            y += 10;
+        var buffers = minecraft.renderBuffers().bufferSource();
+        boolean renderedAny = false;
+
+        // Level-stage pose stacks are in world-render space. Translate once by the
+        // camera position, then place each billboard at its speaker's current position.
+        pose.pushPose();
+        pose.translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
+
+        for (Player player : minecraft.level.players()) {
+            if (player.isRemoved() || player.distanceToSqr(cameraPosition) > MAX_RENDER_DISTANCE_SQR) {
+                continue;
+            }
+
+            String text = SpeechBubbleClientState.visibleText(player.getId());
+            if (text.isEmpty()) continue;
+
+            List<FormattedCharSequence> lines = font.split(Component.literal(text), MAX_LINE_WIDTH);
+            if (lines.isEmpty()) continue;
+
+            pose.pushPose();
+            Vec3 playerPosition = player.position();
+            pose.translate(playerPosition.x, playerPosition.y + player.getBbHeight() + 0.38D, playerPosition.z);
+            pose.mulPose(minecraft.getEntityRenderDispatcher().cameraOrientation());
+            pose.scale(-0.025F, -0.025F, 0.025F);
+
+            float y = -((lines.size() - 1) * 5.0F);
+            for (FormattedCharSequence line : lines) {
+                float x = -font.width(line) / 2.0F;
+                var matrix = pose.last().pose();
+
+                font.drawInBatch(line, x - 1.0F, y, OUTLINE, false, matrix,
+                    buffers, Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+                font.drawInBatch(line, x + 1.0F, y, OUTLINE, false, matrix,
+                    buffers, Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+                font.drawInBatch(line, x, y - 1.0F, OUTLINE, false, matrix,
+                    buffers, Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+                font.drawInBatch(line, x, y + 1.0F, OUTLINE, false, matrix,
+                    buffers, Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+                // Font's background-color argument draws the dark plate behind the line.
+                font.drawInBatch(line, x, y, TEXT, false, matrix,
+                    buffers, Font.DisplayMode.NORMAL, DARK_BACKGROUND, FULL_BRIGHT);
+                y += 10.0F;
+            }
+
+            pose.popPose();
+            renderedAny = true;
         }
+
         pose.popPose();
+
+        // Font uses texture-specific render types, so flush the source after all lines
+        // have been submitted rather than waiting for an unrelated later render pass.
+        if (renderedAny) {
+            buffers.endBatch();
+        }
     }
 }
