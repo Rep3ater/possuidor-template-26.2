@@ -119,6 +119,7 @@ tasks.named('jar', Jar).configure {
     // and including both copies creates a JPMS split-package resolution failure.
     exclude 'net/fabricmc/fabric/api/event/Event.class'
     exclude 'net/fabricmc/fabric/api/event/EventFactory*.class'
+    exclude 'net/fabricmc/fabric/api/util/TriState.class'
 
     // Guard the distributable JAR against reintroducing the fabric_api_base
     // split-package conflict.
@@ -127,7 +128,8 @@ tasks.named('jar', Jar).configure {
         try {
             def conflictingEntries = java.util.Collections.list(archive.entries()).findAll { entry ->
                 entry.name == 'net/fabricmc/fabric/api/event/Event.class' ||
-                    entry.name.startsWith('net/fabricmc/fabric/api/event/EventFactory')
+                    entry.name.startsWith('net/fabricmc/fabric/api/event/EventFactory') ||
+                    entry.name == 'net/fabricmc/fabric/api/util/TriState.class'
             }
             if (!conflictingEntries.isEmpty()) {
                 throw new GradleException(
