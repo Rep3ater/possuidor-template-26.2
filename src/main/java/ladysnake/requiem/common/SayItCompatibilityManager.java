@@ -80,9 +80,9 @@ public final class SayItCompatibilityManager {
         // Requiem mode replaces global chat with an in-world bubble. Each nearby
         // viewer receives the text translated into their own Minecraft language.
         event.setCanceled(true);
-        String original = event.getMessage().getString();
-        if (original == null || original.isBlank()) return;
-        if (original.length() > 256) original = original.substring(0, 256);
+        String rawText = event.getMessage().getString();
+        if (rawText == null || rawText.isBlank()) return;
+        final String original = rawText.length() > 256 ? rawText.substring(0, 256) : rawText;
 
         MinecraftServer server = speaker.getServer();
         if (server == null) return;
