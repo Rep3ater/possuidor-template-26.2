@@ -309,7 +309,6 @@ public final class RequiemClient {
         parmenidesPreviewRequestedChunkZ = Integer.MIN_VALUE;
         parmenidesPreviewDimension = -1;
         ParmenidesClientState.clearPreview();
-        ladysnake.requiem.common.ghost.ParmenidesRole.clearClientStates();
         activePostEffect = null;
         ladysnake.requiem.client.locki.LockiClientState.reset();
     }

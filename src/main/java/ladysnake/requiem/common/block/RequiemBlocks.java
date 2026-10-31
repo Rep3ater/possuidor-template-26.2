@@ -92,16 +92,6 @@ public final class RequiemBlocks {
         BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).strength(5.0F, 6.0F).lightLevel(state -> 7).noOcclusion()
     );
 
-    // Temporary Parmenides platforms. No item is registered; the ghost manager owns their lifetime.
-    public static final ladysnake.requiem.common.ghost.ParmenidesSpectralBlock PARMENIDES_SPECTRAL = makeWithoutItem(
-        ladysnake.requiem.common.ghost.ParmenidesSpectralBlock::new,
-        "parmenides_spectral",
-        BlockBehaviour.Properties.ofFullCopy(Blocks.LIGHT_BLUE_STAINED_GLASS)
-            .noOcclusion().noLootTable().strength(-1.0F, 3600000.0F)
-            .lightLevel(state -> 6)
-            .sound(net.minecraft.world.level.block.SoundType.GLASS)
-    );
-
     private static Block makeVariant(Block base, String id) {
         return make(Block::new, id, CreativeModeTabs.BUILDING_BLOCKS, BlockBehaviour.Properties.ofFullCopy(base));
     }

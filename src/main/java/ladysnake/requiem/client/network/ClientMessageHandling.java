@@ -29,10 +29,7 @@ public final class ClientMessageHandling {
             (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.locki.LockiClientState.accept(payload)));
         registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, ClientMessageHandling::handleHomunculusBrainOpen);
         registrar.playToClient(RequiemNetworking.ParmenidesStatePayload.TYPE, RequiemNetworking.ParmenidesStatePayload.STREAM_CODEC,
-            (payload, context) -> context.enqueueWork(() -> {
-                ladysnake.requiem.client.ParmenidesClientState.update(payload.entityId(), payload.active());
-                ladysnake.requiem.common.ghost.ParmenidesRole.updateClientState(payload.entityId(), payload.active());
-            }));
+            (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.ParmenidesClientState.update(payload.entityId(), payload.active())));
         registrar.playToClient(RequiemNetworking.OutOfBodyBodyPayload.TYPE, RequiemNetworking.OutOfBodyBodyPayload.STREAM_CODEC,
             (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.ParmenidesClientState.updateBody(payload.entityId(), payload.active())));
         registrar.playToClient(RequiemNetworking.ParmenidesPreviewDataPayload.TYPE, RequiemNetworking.ParmenidesPreviewDataPayload.STREAM_CODEC,

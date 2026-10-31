@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "render_type": "minecraft:translucent",
-  "ambientocclusion": false,
-  "textures": {
-    "all": "requiem:block/parmenides_spectral_4"
-  }
-}
