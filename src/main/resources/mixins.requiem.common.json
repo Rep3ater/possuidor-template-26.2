@@ -8,7 +8,8 @@
     "access.ShulkerEntityAccessor",
     "possession.gameplay.ability.BlazeEntityAccessor",
     "possession.gameplay.ability.EvokerEntityAccessor",
-    "possession.gameplay.ability.PufferfishEntityAccessor"
+    "possession.gameplay.ability.PufferfishEntityAccessor",
+    "compat.AppleSkinSyncHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
