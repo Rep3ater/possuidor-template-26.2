@@ -191,8 +191,16 @@ public final class RequiemClient {
 
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.options.getCameraType().isFirstPerson()
-                && SharedBodyClientState.isControlled(event.getEntity().getId())) {
+        if (!mc.options.getCameraType().isFirstPerson() || mc.player == null) {
+            return;
+        }
+
+        // In ordinary possession the camera is attached to the host mob. Hide that host's
+        // model in first person as well as the Shared Body controlled entity.
+        PossessionComponent possession = PossessionComponent.get(mc.player);
+        Mob possessedHost = possession.isPossessionOngoing() ? possession.getHost() : null;
+        if (SharedBodyClientState.isControlled(event.getEntity().getId())
+                || event.getEntity() == possessedHost) {
             event.setCanceled(true);
         }
     }
