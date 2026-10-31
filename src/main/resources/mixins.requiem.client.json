@@ -12,7 +12,8 @@
     "LocalPlayerMixin",
     "LockiAstralAudioMixin",
     "LockiCameraMixin",
-    "CameraMixin"
+    "CameraMixin",
+    "SpeechBubblePlayerModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
