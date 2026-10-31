@@ -31,5 +31,15 @@ public abstract class SpeechBubblePlayerModelMixin<T extends LivingEntity> {
         model.leftArm.yRot = 0.48F + Mth.sin(phase * 0.91F) * 0.44F;
         model.rightArm.zRot = Mth.sin(phase * 0.7F) * 0.12F;
         model.leftArm.zRot = Mth.cos(phase * 0.7F) * 0.12F;
+
+        // PlayerModel's skin overlay is rendered from separate sleeve parts.
+        // setupAnim normally copies the vanilla arm pose to them before this
+        // mixin runs, so explicitly mirror our talking pose onto both sleeves.
+        model.rightSleeve.xRot = model.rightArm.xRot;
+        model.rightSleeve.yRot = model.rightArm.yRot;
+        model.rightSleeve.zRot = model.rightArm.zRot;
+        model.leftSleeve.xRot = model.leftArm.xRot;
+        model.leftSleeve.yRot = model.leftArm.yRot;
+        model.leftSleeve.zRot = model.leftArm.zRot;
     }
 }
