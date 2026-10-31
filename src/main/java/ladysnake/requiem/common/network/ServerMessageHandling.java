@@ -83,6 +83,11 @@ public final class ServerMessageHandling {
 
         // Requiem payloads
         registrar.playToServer(
+            RequiemNetworking.SpeechLanguagePayload.TYPE,
+            RequiemNetworking.SpeechLanguagePayload.STREAM_CODEC,
+            ServerMessageHandling::handleSpeechLanguage
+        );
+        registrar.playToServer(
             RequiemNetworking.UseIndirectAbilityPayload.TYPE,
             RequiemNetworking.UseIndirectAbilityPayload.STREAM_CODEC,
             ServerMessageHandling::handleUseIndirectAbility
@@ -140,6 +145,11 @@ public final class ServerMessageHandling {
 
     private static void handleConsumeResurrectionItem(RequiemCoreNetworking.ConsumeResurrectionItemPayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {});
+    }
+
+    private static void handleSpeechLanguage(RequiemNetworking.SpeechLanguagePayload payload, IPayloadContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) return;
+        context.enqueueWork(() -> ladysnake.requiem.common.SayItCompatibilityManager.setPlayerLanguage(player, payload.language()));
     }
 
     private static void handleAnchorDamage(RequiemNetworking.AnchorDamagePayload payload, IPayloadContext context) {
