@@ -236,7 +236,8 @@ public final class ServerMessageHandling {
             int chunkX = player.chunkPosition().x;
             int chunkZ = player.chunkPosition().z;
             if (payload.chunkX() != chunkX || payload.chunkZ() != chunkZ) return;
-            if (!counterpart.getChunkSource().hasChunk(chunkX, chunkZ)) return;
+            // Load/generate only the requested counterpart chunk; otherwise the preview would
+            // never work when that dimension had not already been visited by another player.
             LevelChunk chunk = counterpart.getChunk(chunkX, chunkZ);
             int minY = counterpart.getMinBuildHeight();
             int height = counterpart.getMaxBuildHeight() - minY;
