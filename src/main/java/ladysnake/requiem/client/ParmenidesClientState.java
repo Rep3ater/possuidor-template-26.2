@@ -49,7 +49,7 @@ public final class ParmenidesClientState {
     private static volatile int previewCenterChunkX;
     private static volatile int previewCenterChunkZ;
     private static volatile long previewStartedAt = -1L;
-    private static boolean terrainRefreshPending;
+    private static boolean terrainRefreshPending;\n    private static boolean terrainWasHidden;
 
     private ParmenidesClientState() { }
 
@@ -90,6 +90,10 @@ public final class ParmenidesClientState {
     public static void movePreviewCenter(int centerChunkX, int centerChunkZ, boolean playerInNether) {
         if (centerChunkX != previewCenterChunkX || centerChunkZ != previewCenterChunkZ
                 || playerInNether != previewPlayerInNether) {
+            if (terrainWasHidden) {
+                markSectionsDirty(previewCenterChunkX, previewCenterChunkZ);
+                terrainWasHidden = false;
+            }
             previewCenterChunkX = centerChunkX;
             previewCenterChunkZ = centerChunkZ;
             previewPlayerInNether = playerInNether;
@@ -113,10 +117,17 @@ public final class ParmenidesClientState {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.levelRenderer == null) return;
         terrainRefreshPending = false;
+        markSectionsDirty(previewCenterChunkX, previewCenterChunkZ);
+        terrainWasHidden = true;
+    }
+
+    private static void markSectionsDirty(int centerX, int centerZ) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.levelRenderer == null) return;
         int minSection = mc.level.getMinSection();
         int maxSection = mc.level.getMaxSection();
-        for (int z = previewCenterChunkZ - 1; z <= previewCenterChunkZ + 1; z++) {
-            for (int x = previewCenterChunkX - 1; x <= previewCenterChunkX + 1; x++) {
+        for (int z = centerZ - 1; z <= centerZ + 1; z++) {
+            for (int x = centerX - 1; x <= centerX + 1; x++) {
                 for (int section = minSection; section < maxSection; section++) {
                     mc.levelRenderer.setSectionDirty(x << 4, section << 4, z << 4, false);
                 }
