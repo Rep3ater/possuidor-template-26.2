@@ -63,7 +63,10 @@ public final class ParmenidesChunkPreviewRenderer {
                 if (dx * dx + dz * dz > radiusSquared) continue;
 
                 lightPos.set(worldX, worldY, worldZ);
-                int packedLight = LevelRenderer.getLightColor(mc.level, lightPos);
+                // The counterpart dimension has its own lighting; using Nether light values
+                // for an Overworld preview (or vice versa) makes much of it nearly invisible.
+                // Full-bright preview lighting keeps the remote geometry readable.
+                int packedLight = 0x00F000F0;
                 pose.pushPose();
                 pose.translate(x, worldY, z);
                 mc.getBlockRenderer().renderSingleBlock(
