@@ -49,7 +49,8 @@ public final class ParmenidesClientState {
     private static volatile int previewCenterChunkX;
     private static volatile int previewCenterChunkZ;
     private static volatile long previewStartedAt = -1L;
-    private static boolean terrainRefreshPending;\n    private static boolean terrainWasHidden;
+    private static boolean terrainRefreshPending;
+    private static boolean terrainWasHidden;
 
     private ParmenidesClientState() { }
 
