@@ -262,8 +262,10 @@ public final class ServerMessageHandling {
                                     for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
                                         neighbor.move(direction);
                                         net.minecraft.world.level.block.state.BlockState adjacent = counterpart.getBlockState(neighbor);
+                                        // Only actual air or a fluid boundary exposes a block.
+                                        // Non-full blocks (snow layers, plants, etc.) must not
+                                        // expose the solid block directly behind/under them.
                                         boolean visibleBoundary = adjacent.isAir()
-                                            || !adjacent.canOcclude()
                                             || !adjacent.getFluidState().isEmpty();
                                         neighbor.move(direction.getOpposite());
                                         if (visibleBoundary) {
