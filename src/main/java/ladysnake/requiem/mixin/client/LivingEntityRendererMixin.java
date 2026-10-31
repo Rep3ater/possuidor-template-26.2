@@ -2,6 +2,7 @@ package ladysnake.requiem.mixin.client;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
+import baritone.api.fakeplayer.ClientPlayerShellEntity;
 import ladysnake.requiem.common.sharedbody.SharedBodyClientState;
 import ladysnake.requiem.common.ghost.ParmenidesRole;
 import ladysnake.requiem.client.render.OutOfBodyAlphaBufferSource;
@@ -41,7 +42,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     }
 
     private boolean requiem$isOutOfBody(T entity) {
-        return !(entity instanceof PlayerShellEntity)
+        return !(entity instanceof PlayerShellEntity) && !(entity instanceof ClientPlayerShellEntity)
                 && entity instanceof net.minecraft.world.entity.player.Player player
                 && (RemnantComponent.isIncorporeal(player)
                     || ladysnake.requiem.client.ParmenidesClientState.isParmenides(player)
@@ -51,7 +52,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Inject(method = "getRenderType", at = @At("HEAD"), cancellable = true)
     private void requiem$translucentSharedBody(T entity, boolean bodyVisible, boolean translucent, boolean glowing, CallbackInfoReturnable<RenderType> cir) {
         if (glowing) return;
-        if (!(entity instanceof PlayerShellEntity)
+        if (!(entity instanceof PlayerShellEntity) && !(entity instanceof ClientPlayerShellEntity)
                 && (SharedBodyClientState.isControlled(entity.getId()) || RemnantComponent.isIncorporeal(entity)
                 || (entity instanceof net.minecraft.world.entity.player.Player player
                     && ladysnake.requiem.client.ParmenidesClientState.isOutOfBodyBody(player.getId()))
