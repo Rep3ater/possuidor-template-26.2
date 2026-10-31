@@ -112,8 +112,9 @@ public final class SayItCompatibilityManager {
         for (List<UUID> viewerIds : viewersByLanguage.values()) {
             recipientCount += sendBubble(server, speakerId, viewerIds, original);
         }
-        Requiem.LOGGER.debug("Requiem chat from {} delivered to {} nearby viewer(s)",
-            speaker.getGameProfile().getName(), recipientCount);
+        Requiem.LOGGER.info("[Requiem] Speech bubble from {} (entity {}) sent to {}/{} nearby viewer(s).",
+            speaker.getGameProfile().getName(), speaker.getId(), recipientCount,
+            viewersByLanguage.values().stream().mapToInt(List::size).sum());
 
         if (!RequiemConfig.speech.translateBubbles) return;
 
