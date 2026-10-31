@@ -1,6 +1,7 @@
 package ladysnake.requiem.mixin.client;
 
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.PlayerShellEntity;
 import ladysnake.requiem.common.sharedbody.SharedBodyClientState;
 import ladysnake.requiem.common.ghost.ParmenidesRole;
 import ladysnake.requiem.client.render.OutOfBodyAlphaBufferSource;
@@ -40,7 +41,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     }
 
     private boolean requiem$isOutOfBody(T entity) {
-        return entity instanceof net.minecraft.world.entity.player.Player player
+        return !(entity instanceof PlayerShellEntity)
+                && entity instanceof net.minecraft.world.entity.player.Player player
                 && (RemnantComponent.isIncorporeal(player)
                     || ladysnake.requiem.client.ParmenidesClientState.isParmenides(player)
                     || ladysnake.requiem.client.ParmenidesClientState.isOutOfBodyBody(player.getId()));
@@ -49,11 +51,12 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
     @Inject(method = "getRenderType", at = @At("HEAD"), cancellable = true)
     private void requiem$translucentSharedBody(T entity, boolean bodyVisible, boolean translucent, boolean glowing, CallbackInfoReturnable<RenderType> cir) {
         if (glowing) return;
-        if (SharedBodyClientState.isControlled(entity.getId()) || RemnantComponent.isIncorporeal(entity)
+        if (!(entity instanceof PlayerShellEntity)
+                && (SharedBodyClientState.isControlled(entity.getId()) || RemnantComponent.isIncorporeal(entity)
                 || (entity instanceof net.minecraft.world.entity.player.Player player
                     && ladysnake.requiem.client.ParmenidesClientState.isOutOfBodyBody(player.getId()))
                 || (entity instanceof net.minecraft.world.entity.player.Player player
-                    && ladysnake.requiem.client.ParmenidesClientState.isParmenides(player))) {
+                    && ladysnake.requiem.client.ParmenidesClientState.isParmenides(player)))) {
             cir.setReturnValue(RenderType.entityTranslucentCull(
                     ((EntityRendererAccessor) (Object) this).requiem$getTextureLocation(entity)));
         }
