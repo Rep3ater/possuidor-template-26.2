@@ -1,0 +1,884 @@
+[18:02:00] [main/INFO]: ModLauncher running: args [--username, Rep3ater, --version, neoforge-21.1.265, --gameDir, C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1, --assetsDir, C:\Users\gusta\curseforge\minecraft\Install\assets, --assetIndex, 17, --uuid, ae8a992589364627a7e72926f4b780c6, --accessToken, ❄❄❄❄❄❄❄❄, --clientId, be5182-fd6004-54c416-3a1a03-db3e23, --xuid, 2535466159773922, --userType, msa, --versionType, release, --width, 1024, --height, 768, --quickPlayPath, C:\Users\gusta\curseforge\minecraft\Quickplay\1fee7bff-93d2-4a58-83ec-de8dc0fa6217.json, , , , --fml.neoForgeVersion, 21.1.265, --fml.fmlVersion, 4.0.45, --fml.mcVersion, 1.21.1, --fml.neoFormVersion, 20240808.144430, --launchTarget, forgeclient]
+[18:02:00] [main/INFO]: JVM identified as Eclipse Adoptium OpenJDK 64-Bit Server VM 21.0.11+10-LTS
+[18:02:00] [main/INFO]: ModLauncher 11.0.5+main.901c6ea8 starting: java version 21.0.11 by Eclipse Adoptium; OS Windows 11 arch amd64 version 10.0
+[18:02:00] [main/INFO]: Searching for graphics cards...
+[18:02:00] [main/INFO]: Found graphics adapter: AdapterInfo{vendor=NVIDIA, description='NVIDIA GeForce GTX 1650', adapterType=0x00002313, openglIcdFilePath='C:\WINDOWS\System32\DriverStore\FileRepository\nvdm.inf_amd64_f6058642c859393f\nvoglv64.dll', openglIcdVersion=32.0.16.1060}
+[18:02:00] [main/INFO]: Found graphics adapter: AdapterInfo{vendor=INTEL, description='Intel(R) UHD Graphics', adapterType=0x0000232B, openglIcdFilePath='C:\WINDOWS\System32\DriverStore\FileRepository\iigd_dch.inf_amd64_38f71811f465a8ab\ig9icd64.dll', openglIcdVersion=31.0.101.2137}
+[18:02:00] [main/WARN]: Sodium has applied one or more workarounds to prevent crashes or other issues on your system: [NVIDIA_THREADED_OPTIMIZATIONS_BROKEN]
+[18:02:00] [main/WARN]: This is not necessarily an issue, but it may result in certain features or optimizations being disabled. You can sometimes fix these issues by upgrading your graphics driver.
+[18:02:00] [main/INFO]: Modifying process environment to apply workarounds for the NVIDIA graphics driver...
+[18:02:00] [main/INFO]: Loading ImmediateWindowProvider fmlearlywindow
+[18:02:00] [main/INFO]: Trying GL version 4.6
+[18:02:00] [main/INFO]: Requested GL version 4.6 got version 4.6
+[18:02:00] [main/INFO]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=union:/C:/Users/gusta/curseforge/minecraft/Install/libraries/net/fabricmc/sponge-mixin/0.16.4+mixin.0.8.7/sponge-mixin-0.16.4+mixin.0.8.7.jar%23121!/ Service=ModLauncher Env=CLIENT
+[18:02:01] [pool-2-thread-1/INFO]: GL info: NVIDIA GeForce GTX 1650/PCIe/SSE2 GL version 4.6.0 NVIDIA 610.60, NVIDIA Corporation
+[18:02:01] [main/INFO]: Found mod file "client-1.21.1-20240808.144430-srg.jar" [locator: production client provider +net.neoforged:neoforge:21.1.265:client]
+[18:02:01] [main/INFO]: Found mod file "neoforge-21.1.265-universal.jar" [locator: PathBasedLocator[name=neoforge, paths=[C:\Users\gusta\curseforge\minecraft\Install\libraries\net\neoforged\neoforge\21.1.265\neoforge-21.1.265-universal.jar]], reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "net.caffeinemc.sodium-neoforge-0.8.13+mc1.21.1-mod.jar" [locator: net.caffeinemc.mods.sodium.service.SodiumServiceModLocator@76b74e9c, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "fabric-rendering-data-attachment-v1-0.3.48+73761d2e19.jar" [locator: net.caffeinemc.mods.sodium.service.SodiumServiceModLocator@76b74e9c, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "fabric-renderer-api-v1-3.4.1+9125b6dc19.jar" [locator: net.caffeinemc.mods.sodium.service.SodiumServiceModLocator@76b74e9c, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "fabric-block-view-api-v2-1.0.10+9afaaf8c19.jar" [locator: net.caffeinemc.mods.sodium.service.SodiumServiceModLocator@76b74e9c, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "fabric-api-base-0.4.42+d1308ded19.jar" [locator: net.caffeinemc.mods.sodium.service.SodiumServiceModLocator@76b74e9c, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "animalia-neoforge-1.21.1-1.0.3.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "Apotheosis-1.21.1-8.9.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "ApothicAttributes-1.21.1-2.11.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "ApothicEnchanting-1.21.1-1.6.4.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "ApothicSpawners-1.21.1-1.4.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "appleskin-neoforge-mc1.21-3.0.9.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "atlas_api-1.21.1-1.2.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "balm-neoforge-1.21.1-21.0.66.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "blueprint-1.21.1-8.2.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "comforts-neoforge-9.0.5+1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "Controlling-neoforge-1.21.1-19.0.5.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "create-1.21.1-6.0.10.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "create-aeronautics-bundled-1.21.1-1.3.2.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "curios-neoforge-9.5.1+1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "customlights-neoforge-1.21.1-1.0.2.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "entityculling-neoforge-1.11.3-mc1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "FarmersDelight-1.21.1-1.3.4.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "ferritecore-7.0.3-neoforge.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "geckolib-neoforge-1.21.1-4.9.3.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "glass-neoforge-1.21.1-9.0.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "ImmediatelyFast-NeoForge-1.6.15+1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "iris-neoforge-1.8.14-beta.1+mc1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "irons_apothic-2.2.8.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "irons_artifice-1.21.1-1.1.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "irons_jewelry-1.21.1-2.0.2.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "irons_lib-1.21.1-2.3.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "irons_spellbooks-1.21.1-3.16.3.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "ironssablecompat-1.0.4.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "Jade-1.21.1-NeoForge-15.10.6.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "jei-1.21.1-neoforge-19.64.0.455.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found gamelibrary file "mezz_config-1.21.1-neoforge-0.6.10-standalone.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "modernfix-neoforge-5.27.27+mc1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "moonlight-1.21.1-3.7.2-neoforge.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "MouseTweaks-neoforge-mc1.21-2.26.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "notenoughcrashes-neoforge-4.4.9+1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "Patchouli-1.21.1-93-NEOFORGE.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "Placebo-1.21.1-9.9.4.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "player-animation-lib-forge-2.0.4+1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "requiem-2.0.0-beta.16.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "sable-neoforge-1.21.1-2.0.6.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "Sable_AeroDynamic-1.21.1-1.0.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "savage_and_ravage-6.0.1-neoforge.1.21.1.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "sayitenglish-neoforge-1.21.1-1.1.0.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "Searchables-neoforge-1.21.1-1.0.2.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "skyhook-ziplined-1.0-1.21.1-neoforge.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "sound-physics-remastered-neoforge-1.21.1-1.5.2.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "supplementaries-1.21.1-4.0.2-neoforge.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "waystones-neoforge-1.21.1-21.1.46.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "waystonessable-1.0.7.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:01] [main/INFO]: Found mod file "zipline-1.5.3+1.21.1-neoforge.jar" [locator: {mods folder locator at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\mods}, reader: mod manifest]
+[18:02:02] [main/WARN]: Attempted to select a dependency jar for JarJar which was passed in as source: fabric_api_base. Using Mod File: 
+[18:02:02] [main/WARN]: Attempted to select a dependency jar for JarJar which was passed in as source: fabric_renderer_api_v1. Using Mod File: 
+[18:02:02] [main/WARN]: Attempted to select a dependency jar for JarJar which was passed in as source: fabric_block_view_api_v2. Using Mod File: 
+[18:02:02] [main/WARN]: Attempted to select a dependency jar for JarJar which was passed in as source: fabric_rendering_data_attachment_v1. Using Mod File: 
+[18:02:02] [main/INFO]: Found 25 dependencies adding them to mods collection
+[18:02:02] [main/INFO]: Found gamelibrary file "mixinextras-neoforge-0.5.5.jar" [parent: neoforge-21.1.265-universal.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "kuma-api-neoforge-21.0.8+1.21.jar" [parent: balm-neoforge-1.21.1-21.0.66.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "codecui-neoforge-1.21.1-1.4.7.jar" [parent: moonlight-1.21.1-3.7.2-neoforge.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found gamelibrary file "mixinconstraints-1.1.0.jar" [parent: zipline-1.5.3+1.21.1-neoforge.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found gamelibrary file "dev.ryanhcode.sable.sable-sable_rapier-1.21.1-2.0.6.jar" [parent: sable-neoforge-1.21.1-2.0.6.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found library file "glsl-processor-0.2.3.jar" [parent: veil-neoforge-1.21.1-4.3.2.jar, locator: jarinjar]
+[18:02:02] [main/INFO]: Found mod file "ponder-neoforge-1.0.82+mc1.21.1.jar" [parent: create-1.21.1-6.0.10.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found library file "net.neoforged.neoforge-coremods-21.1.265.jar" [parent: neoforge-21.1.265-universal.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "spectrelib-neoforge-0.17.2+1.21.jar" [parent: comforts-neoforge-9.0.5+1.21.1.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "dev.eriksonn.aeronautics.aeronautics-neoforge-1.21.1-1.3.2.jar" [parent: create-aeronautics-bundled-1.21.1-1.3.2.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found library file "MixinSquared-0.3.7.jar" [parent: mixinsquared-forge-0.3.7.jar, locator: jarinjar]
+[18:02:02] [main/INFO]: Found library file "jcpp-1.4.14.jar" [parent: iris-neoforge-1.8.14-beta.1+mc1.21.1.jar, locator: jarinjar]
+[18:02:02] [main/INFO]: Found library file "glsl-transformer-3.0.0-pre3.jar" [parent: iris-neoforge-1.8.14-beta.1+mc1.21.1.jar, locator: jarinjar]
+[18:02:02] [main/INFO]: Found mod file "TRender-1.0.17-1.21.1-neoforge-SNAPSHOT.jar" [parent: entityculling-neoforge-1.11.3-mc1.21.1.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "flywheel-neoforge-1.21.1-1.0.6.jar" [parent: create-1.21.1-6.0.10.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "sable-companion-common-1.21.1-1.6.0.jar" [parent: ironssablecompat-1.0.4.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "veil-neoforge-1.21.1-4.3.2.jar" [parent: sable-neoforge-1.21.1-2.0.6.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "dev.simulated_team.simulated.simulated-neoforge-1.21.1-1.3.2.jar" [parent: create-aeronautics-bundled-1.21.1-1.3.2.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found gamelibrary file "mixinsquared-forge-0.3.7.jar" [parent: supplementaries-1.21.1-4.0.2-neoforge.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "TRansition-1.0.26-1.21.1-neoforge-SNAPSHOT.jar" [parent: entityculling-neoforge-1.11.3-mc1.21.1.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found library file "molang-compiler-3.1.1.19.jar" [parent: veil-neoforge-1.21.1-4.3.2.jar, locator: jarinjar]
+[18:02:02] [main/INFO]: Found library file "Reflect-1.6.2.jar" [parent: ImmediatelyFast-NeoForge-1.6.15+1.21.1.jar, locator: jarinjar]
+[18:02:02] [main/INFO]: Found gamelibrary file "Registrate-MC1.21-1.3.0+67.jar" [parent: create-1.21.1-6.0.10.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "dev.ryanhcode.offroad.offroad-neoforge-1.21.1-1.3.2.jar" [parent: create-aeronautics-bundled-1.21.1-1.3.2.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: Found mod file "mezz_config-1.21.1-neoforge-0.6.10.jar" [parent: mezz_config-1.21.1-neoforge-0.6.10-standalone.jar, locator: jarinjar, reader: mod manifest]
+[18:02:02] [main/INFO]: 
+     Mod List:
+		Name Version (Mod Id)
+
+		Animalia 1.0.3 (animalia)
+		Apotheosis 8.9.0 (apotheosis)
+		Apothic Attributes 2.11.0 (apothic_attributes)
+		Apothic Enchanting 1.6.4 (apothic_enchanting)
+		Apothic Spawners 1.4.0 (apothic_spawners)
+		AppleSkin 3.0.9+mc1.21 (appleskin)
+		Atlas API 1.21.1-1.2.0 (atlas_api)
+		Balm 21.0.66 (balm)
+		Blueprint 8.2.0 (blueprint)
+		CodecUI 1.21.1-1.4.7 (codecui)
+		Comforts 9.0.5+1.21.1 (comforts)
+		Controlling 19.0.5 (controlling)
+		Create 6.0.10 (create)
+		Create Aeronautics 1.3.2 (aeronautics)
+		Create Aeronautics 1.3.2 (aeronautics_bundled)
+		Create Offroad 1.3.2 (offroad)
+		Create Simulated 1.3.2 (simulated)
+		Curios API 9.5.1+1.21.1 (curios)
+		CustomLights 1.0.2 (customlights)
+		EntityCulling 1.11.3 (entityculling)
+		Farmer's Delight 1.3.4 (farmersdelight)
+		Ferrite Core 7.0.3 (ferritecore)
+		Flywheel 1.0.6 (flywheel)
+		Forgified Fabric API Base 0.4.42+d1308ded19 (fabric_api_base)
+		Forgified Fabric BlockView API (v2) 1.0.10+9afaaf8c19 (fabric_block_view_api_v2)
+		Forgified Fabric Renderer API (v1) 3.4.1+9125b6dc19 (fabric_renderer_api_v1)
+		Forgified Fabric Rendering Data Attachment (v1) 0.3.48+73761d2e19 (fabric_rendering_data_attachment_v1)
+		GeckoLib 4 4.9.3 (geckolib)
+		GeneralLaymansAestheticSpyingScreen 9.0.0 (generallaymansaestheticspyingscreen)
+		ImmediatelyFast 1.6.15+1.21.1 (immediatelyfast)
+		Iris 1.8.14-beta.1+mc1.21.1 (iris)
+		Iron's Apothic 2.2.8 (irons_apothic)
+		Iron's Arms 'n Artifice 1.21.1-1.1.1 (irons_artifice)
+		Iron's Gems 'n Jewelry 1.21.1-2.0.2 (irons_jewelry)
+		Iron's Lib 1.21.1-2.3.0 (irons_lib)
+		Iron's Spells 'n Spellbooks 1.21.1-3.16.3 (irons_spellbooks)
+		Iron's Spells x Sable Compat 1.0.4 (ironssablecompat)
+		Jade 15.10.6+neoforge (jade)
+		Just Enough Items 19.64.0.455 (jei)
+		KumaAPI 21.0.8 (kuma_api)
+		MezzConfig 0.6.10 (mezz_config)
+		Minecraft 1.21.1 (minecraft)
+		ModernFix 5.27.27+mc1.21.1 (modernfix)
+		Moonlight Lib 1.21.1-3.7.2 (moonlight)
+		Mouse Tweaks 2.26.1 (mousetweaks)
+		NeoForge 21.1.265 (neoforge)
+		Not Enough Crashes 4.4.9+1.21.1 (notenoughcrashes)
+		Patchouli 1.21.1-93-NEOFORGE (patchouli)
+		Placebo 9.9.4 (placebo)
+		Player Animator 2.0.4+1.21.1 (playeranimator)
+		Ponder 1.0.82+mc1.21.1 (ponder)
+		Requiem 2.0.0-beta.16 (requiem)
+		Sable 2.0.6 (sable)
+		Sable Companion 1.6.0 (sablecompanion)
+		Sable-AeroDynamic 1.0.0 (sableatmosphericeffects)
+		Savage & Ravage 6.0.1-neoforge.1.21.1 (savage_and_ravage)
+		SayIt 1.1.0 (sayitenglish)
+		Searchables 1.0.2 (searchables)
+		Skyhook - Ziplined 1.0.0 (skyhook)
+		Sodium 0.8.13+mc1.21.1 (sodium)
+		Sound Physics Remastered 1.21.1-1.5.2 (sound_physics_remastered)
+		SpectreLib 0.17.2+1.21 (spectrelib)
+		Supplementaries 1.21.1-4.0.2 (supplementaries)
+		TRansition 1.0.26 (transition)
+		TRender 1.0.17 (trender)
+		Veil 4.3.2 (veil)
+		Waystones 21.1.46 (waystones)
+		WaystonesSable 1.0.7 (waystonessable)
+		Zipline 1.5.3+1.21.1 (zipline)
+[18:02:03] [main/INFO]: Loading coremod script-engine for [apothic_enchanting]
+[18:02:04] [main/INFO]: Compatibility level set to JAVA_21
+[18:02:04] [main/INFO]: Launching target 'forgeclient' with arguments [--version, neoforge-21.1.265, --gameDir, C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1, --assetsDir, C:\Users\gusta\curseforge\minecraft\Install\assets, --uuid, ae8a992589364627a7e72926f4b780c6, --username, Rep3ater, --assetIndex, 17, --accessToken, ❄❄❄❄❄❄❄❄, --clientId, be5182-fd6004-54c416-3a1a03-db3e23, --xuid, 2535466159773922, --userType, msa, --versionType, release, --width, 1024, --height, 768, --quickPlayPath, C:\Users\gusta\curseforge\minecraft\Quickplay\1fee7bff-93d2-4a58-83ec-de8dc0fa6217.json, , , ]
+[18:02:05] [main/WARN]: Reference map 'kuma_api.refmap.json' for kuma_api.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'geckolib.refmap.json' for geckolib.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'irons_lib.refmap.json' for irons_lib.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'aeronautics.refmap.json' for aeronautics.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'sound_physics_remastered.refmap.json' for sound_physics_remastered.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'waystones.refmap.json' for waystones.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'controlling.refmap.json' for controlling.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'controlling.refmap.json' for controlling.neoforge.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'placebo.refmap.json' for placebo.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/INFO]: Loaded configuration file for ModernFix 5.27.27+mc1.21.1: 89 options available, 0 override(s) found
+[18:02:05] [main/INFO]: Applying Nashorn fix
+[18:02:05] [main/INFO]: Configuring Minecraft's max.bg.threads option with 9 threads
+[18:02:05] [main/WARN]: Reference map 'comforts.refmap.json' for comforts.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'iris.refmap.json' for mixins.iris.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'iris.refmap.json' for mixins.iris.fantastic.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'iris.refmap.json' for mixins.iris.vertexformat.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'iris.refmap.json' for iris-batched-entity-rendering.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'iris.refmap.json' for mixins.iris.compat.sodium.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'simulated.refmap.json' for simulated.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'balm.refmap.json' for balm.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/INFO]: Loaded configuration file for Sodium: 45 options available, 1 override(s) found
+[18:02:05] [main/WARN]: Reference map 'offroad.refmap.json' for offroad.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'blueprint.refmap.json' for blueprint.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'apothic_spawners.refmap.json' for apothic_spawners.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'apothic_attributes.refmap.json' for apothic_attributes.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'curios.refmap.json' for curios.neoforge.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'curios.refmap.json' for curios.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'ponder.refmap.json' for ponder-common.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/INFO]: Using Sodium renderer mixins
+[18:02:05] [main/INFO]: Using Sodium renderer mixins
+[18:02:05] [main/INFO]: [com.sshakusora.waystonessable.mixin.WaystonesSableMixinPlugin:log:234]: [WaystonesSable/MixinPlugin] loaded: Create attached-check API compatible=true, Sable assembleBlocks compatible=true, Sable start-tracking packet compatible=true, Sable stop-tracking packet compatible=true, forceAssemblyMixin=false, disableAssemblyMixin=false, disableTrackingPacketMixins=false
+[18:02:05] [main/WARN]: Reference map 'patchouli.refmap.json' for patchouli_xplat.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'searchables.refmap.json' for searchables.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'searchables.refmap.json' for searchables.neoforge.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'irons_spellbooks.refmap.json' for irons_spellbooks.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'ironssablecompat.refmap.json' for mixins.ironssablecompat.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'entityculling.refmap.mixins.json' for entityculling.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.predicates.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.fastmap.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.mrl.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.dedupmultipart.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.blockstatecache.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.dedupbakedquad.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.threaddetec.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.modelsides.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.datacomponents.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map '${refmap_target}refmap.json' for ferritecore.accessors.mixin.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'apotheosis.refmap.json' for apotheosis.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'irons_apothic.refmap.json' for irons_apothic.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:05] [main/WARN]: Reference map 'irons_spellbooks.refmap.json' for irons_jewelry.mixins.json could not be read. If this is a development environment you can ignore this message
+[18:02:06] [main/WARN]: Error loading class: com/portingdeadmods/cable_facades/events/GameClientEvents$2 (java.lang.ClassNotFoundException: com.portingdeadmods.cable_facades.events.GameClientEvents$2)
+[18:02:06] [main/WARN]: Error loading class: com/direwolf20/justdirethings/client/renderers/OurRenderTypes (java.lang.ClassNotFoundException: com.direwolf20.justdirethings.client.renderers.OurRenderTypes)
+[18:02:06] [main/WARN]: Error loading class: mekanism/client/render/entity/RenderFlame (java.lang.ClassNotFoundException: mekanism.client.render.entity.RenderFlame)
+[18:02:06] [main/WARN]: Error loading class: mekanism/client/render/armor/MekaSuitArmor (java.lang.ClassNotFoundException: mekanism.client.render.armor.MekaSuitArmor)
+[18:02:06] [main/WARN]: Error loading class: mekanism/client/render/lib/effect/BillboardingEffectRenderer (java.lang.ClassNotFoundException: mekanism.client.render.lib.effect.BillboardingEffectRenderer)
+[18:02:06] [main/WARN]: Error loading class: blusunrize/immersiveengineering/client/utils/IEGLShaders (java.lang.ClassNotFoundException: blusunrize.immersiveengineering.client.utils.IEGLShaders)
+[18:02:06] [main/WARN]: Force-disabling mixin 'features.render.world.sky.ClientLevelMixin' as rule 'mixin.features.render.world.sky' (added by mods [iris]) disables it and children
+[18:02:06] [main/WARN]: Force-disabling mixin 'features.render.world.sky.FogRendererMixin' as rule 'mixin.features.render.world.sky' (added by mods [iris]) disables it and children
+[18:02:06] [main/WARN]: Force-disabling mixin 'features.render.world.sky.LevelRendererMixin' as rule 'mixin.features.render.world.sky' (added by mods [iris]) disables it and children
+[18:02:06] [main/WARN]: Error loading class: org/embeddedt/embeddium/impl/render/chunk/compile/pipeline/FluidRenderer (java.lang.ClassNotFoundException: org.embeddedt.embeddium.impl.render.chunk.compile.pipeline.FluidRenderer)
+[18:02:06] [main/WARN]: Error loading class: traben/entity_model_features/models/parts/EMFModelPartCustom (java.lang.ClassNotFoundException: traben.entity_model_features.models.parts.EMFModelPartCustom)
+[18:02:07] [main/INFO]: [com.sshakusora.waystonessable.mixin.WaystonesSableMixinPlugin:log:234]: [WaystonesSable/MixinPlugin] Skipping com.sshakusora.waystonessable.mixin.SubLevelAssemblyHelperMixin (Create attached-check API compatible=true, Sable assembleBlocks compatible=true)
+[18:02:07] [main/INFO]: [com.sshakusora.waystonessable.mixin.WaystonesSableMixinPlugin:log:234]: [WaystonesSable/MixinPlugin] Applying com.sshakusora.waystonessable.mixin.client.ClientboundStartTrackingSubLevelPacketMixin (target packet compatible=true)
+[18:02:07] [main/INFO]: [com.sshakusora.waystonessable.mixin.WaystonesSableMixinPlugin:log:234]: [WaystonesSable/MixinPlugin] Applying com.sshakusora.waystonessable.mixin.client.ClientboundStopTrackingSubLevelPacketMixin (target packet compatible=true)
+[18:02:07] [main/WARN]: Error loading class: net/coderbot/iris/pathways/HandRenderer (java.lang.ClassNotFoundException: net.coderbot.iris.pathways.HandRenderer)
+[18:02:07] [main/INFO]: Replaced 2 calls to Enchantment#getMaxLevel() in net/minecraft/world/inventory/AnvilMenu
+[18:02:07] [main/INFO]: Replaced 1 calls to Enchantment#getMaxLevel() in net/minecraft/world/item/enchantment/Enchantment
+[18:02:07] [main/WARN]: Error loading class: org/violetmoon/quark/content/tweaks/module/GoldToolsHaveFortuneModule (java.lang.ClassNotFoundException: org.violetmoon.quark.content.tweaks.module.GoldToolsHaveFortuneModule)
+[18:02:07] [main/WARN]: Error loading class: com/hollingsworth/arsnouveau/common/items/SpellCrossbow (java.lang.ClassNotFoundException: com.hollingsworth.arsnouveau.common.items.SpellCrossbow)
+[18:02:07] [main/INFO]: Replaced 1 calls to Enchantment#getMaxLevel() in net/minecraft/world/item/enchantment/EnchantmentHelper
+[18:02:07] [main/WARN]: Error loading class: org/violetmoon/quark/content/tweaks/module/GoldToolsHaveFortuneModule (java.lang.ClassNotFoundException: org.violetmoon.quark.content.tweaks.module.GoldToolsHaveFortuneModule)
+[18:02:07] [main/WARN]: Error loading class: net/minecraft/client/renderer/debug/EntityHitboxDebugRenderer (java.lang.ClassNotFoundException: net.minecraft.client.renderer.debug.EntityHitboxDebugRenderer)
+[18:02:07] [main/WARN]: Error loading class: org/jetbrains/annotations/ApiStatus$ScheduledForRemoval (java.lang.ClassNotFoundException: org.jetbrains.annotations.ApiStatus$ScheduledForRemoval)
+[18:02:07] [main/WARN]: Error loading class: net/coderbot/iris/pathways/HandRenderer (java.lang.ClassNotFoundException: net.coderbot.iris.pathways.HandRenderer)
+[18:02:07] [main/WARN]: Error loading class: net/coderbot/iris/pathways/HandRenderer (java.lang.ClassNotFoundException: net.coderbot.iris.pathways.HandRenderer)
+[18:02:07] [main/INFO]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.5).
+[31Oct2026 18:02:10.147] [Datafixer Bootstrap/INFO] [com.mojang.datafixers.DataFixerBuilder/]: 229 Datafixer optimizations took 285 milliseconds
+[31Oct2026 18:02:10.588] [pool-15-thread-1/INFO] [net.minecraft.server.Bootstrap/]: ModernFix reached bootstrap stage (12.67 s after launch)
+[31Oct2026 18:02:10.748] [pool-15-thread-1/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 2 calls to Enchantment#getMaxLevel() in net/minecraft/world/item/CreativeModeTabs
+[31Oct2026 18:02:12.106] [pool-15-thread-1/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 2 calls to Enchantment#getMaxLevel() in net/minecraft/world/inventory/AnvilMenu
+[31Oct2026 18:02:12.582] [pool-15-thread-1/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 1 calls to Enchantment#getMaxLevel() in net/minecraft/world/item/enchantment/Enchantment
+[31Oct2026 18:02:13.175] [pool-15-thread-1/INFO] [mixin/]: savage_and_ravage.mixins.json:RaiderAccessor from mod savage_and_ravage->@Accessor[FIELD_GETTER]::getIsCelebrating()Lnet/minecraft/network/syncher/EntityDataAccessor; should be static as its target is
+[31Oct2026 18:02:13.529] [pool-15-thread-1/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Patching FishingHook#catchingFish
+[31Oct2026 18:02:13.917] [pool-15-thread-1/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 1 calls to Enchantment#getMaxLevel() in net/minecraft/world/level/storage/loot/functions/EnchantRandomlyFunction
+[31Oct2026 18:02:14.745] [pool-15-thread-1/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 1 calls to Enchantment#getMaxLevel() in net/minecraft/world/item/enchantment/providers/SingleEnchantment
+[31Oct2026 18:02:14.812] [pool-15-thread-1/INFO] [net.minecraft.server.Bootstrap/]: Vanilla bootstrap took 4203 milliseconds
+[31Oct2026 18:02:15.363] [main/INFO] [net.minecraft.client.main.Main/]: Completely ignored arguments: [, , ]
+[31Oct2026 18:02:15.484] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/gusta/curseforge/minecraft/Install/libraries/net/minecraft/client/1.21.1-20240808.144430/client-1.21.1-20240808.144430-srg.jar%23240!/assets/.mcassetsroot' uses unexpected schema
+[31Oct2026 18:02:15.485] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/gusta/curseforge/minecraft/Install/libraries/net/minecraft/client/1.21.1-20240808.144430/client-1.21.1-20240808.144430-srg.jar%23240!/data/.mcassetsroot' uses unexpected schema
+[31Oct2026 18:02:15.515] [Render thread/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[31Oct2026 18:02:15.527] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Setting user: Rep3ater
+[31Oct2026 18:02:15.569] [Render thread/INFO] [mixin/]: BeforeConstant is searching for constants in method with descriptor (Lnet/minecraft/client/GuiMessage;)V
+[31Oct2026 18:02:15.569] [Render thread/INFO] [mixin/]:   BeforeConstant found STRING constant: value = , stringValue = null
+[31Oct2026 18:02:15.569] [Render thread/INFO] [mixin/]:     BeforeConstant found a matching constant TYPE at ordinal 0
+[31Oct2026 18:02:15.569] [Render thread/INFO] [mixin/]:       BeforeConstant found LdcInsn 
+[31Oct2026 18:02:15.569] [Render thread/INFO] [mixin/]:   BeforeConstant found STRING constant: value = \\r, stringValue = null
+[31Oct2026 18:02:15.569] [Render thread/INFO] [mixin/]:     BeforeConstant found a matching constant TYPE at ordinal 1
+[31Oct2026 18:02:15.569] [Render thread/INFO] [mixin/]:       BeforeConstant found LdcInsn \\r
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:   BeforeConstant found STRING constant: value = 
+, stringValue = null
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:     BeforeConstant found a matching constant TYPE at ordinal 2
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:       BeforeConstant found LdcInsn 
+
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:   BeforeConstant found STRING constant: value = \\n, stringValue = null
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:     BeforeConstant found a matching constant TYPE at ordinal 3
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:       BeforeConstant found LdcInsn \\n
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:   BeforeConstant found CLASS constant: value = Ljava/lang/String;, typeValue = null
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:   BeforeConstant found STRING constant: value = [{}] [CHAT] {}, stringValue = null
+[31Oct2026 18:02:15.571] [Render thread/INFO] [mixin/]:     BeforeConstant found a matching constant TYPE at ordinal 4
+[31Oct2026 18:02:15.572] [Render thread/INFO] [mixin/]:       BeforeConstant found LdcInsn [{}] [CHAT] {}
+[31Oct2026 18:02:15.572] [Render thread/INFO] [mixin/]:   BeforeConstant found STRING constant: value = [CHAT] {}, stringValue = null
+[31Oct2026 18:02:15.572] [Render thread/INFO] [mixin/]:     BeforeConstant found a matching constant TYPE at ordinal 5
+[31Oct2026 18:02:15.572] [Render thread/INFO] [mixin/]:       BeforeConstant found LdcInsn [CHAT] {}
+[31Oct2026 18:02:15.675] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Backend library: LWJGL version 3.3.3+5
+[31Oct2026 18:02:15.730] [Render thread/INFO] [com.mojang.blaze3d.platform.Window/]: OpenGL Vendor: NVIDIA Corporation
+[31Oct2026 18:02:15.730] [Render thread/INFO] [com.mojang.blaze3d.platform.Window/]: OpenGL Renderer: NVIDIA GeForce GTX 1650/PCIe/SSE2
+[31Oct2026 18:02:15.730] [Render thread/INFO] [com.mojang.blaze3d.platform.Window/]: OpenGL Version: 4.6.0 NVIDIA 610.60
+[31Oct2026 18:02:15.733] [Render thread/INFO] [Sodium-NvidiaWorkarounds/]: Modifying OpenGL context to apply workarounds for the NVIDIA graphics driver...
+[31Oct2026 18:02:15.733] [Render thread/INFO] [Sodium-NvidiaWorkarounds/]: Enabling GL_DEBUG_OUTPUT_SYNCHRONOUS to force the NVIDIA driver to disable threaded command submission
+[31Oct2026 18:02:15.812] [Render thread/INFO] [ImmediatelyFast/]: Initializing ImmediatelyFast 1.6.15+1.21.1 on NVIDIA GeForce GTX 1650/PCIe/SSE2 (NVIDIA Corporation) with OpenGL 4.6.0 NVIDIA 610.60
+[31Oct2026 18:02:15.812] [Render thread/INFO] [ImmediatelyFast/]: Found Iris 1.8.14-beta.1+mc1.21.1. Enabling compatibility.
+[31Oct2026 18:02:16.010] [Render thread/INFO] [Iris/]: Debug functionality is disabled.
+[31Oct2026 18:02:16.015] [Render thread/INFO] [Iris/]: OpenGL 4.5 detected, enabling DSA.
+[31Oct2026 18:02:16.049] [Render thread/INFO] [Iris/]: Shaders are disabled because no valid shaderpack is selected
+[31Oct2026 18:02:16.171] [ForkJoinPool.commonPool-worker-3/WARN] [Iris/]: [Iris Update Check] This version doesn't have an update index, skipping.
+[31Oct2026 18:02:16.200] [modloading-worker-0/INFO] [CodecUI/]: Codec construction mixins inactive (Codec, MapCodec, RecordCodecBuilder) - expected on NeoForge; using reflective schema inference (numeric ranges recovered, optional-field defaults not).
+[31Oct2026 18:02:16.209] [modloading-worker-0/INFO] [STDOUT/]: [dev.tr7zw.trender.gui.impl.client.LibGuiClient:onInitializeClient:37]: [TRender] Initializing Client...
+[31Oct2026 18:02:16.229] [modloading-worker-0/INFO] [Veil/]: Veil is initializing.
+[31Oct2026 18:02:16.262] [modloading-worker-0/INFO] [net.neoforged.neoforge.common.NeoForgeMod/NEOFORGE-MOD]: NeoForge mod loading, version 21.1.265, for MC 1.21.1
+[31Oct2026 18:02:17.046] [modloading-worker-0/INFO] [STDOUT/]: [yalter.mousetweaks.Logger:Log:6]: [Mouse Tweaks] Main.initialize()
+[31Oct2026 18:02:17.057] [modloading-worker-0/INFO] [STDOUT/]: [yalter.mousetweaks.Logger:Log:6]: [Mouse Tweaks] Initialized.
+[31Oct2026 18:02:17.085] [modloading-worker-0/INFO] [net.blay09.mods.balm.neoforge.config.NeoForgeBalmConfig/]: Registering config for waystones:common (COMMON) with 38 properties.
+[31Oct2026 18:02:17.330] [modloading-worker-0/INFO] [sayitenglish/]: sayitenglish loaded
+[31Oct2026 18:02:17.347] [modloading-worker-0/INFO] [customlights/]: CustomLights: light culling follows net.caffeinemc.mods.sodium.client.render.SodiumWorldRenderer
+[31Oct2026 18:02:17.350] [modloading-worker-0/INFO] [com.simibubi.create.Create/]: Create 6.0.10 initializing! Commit hash: ac0c444d9828da3453ae8cc65338e8de063286fb
+[31Oct2026 18:02:17.871] [modloading-worker-0/INFO] [Requiem/]: MutableRemnantState loaded successfully: class ladysnake.requiem.core.remnant.MutableRemnantState
+[31Oct2026 18:02:17.871] [modloading-worker-0/INFO] [requiem-core/]: DemonRemnantState.<clinit> initializing...
+[31Oct2026 18:02:17.871] [modloading-worker-0/INFO] [Requiem/]: DemonRemnantState loaded successfully: class ladysnake.requiem.common.remnant.DemonRemnantState
+[31Oct2026 18:02:18.017] [modloading-worker-0/WARN] [Supplementaries/]: Dye color white produced diffuse color -1 (white), this should never happen
+[31Oct2026 18:02:18.286] [modloading-worker-0/WARN] [patchouli/]: Could not locate JEI keybindings, lookups in books may not work
+[31Oct2026 18:02:18.375] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager...
+[31Oct2026 18:02:18.382] [modloading-worker-0/INFO] [mezz.jei.library.load.PluginCaller/]: Sending ConfigManager took 4.561 milliseconds
+[31Oct2026 18:02:18.630] [modloading-worker-0/INFO] [dev.muon.irons_apothic.IronsApothic/]: Loading Iron's Apotheosis Compat
+[31Oct2026 18:02:19.914] [modloading-worker-0/INFO] [dev.ryanhcode.sable.Sable/]: Sable loaded!
+[31Oct2026 18:02:19.930] [modloading-worker-0/WARN] [dev.ryanhcode.sable.Sable/]: NOTE: Sable is loaded with Flywheel. Sable contains extensive shader overrides and a full light-storage replacement. Expect this to cause compatibility issues. If issues arise, please report them to the Sable issue tracker (https://github.com/ryanhcode/sable/issues) instead of the Flywheel issue tracker.
+[31Oct2026 18:02:19.932] [modloading-worker-0/WARN] [net.neoforged.neoforge.common.ModConfigSpec/CORE]: Detected a comment that is all whitespace for config option probeOnFirstBuild, which causes obscure bugs in NeoForge's config system and will cause a crash in the future. Please report this to the mod author.
+[31Oct2026 18:02:19.936] [modloading-worker-0/INFO] [com.sshakusora.waystonessable.WaystonesSable/]: Registered Create attached-block check for Waystone upper/lower halves; Create Aeronautics block discovery can now keep both halves in one Sable SubLevel.
+[31Oct2026 18:02:21.214] [modloading-sync-worker/INFO] [Moonlight/]: Initialized block sets in 9ms
+[31Oct2026 18:02:21.927] [Render thread/INFO] [Moonlight/]: Merging 2 images using mode MIN_AREA_NO_UPSCALE
+[31Oct2026 18:02:22.183] [Render thread/INFO] [Veil/]: GL Debug supported
+[31Oct2026 18:02:22.526] [Render thread/INFO] [Iris/]: Hardware information:
+[31Oct2026 18:02:22.526] [Render thread/INFO] [Iris/]: CPU: 12x Intel(R) Core(TM) i5-10500H CPU @ 2.50GHz
+[31Oct2026 18:02:22.526] [Render thread/INFO] [Iris/]: GPU: NVIDIA GeForce GTX 1650/PCIe/SSE2 (Supports OpenGL 4.6.0 NVIDIA 610.60)
+[31Oct2026 18:02:22.526] [Render thread/INFO] [Iris/]: OS: Windows 11 (10.0)
+[31Oct2026 18:02:22.560] [Render thread/INFO] [mixin/]: BeforeConstant is searching for constants in method with descriptor (Lnet/minecraft/network/chat/Component;Z)V
+[31Oct2026 18:02:22.560] [Render thread/INFO] [mixin/]:   BeforeConstant found INTEGER constant: value = 0, intValue = null
+[31Oct2026 18:02:22.561] [Render thread/INFO] [mixin/]:     BeforeConstant found a matching constant TYPE at ordinal 0
+[31Oct2026 18:02:22.561] [Render thread/INFO] [mixin/]:       BeforeConstant found Insn [ICONST_0] 
+[31Oct2026 18:02:22.561] [Render thread/INFO] [mixin/]:   BeforeConstant found INTEGER constant: value = 60, intValue = null
+[31Oct2026 18:02:22.561] [Render thread/INFO] [mixin/]:     BeforeConstant found a matching constant TYPE at ordinal 1
+[31Oct2026 18:02:22.561] [Render thread/INFO] [mixin/]:       BeforeConstant found IntInsn 60
+[31Oct2026 18:02:22.701] [Render thread/WARN] [mixin/]: Method overwrite conflict for containerTick in moonlight-common.mixins.json:CartographyTableScreenMixin from mod moonlight, previously written by net.mehvahdjukaar.supplementaries.mixins.CartographyTableScreenMixin. Skipping method.
+[31Oct2026 18:02:22.925] [Render thread/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Patching FishingHook#catchingFish
+[31Oct2026 18:02:23.361] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources, mod/sodium, mod/notenoughcrashes, mod/kuma_api, mod/fabric_renderer_api_v1, mod/codecui, mod/geckolib, mod/playeranimator, mod/animalia, mod/irons_lib, mod/aeronautics, mod/aeronautics_bundled, mod/trender, mod/sound_physics_remastered, mod/skyhook, mod/waystones, mod/controlling, mod/neoforge, mod/placebo, mod/modernfix, mod/irons_artifice, mod/comforts, mod/fabric_block_view_api_v2, mod/iris, mod/veil, mod/simulated, mod/balm, mod/supplementaries, mod/offroad, mod/farmersdelight, mod/blueprint, mod/savage_and_ravage, mod/generallaymansaestheticspyingscreen, mod/moonlight, mod/apothic_spawners, mod/fabric_api_base, mod/mousetweaks, mod/jade, mod/spectrelib, mod/apothic_attributes, mod/zipline, mod/curios, mod/flywheel, mod/ponder, mod/create, mod/sable, mod/sableatmosphericeffects, mod/waystonessable, mod/sablecompanion, mod/patchouli, mod/searchables, mod/irons_spellbooks, mod/ironssablecompat, mod/entityculling, mod/immediatelyfast, mod/customlights, mod/appleskin, mod/ferritecore, mod/apothic_enchanting, mod/apotheosis, mod/irons_apothic, mod/transition, mod/fabric_rendering_data_attachment_v1, mod/sayitenglish, mod/requiem, mod/atlas_api, mod/mezz_config, mod/jei, mod/irons_jewelry, moonlight:merged_pack
+[31Oct2026 18:02:23.390] [Render thread/INFO] [com.teamabnormals.blueprint.core.Blueprint/]: Successfully loaded 0 assets remolders!
+[31Oct2026 18:02:23.409] [Worker-ResourceReload-0/INFO] [Moonlight/]: Resource cache state for CLIENT_RESOURCES: up to date
+[31Oct2026 18:02:23.413] [Worker-ResourceReload-0/INFO] [Moonlight/]: Populated search tree for pack at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\dynamic-resource-pack-cache\supplementaries-generated_pack in 2.229 ms
+[31Oct2026 18:02:23.413] [Worker-ResourceReload-0/INFO] [Moonlight/]: Starting runtime resource generation for pack type CLIENT_RESOURCES with generators [moonlight:dynamic_resources, supplementaries:generated_pack]
+[31Oct2026 18:02:23.418] [Worker-ResourceReload-0/INFO] [Moonlight/]: Regenerating Dynamic CLIENT_RESOURCES Resources Provider [moonlight:dynamic_resources], requested by strategy REGEN_ON_EVERY_RELOAD
+[31Oct2026 18:02:23.422] [Worker-ResourceReload-0/INFO] [Moonlight/]: Generated runtime CLIENT_RESOURCES for pack moonlight:dynamic_resources in 4.437 ms
+[31Oct2026 18:02:23.429] [Worker-ResourceReload-0/INFO] [Moonlight/]: Skipping regeneration for Dynamic CLIENT_RESOURCES Resources Provider [supplementaries:generated_pack] (cache up-to-date)
+[31Oct2026 18:02:23.442] [Worker-ResourceReload-0/INFO] [Moonlight/]: Finished runtime resources generation for 2 packs in a total of 28.37 ms 
+[31Oct2026 18:02:23.534] [Worker-ResourceReload-2/WARN] [GeckoLib/]: Found animation file with improper file name format; animation files should end in .animation.json: 'irons_spellbooks:animations/casting_animations.json'
+[31Oct2026 18:02:23.588] [Worker-ResourceReload-8/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/arquebus.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.589] [Worker-ResourceReload-6/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/blackpowder_revolver.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.589] [Worker-ResourceReload-10/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/blunderbuss.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.589] [Worker-ResourceReload-8/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/clockwork_rifle.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.590] [Worker-ResourceReload-6/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/flintlock.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.590] [Worker-ResourceReload-10/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/example_revolver.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.591] [Worker-ResourceReload-3/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/musket.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.591] [Worker-ResourceReload-6/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/six_shooter.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.591] [Worker-ResourceReload-10/WARN] [GeckoLib/]: Unsupported geometry json version: 1.21.0 for model irons_artifice:geo/item/spyglass_scope.geo.json. Supported versions: 1.12.0. Remove any rotated face UVs and re-export the model to fix
+[31Oct2026 18:02:23.592] [Worker-ResourceReload-10/WARN] [GeckoLib/]: Unsupported geometry json version: 1.21.0 for model irons_artifice:geo/item/suppressor.geo.json. Supported versions: 1.12.0. Remove any rotated face UVs and re-export the model to fix
+[31Oct2026 18:02:23.592] [Worker-ResourceReload-8/WARN] [GeckoLib/]: Unsupported geometry json version for model irons_artifice:geo/item/hand_cannon.geo.json. Supported versions: 1.12.0
+[31Oct2026 18:02:23.613] [Worker-ResourceReload-7/WARN] [GeckoLib/]: Found animation file with improper file name format; animation files should end in .animation.json: 'irons_spellbooks:animations/ice_block_animations.json'
+[31Oct2026 18:02:23.615] [Worker-ResourceReload-6/INFO] [com.animalia.Animalia/]: Animalia common setup complete
+[31Oct2026 18:02:23.627] [Worker-ResourceReload-8/WARN] [GeckoLib/]: Found animation file with improper file name format; animation files should end in .animation.json: 'irons_spellbooks:animations/root_animations.json'
+[31Oct2026 18:02:23.627] [Worker-ResourceReload-9/WARN] [GeckoLib/]: Found animation file with improper file name format; animation files should end in .animation.json: 'irons_spellbooks:animations/spectral_hammer.json'
+[31Oct2026 18:02:23.628] [Worker-ResourceReload-8/WARN] [GeckoLib/]: Found animation file with improper file name format; animation files should end in .animation.json: 'irons_spellbooks:animations/summoned_weapon_animations.json'
+[31Oct2026 18:02:23.630] [Worker-ResourceReload-8/WARN] [GeckoLib/]: Found animation file with improper file name format; animation files should end in .animation.json: 'irons_spellbooks:animations/void_tentacle_animations.json'
+[31Oct2026 18:02:23.632] [Worker-ResourceReload-9/WARN] [GeckoLib/]: Found animation file with improper file name format; animation files should end in .animation.json: 'irons_lib:animations/wizard_armor_animation.json'
+[31Oct2026 18:02:23.632] [Worker-ResourceReload-9/WARN] [GeckoLib/]: Found animation file with improper file name format; animation files should end in .animation.json: 'irons_spellbooks:animations/wizard_armor_animation.json'
+[31Oct2026 18:02:23.726] [NeoForge Version Check/INFO] [net.neoforged.fml.VersionChecker/]: [sound_physics_remastered] Starting version check at https://update.maxhenkel.de/neoforge/sound_physics_remastered
+[31Oct2026 18:02:24.126] [Render thread/INFO] [Supplementaries/]: Finished mod setup in: [5, 1, 1, 0, 1, 0] ms
+[31Oct2026 18:02:24.165] [Render thread/INFO] [Moonlight/]: Initialized color sets in 32ms
+[31Oct2026 18:02:24.214] [Worker-ResourceReload-0/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_all_no_pua-15.1.05.hex, loading
+[31Oct2026 18:02:24.252] [Render thread/INFO] [Requiem/]: Registering Requiem plugin: ladysnake.requiem.common.VanillaRequiemPlugin
+[31Oct2026 18:02:24.581] [Worker-ResourceReload-10/WARN] [net.minecraft.client.renderer.texture.SpriteContents/]: Unused frames in sprite apotheosis:items/gems/molten_breach: [11, 12, 13]
+[31Oct2026 18:02:24.838] [Worker-ResourceReload-10/WARN] [net.minecraft.client.renderer.texture.SpriteContents/]: Unused frames in sprite irons_spellbooks:item/upgrade_orb_ender: [1, 5, 6, 7]
+[31Oct2026 18:02:24.847] [Worker-ResourceReload-5/WARN] [net.minecraft.client.renderer.texture.SpriteContents/]: Unused frames in sprite irons_spellbooks:item/energized_core_energy: [11]
+[31Oct2026 18:02:24.851] [Worker-ResourceReload-8/INFO] [Sound Physics - General/]: Reloading reverb parameters
+[31Oct2026 18:02:24.871] [NeoForge Version Check/INFO] [net.neoforged.fml.VersionChecker/]: [sound_physics_remastered] Found status: UP_TO_DATE Current: 1.21.1-1.5.2 Target: null
+[31Oct2026 18:02:24.928] [Placebo Patreon Trail Loader/INFO] [placebo/]: Loading patreon trails data...
+[31Oct2026 18:02:24.929] [Placebo Patreon Wing Loader/INFO] [placebo/]: Loading patreon wing data...
+[31Oct2026 18:02:24.930] [NeoForge Version Check/INFO] [net.neoforged.fml.VersionChecker/]: [controlling] Starting version check at https://updates.blamejared.com/get?n=controlling&gv=1.21.1&ml=neoforge
+[31Oct2026 18:02:24.957] [Worker-ResourceReload-5/INFO] [SpectreLib/]: Registering config screens for mod comforts with 2 config(s)
+[31Oct2026 18:02:25.071] [Placebo Patreon Trail Loader/INFO] [placebo/]: Loaded 52 patreon trails.
+[31Oct2026 18:02:25.071] [Placebo Patreon Wing Loader/INFO] [placebo/]: Loaded 45 patreon wings.
+[31Oct2026 18:02:25.233] [Worker-ResourceReload-4/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_jp_patch-15.1.05.hex, loading
+[31Oct2026 18:02:25.648] [NeoForge Version Check/INFO] [net.neoforged.fml.VersionChecker/]: [controlling] Found status: BETA Current: 19.0.5 Target: 19.0.5
+[31Oct2026 18:02:25.648] [NeoForge Version Check/INFO] [net.neoforged.fml.VersionChecker/]: [create] Starting version check at https://api.modrinth.com/updates/create/forge_updates.json?neoforge=only
+[31Oct2026 18:02:25.908] [NeoForge Version Check/INFO] [net.neoforged.fml.VersionChecker/]: [create] Found status: OUTDATED Current: 6.0.10 Target: 6.0.10+mc1.21.1
+[31Oct2026 18:02:25.908] [NeoForge Version Check/INFO] [net.neoforged.fml.VersionChecker/]: [searchables] Starting version check at https://updates.blamejared.com/get?n=searchables&gv=1.21.1&ml=neoforge
+[31Oct2026 18:02:26.132] [NeoForge Version Check/INFO] [net.neoforged.fml.VersionChecker/]: [searchables] Found status: BETA Current: 1.0.2 Target: 1.0.2
+[31Oct2026 18:02:26.213] [Worker-ResourceReload-7/WARN] [net.minecraft.client.resources.model.ModelBakery/]: Unable to load model: 'irons_spellbooks:item/template_open_spell_book_model' referenced from: irons_spellbooks:item/template_open_spell_book_model: java.io.FileNotFoundException: irons_spellbooks:models/item/template_open_spell_book_model.json
+[31Oct2026 18:02:27.796] [Render thread/INFO] [Veil/]: Loaded 0 shader redirects, 0 replacements
+[31Oct2026 18:02:27.957] [Render thread/INFO] [Veil/]: Loaded 29 shaders from: pinwheel/shaders/program
+[31Oct2026 18:02:27.962] [Worker-ResourceReload-2/INFO] [io.redspace.ironsspellbooks.IronsSpellbooks/]: Got IMC []
+[31Oct2026 18:02:28.029] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from net.blay09.mods.waystones.compat.JadeIntegration
+[31Oct2026 18:02:28.046] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from net.blay09.mods.balm.neoforge.compat.hudinfo.NeoForgeJadeModCompat
+[31Oct2026 18:02:28.049] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from net.mehvahdjukaar.supplementaries.integration.JadeCompat
+[31Oct2026 18:02:28.050] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from dev.shadowsoffire.apothic_spawners.compat.SpawnerHwylaPlugin
+[31Oct2026 18:02:28.051] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from snownee.jade.addon.vanilla.VanillaPlugin
+[31Oct2026 18:02:28.076] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from snownee.jade.addon.universal.UniversalPlugin
+[31Oct2026 18:02:28.081] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from snownee.jade.addon.debug.DebugPlugin
+[31Oct2026 18:02:28.083] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from snownee.jade.addon.core.CorePlugin
+[31Oct2026 18:02:28.086] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from snownee.jade.addon.access.AccessibilityPlugin
+[31Oct2026 18:02:28.088] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from dev.shadowsoffire.apothic_enchanting.compat.EnchJadePlugin
+[31Oct2026 18:02:28.092] [Worker-ResourceReload-9/INFO] [snownee.jade.Jade/]: Start loading plugin from dev.shadowsoffire.apotheosis.compat.AdventureHwylaPlugin
+[31Oct2026 18:02:28.103] [Worker-ResourceReload-7/INFO] [PonderIndex/]: Registering Ponder Scenes took 121.5 ms
+[31Oct2026 18:02:28.109] [Worker-ResourceReload-7/INFO] [PonderIndex/]: Registering Ponder Tags took 6.248 ms
+[31Oct2026 18:02:28.401] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
+[31Oct2026 18:02:28.401] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[31Oct2026 18:02:28.402] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: supplementaries:entity.plunderer.cannon_use
+[31Oct2026 18:02:28.402] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: irons_spellbooks:entity.generic.swing_weird
+[31Oct2026 18:02:28.402] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: irons_spellbooks:entity.dead_king.music.drum_loop
+[31Oct2026 18:02:28.402] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: requiem:entity.mortician.trade
+[31Oct2026 18:02:28.543] [Render thread/INFO] [com.mojang.blaze3d.audio.Library/]: OpenAL initialized on device OpenAL Soft on Headphones (Realtek(R) Audio)
+[31Oct2026 18:02:28.543] [Render thread/INFO] [Sound Physics - General/]: Initializing Sound Physics
+[31Oct2026 18:02:28.543] [Render thread/INFO] [Sound Physics - General/]: EFX Extension recognized
+[31Oct2026 18:02:28.543] [Render thread/INFO] [Sound Physics - General/]: Max auxiliary sends: 4
+[31Oct2026 18:02:28.545] [Render thread/INFO] [Sound Physics - General/]: Aux slot 1 created
+[31Oct2026 18:02:28.545] [Render thread/INFO] [Sound Physics - General/]: Aux slot 2 created
+[31Oct2026 18:02:28.545] [Render thread/INFO] [Sound Physics - General/]: Aux slot 3 created
+[31Oct2026 18:02:28.545] [Render thread/INFO] [Sound Physics - General/]: Aux slot 4 created
+[31Oct2026 18:02:28.548] [Render thread/INFO] [Sound Physics - General/]: EFX ready
+[31Oct2026 18:02:28.549] [Render thread/INFO] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Sound engine started
+[31Oct2026 18:02:28.698] [Render thread/INFO] [com.teamabnormals.blueprint.core.Blueprint/]: Endimation Loader has loaded 1 endimations
+[31Oct2026 18:02:28.698] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 2048x2048x4 minecraft:textures/atlas/blocks.png-atlas
+[31Oct2026 18:02:28.746] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/signs.png-atlas
+[31Oct2026 18:02:28.747] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[31Oct2026 18:02:28.749] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[31Oct2026 18:02:28.751] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 2048x2048x4 minecraft:textures/atlas/armor_trims.png-atlas
+[31Oct2026 18:02:28.764] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[31Oct2026 18:02:28.764] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[31Oct2026 18:02:28.766] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[31Oct2026 18:02:28.767] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[31Oct2026 18:02:28.886] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x0 minecraft:textures/atlas/particles.png-atlas
+[31Oct2026 18:02:28.891] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[31Oct2026 18:02:28.892] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 minecraft:textures/atlas/mob_effects.png-atlas
+[31Oct2026 18:02:28.893] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 minecraft:textures/atlas/map_decorations.png-atlas
+[31Oct2026 18:02:28.894] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[31Oct2026 18:02:28.934] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[31Oct2026 18:02:29.036] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader apotheosis:gray could not find uniform named IViewRotMat in the specified shader program.
+[31Oct2026 18:02:29.133] [Render thread/INFO] [net.neoforged.neoforge.client.entity.animation.json.AnimationLoader/]: Loaded 0 entity animations
+[31Oct2026 18:02:29.134] [Render thread/INFO] [Veil/]: Loaded 3 framebuffers
+[31Oct2026 18:02:29.162] [Render thread/INFO] [Veil/]: Loaded 6 post pipelines
+[31Oct2026 18:02:29.171] [Render thread/INFO] [Veil/]: Loaded 4 render types
+[31Oct2026 18:02:29.171] [Render thread/INFO] [Veil/]: Enabled bloom pipeline
+[31Oct2026 18:02:29.172] [Render thread/INFO] [Veil/]: Loaded 0 quasar particles
+[31Oct2026 18:02:29.172] [Render thread/INFO] [Veil/]: Loaded 0 templates
+[31Oct2026 18:02:29.173] [Render thread/INFO] [Veil/]: Loaded 0 modules
+[31Oct2026 18:02:29.193] [Render thread/INFO] [com.teamabnormals.blueprint.core.Blueprint/]: Blueprint Splash Manager has loaded 0 splashes
+[31Oct2026 18:02:29.235] [Render thread/INFO] [flywheel/backend/shaders/]: Loaded 77 shader sources in 26.005 ms
+[31Oct2026 18:02:29.257] [Render thread/INFO] [Veil/]: Compiled 69 vanilla shaders in 216.8 ms
+[31Oct2026 18:02:29.264] [Render thread/INFO] [com.simibubi.create.Create/]: Loaded 58 train hat configurations.
+[31Oct2026 18:02:29.270] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader preloaded 747 jsons
+[31Oct2026 18:02:29.374] [Render thread/INFO] [Iris/]: Creating pipeline for dimension minecraft:overworld
+[31Oct2026 18:02:30.313] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader apotheosis:gray could not find uniform named IViewRotMat in the specified shader program.
+[31Oct2026 18:02:30.498] [Render thread/INFO] [Veil/]: Finished uploading vanilla shaders
+[31Oct2026 18:02:31.340] [Render thread/WARN] [mixin/]: Error loading class: net/coderbot/iris/pathways/HandRenderer (java.lang.ClassNotFoundException: net.coderbot.iris.pathways.HandRenderer)
+[31Oct2026 18:02:31.376] [Render thread/WARN] [ModernFix/]: Game took 33.464 seconds to start
+[31Oct2026 18:02:58.989] [Render thread/INFO] [com.simibubi.create.Create/]: Created 157 recipes which will be injected into the game
+[31Oct2026 18:02:58.997] [Render thread/INFO] [com.simibubi.create.Create/]: Created 0 tags which will be injected into the game
+[31Oct2026 18:02:59.042] [Render thread/INFO] [com.teamabnormals.blueprint.core.Blueprint/]: Successfully loaded 0 data remolders!
+[31Oct2026 18:02:59.058] [Render thread/INFO] [Moonlight/]: Resource cache state for SERVER_DATA: up to date
+[31Oct2026 18:02:59.062] [Render thread/INFO] [Moonlight/]: Populated search tree for pack at C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\dynamic-data-pack-cache\supplementaries-generated_pack in 3.744 ms
+[31Oct2026 18:02:59.063] [Render thread/INFO] [Moonlight/]: Starting runtime resource generation for pack type SERVER_DATA with generators [supplementaries:generated_pack]
+[31Oct2026 18:02:59.067] [Render thread/INFO] [Moonlight/]: Skipping regeneration for Dynamic SERVER_DATA Resources Provider [supplementaries:generated_pack] (cache up-to-date)
+[31Oct2026 18:02:59.067] [Render thread/INFO] [Moonlight/]: Finished runtime resources generation for 1 packs in a total of 3.922 ms 
+[31Oct2026 18:03:00.328] [Worker-ResourceReload-9/ERROR] [net.minecraft.world.level.storage.loot.LootDataType/]: Couldn't parse element ResourceKey[minecraft:root / minecraft:loot_table]:savage_and_ravage:entities/trickster - Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_function_type]: minecraft:looting_enchant; Second: Not a json array: {"function":"minecraft:looting_enchant","count":{"min":0.0,"max":1.0}}; Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_condition_type]: minecraft:random_chance_with_looting; Second: Not a json array: {"condition":"minecraft:random_chance_with_looting","chance":0.05,"looting_multiplier":0.025}
+[31Oct2026 18:03:00.346] [Worker-ResourceReload-9/ERROR] [net.minecraft.world.level.storage.loot.LootDataType/]: Couldn't parse element ResourceKey[minecraft:root / minecraft:loot_table]:savage_and_ravage:entities/raider_drops - Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_function_type]: minecraft:looting_enchant; Second: Not a json array: {"function":"looting_enchant","count":{"min":0,"max":1}}; Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_function_type]: minecraft:looting_enchant; Second: Not a json array: {"function":"looting_enchant","count":{"min":0,"max":1}}; Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_function_type]: minecraft:looting_enchant; Second: Not a json array: {"function":"looting_enchant","count":{"min":0,"max":1}}; Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_function_type]: minecraft:looting_enchant; Second: Not a json array: {"function":"looting_enchant","count":{"min":0,"max":1}}
+[31Oct2026 18:03:00.430] [Worker-ResourceReload-9/ERROR] [net.minecraft.world.level.storage.loot.LootDataType/]: Couldn't parse element ResourceKey[minecraft:root / minecraft:loot_table]:irons_jewelry:generate_jewelry_test_materials - Not a valid resource location: #irons_jewelry:gem Non [a-z0-9_.-] character in namespace of location: #irons_jewelry:gem; Not a valid resource location: #irons_jewelry:metal Non [a-z0-9_.-] character in namespace of location: #irons_jewelry:metal missed input: {"#irons_jewelry:metal":"irons_jewelry:gold","#irons_jewelry:gem":["irons_jewelry:ruby","irons_jewelry:diamond"]}
+[31Oct2026 18:03:00.439] [Worker-ResourceReload-9/ERROR] [net.minecraft.world.level.storage.loot.LootDataType/]: Couldn't parse element ResourceKey[minecraft:root / minecraft:loot_table]:savage_and_ravage:entities/executioner - Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_function_type]: minecraft:looting_enchant; Second: Not a json array: {"function":"minecraft:looting_enchant","count":{"min":0.0,"max":2.0}}
+[31Oct2026 18:03:00.442] [Worker-ResourceReload-9/ERROR] [net.minecraft.world.level.storage.loot.LootDataType/]: Couldn't parse element ResourceKey[minecraft:root / minecraft:loot_table]:savage_and_ravage:entities/skeleton_villager - Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_function_type]: minecraft:looting_enchant; Second: Not a json array: {"function":"minecraft:looting_enchant","count":{"min":0.0,"max":1.0}}; Failed to parse either. First: Unknown registry key in ResourceKey[minecraft:root / minecraft:loot_function_type]: minecraft:looting_enchant; Second: Not a json array: {"function":"minecraft:looting_enchant","count":{"min":0.0,"max":1.0}}
+[31Oct2026 18:03:00.710] [Worker-ResourceReload-9/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 2 calls to Enchantment#getMaxLevel() in net/minecraft/server/commands/EnchantCommand
+[31Oct2026 18:03:00.960] [Worker-ResourceReload-9/INFO] [dev.muon.irons_apothic.IronsApothic/]: Commands registered.
+[31Oct2026 18:03:01.071] [Worker-ResourceReload-3/ERROR] [net.minecraft.tags.TagLoader/]: Couldn't load tag savage_and_ravage:has_monster/iceologer as it is missing following references: 
+	#forge:is_snowy (from mod/savage_and_ravage)
+[31Oct2026 18:03:01.480] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/chiseled: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.483] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:small_construct_heart_from_heart: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "minecraft:iron_nugget"; Second: Not a JSON object: "minecraft:iron_nugget"; Failed to parse either. First: Not a json array: "requiem:construct_heart"; Second: Not a JSON object: "requiem:construct_heart"; No ingredients for shapeless recipe
+[31Oct2026 18:03:01.502] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/chiseled_slab: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite_slabs"; Second: Not a JSON object: "#requiem:tachylite_slabs"
+[31Oct2026 18:03:01.503] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/chiseled_slab_from_tachylite: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.535] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/rift: com.google.gson.JsonParseException: Map entry 'E' : Failed to parse either. First: Not a json array: "minecraft:ender_pearl"; Second: Not a JSON object: "minecraft:ender_pearl"
+[31Oct2026 18:03:01.542] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:quark/creeper_spores_from_sack: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:creeper_spores","count":9}]
+[31Oct2026 18:03:01.565] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/chiseled_slab: com.google.gson.JsonParseException: Map entry '#' : Failed to parse either. First: Not a json array: "requiem:tachylite/chiseled"; Second: Not a JSON object: "requiem:tachylite/chiseled"
+[31Oct2026 18:03:01.567] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/tachylite: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.578] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/tachylite_stairs_from_tachylite: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.578] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:griefer_chestplate: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:griefer_chestplate"}]
+[31Oct2026 18:03:01.583] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:gloomy_tile_stairs: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:gloomy_tile_stairs","count":4}]
+[31Oct2026 18:03:01.594] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:griefer_boots: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:griefer_boots"}]
+[31Oct2026 18:03:01.595] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:spore_bomb: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:spore_bomb"}]
+[31Oct2026 18:03:01.599] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:griefer_leggings: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:griefer_leggings"}]
+[31Oct2026 18:03:01.602] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:quark/creeper_spore_sack: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:creeper_spore_sack","count":1}]
+[31Oct2026 18:03:01.603] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:blast_proof_stairs_stonecutter: com.google.gson.JsonParseException: Not a JSON object: "savage_and_ravage:blast_proof_stairs"
+[31Oct2026 18:03:01.603] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:small_construct_heart: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "minecraft:iron_nugget"; Second: Not a JSON object: "minecraft:iron_nugget"; Failed to parse either. First: Not a json array: "#requiem:construct_meat"; Second: Not a JSON object: "#requiem:construct_meat"; Failed to parse either. First: Not a json array: "minecraft:nether_star"; Second: Not a JSON object: "minecraft:nether_star"; No ingredients for shapeless recipe
+[31Oct2026 18:03:01.604] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:gloomy_tile_wall: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:gloomy_tile_wall","count":6}]
+[31Oct2026 18:03:01.610] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/chiseled_stairs_from_tachylite: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.611] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/tachylite_stairs: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite_stairs"; Second: Not a JSON object: "#requiem:tachylite_stairs"
+[31Oct2026 18:03:01.613] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/scraped: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.617] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/chiseled: com.google.gson.JsonParseException: Map entry '#' : Failed to parse either. First: Not a json array: "requiem:tachylite/tachylite"; Second: Not a JSON object: "requiem:tachylite/tachylite"
+[31Oct2026 18:03:01.619] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:gloomy_tile_wall_stonecutter: com.google.gson.JsonParseException: Not a JSON object: "savage_and_ravage:gloomy_tile_wall"
+[31Oct2026 18:03:01.621] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:construct_heart: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:construct_meat"; Second: Not a JSON object: "#requiem:construct_meat"; Failed to parse either. First: Not a json array: "minecraft:nether_star"; Second: Not a JSON object: "minecraft:nether_star"; No ingredients for shapeless recipe
+[31Oct2026 18:03:01.623] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/tachylite_slab_from_tachylite: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.624] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/tachylite: com.google.gson.JsonParseException: Map entry 'B' : Failed to parse either. First: Not a json array: "minecraft:basalt"; Second: Not a JSON object: "minecraft:basalt"
+[31Oct2026 18:03:01.626] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:gloomy_tile_slab_stonecutter: com.google.gson.JsonParseException: Not a JSON object: "savage_and_ravage:gloomy_tile_slab"
+[31Oct2026 18:03:01.638] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:blast_proof_stairs: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:blast_proof_stairs","count":4}]
+[31Oct2026 18:03:01.646] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/runestone: com.google.gson.JsonParseException: Map entry '#' : Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.647] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/chiseled_pillar: com.google.gson.JsonParseException: Map entry '#' : Failed to parse either. First: Not a json array: "requiem:tachylite/chiseled"; Second: Not a JSON object: "requiem:tachylite/chiseled"
+[31Oct2026 18:03:01.652] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/tachylite_stairs: com.google.gson.JsonParseException: Map entry '#' : Failed to parse either. First: Not a json array: "requiem:tachylite/tachylite"; Second: Not a JSON object: "requiem:tachylite/tachylite"
+[31Oct2026 18:03:01.653] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/chiseled_pillar: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite"; Second: Not a JSON object: "#requiem:tachylite"
+[31Oct2026 18:03:01.654] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/stonecutting/chiseled_stairs: com.google.gson.JsonParseException: Failed to parse either. First: Not a json array: "#requiem:tachylite_stairs"; Second: Not a JSON object: "#requiem:tachylite_stairs"
+[31Oct2026 18:03:01.661] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/chiseled_stairs: com.google.gson.JsonParseException: Map entry '#' : Failed to parse either. First: Not a json array: "requiem:tachylite/chiseled"; Second: Not a JSON object: "requiem:tachylite/chiseled"
+[31Oct2026 18:03:01.665] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:blast_proof_slab: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:blast_proof_slab","count":6}]
+[31Oct2026 18:03:01.668] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:tachylite/tachylite_slab: com.google.gson.JsonParseException: Map entry '#' : Failed to parse either. First: Not a json array: "requiem:tachylite/tachylite"; Second: Not a JSON object: "requiem:tachylite/tachylite"
+[31Oct2026 18:03:01.669] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:griefer_helmet: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:griefer_helmet"}]
+[31Oct2026 18:03:01.680] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:blast_proof_plates: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:blast_proof_plates","count":12}]
+[31Oct2026 18:03:01.682] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:gloomy_tiles: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:gloomy_tiles","count":8}]
+[31Oct2026 18:03:01.699] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:blast_proof_plating: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:blast_proof_plating","count":1}]
+[31Oct2026 18:03:01.701] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:mischief_arrow: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:mischief_arrow","count":4}]
+[31Oct2026 18:03:01.702] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:chiseled_gloomy_tiles_stonecutter: com.google.gson.JsonParseException: Not a JSON object: "savage_and_ravage:chiseled_gloomy_tiles"
+[31Oct2026 18:03:01.703] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:gloomy_tile_slab: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:gloomy_tile_slab","count":6}]
+[31Oct2026 18:03:01.707] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:blast_proof_slab_stonecutter: com.google.gson.JsonParseException: Not a JSON object: "savage_and_ravage:blast_proof_slab"
+[31Oct2026 18:03:01.710] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:gloomy_tile_stairs_stonecutter: com.google.gson.JsonParseException: Not a JSON object: "savage_and_ravage:gloomy_tile_stairs"
+[31Oct2026 18:03:01.711] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:key_trigger_r: com.google.gson.JsonParseException: Map entry 'R' : Failed to parse either. First: Not a json array: "minecraft:redstone"; Second: Not a JSON object: "minecraft:redstone"
+[31Oct2026 18:03:01.711] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe savage_and_ravage:chiseled_gloomy_tiles_from_slab: com.google.gson.JsonParseException: No key id in MapLike[{"item":"savage_and_ravage:chiseled_gloomy_tiles","count":1}]
+[31Oct2026 18:03:01.711] [Render thread/ERROR] [net.minecraft.world.item.crafting.RecipeManager/]: Parsing error loading recipe requiem:key_trigger_v: com.google.gson.JsonParseException: Map entry 'R' : Failed to parse either. First: Not a json array: "minecraft:redstone"; Second: Not a JSON object: "minecraft:redstone"
+[31Oct2026 18:03:01.719] [Render thread/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 4218 recipes
+[31Oct2026 18:03:01.724] [Render thread/ERROR] [com.teamabnormals.blueprint.core.Blueprint/]: Parsing error loading Advancement Modifier Group: savage_and_ravage:adventure/voluntary_exile
+com.google.gson.JsonParseException: Unknown registry key in ResourceKey[minecraft:root / neoforge:condition_codecs]: savage_and_ravage:config
+	at MC-BOOTSTRAP/datafixerupper@8.0.16/com.mojang.serialization.DataResult$Error.getOrThrow(DataResult.java:287) ~[datafixerupper-8.0.16.jar%23150!/:?]
+	at TRANSFORMER/neoforge@21.1.265/net.neoforged.neoforge.common.conditions.ICondition.getWithConditionalCodec(ICondition.java:42) ~[neoforge-21.1.265-universal.jar%23241!/:?]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.core.util.modification.ObjectModifierGroup.lambda$deserialize$0(ObjectModifierGroup.java:78) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at java.base/java.lang.Iterable.forEach(Unknown Source) ~[?:?]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.core.util.modification.ObjectModifierGroup.deserialize(ObjectModifierGroup.java:76) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.core.util.modification.ObjectModificationManager.apply(ObjectModificationManager.java:91) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.core.util.modification.ObjectModificationManager.apply(ObjectModificationManager.java:33) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.packs.resources.SimplePreparableReloadListener.lambda$reload$1(SimplePreparableReloadListener.java:19) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(Unknown Source) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(Unknown Source) ~[?:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.packs.resources.SimpleReloadInstance.lambda$new$3(SimpleReloadInstance.java:69) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:148) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:122) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:132) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldDataBlocking(WorldOpenFlows.java:201) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldStem(WorldOpenFlows.java:142) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelStem(WorldOpenFlows.java:346) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldCheckVersionCompatibility(WorldOpenFlows.java:335) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelData(WorldOpenFlows.java:297) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorld(WorldOpenFlows.java:261) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.joinWorld(WorldSelectionList.java:498) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.mouseClicked(WorldSelectionList.java:481) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.components.AbstractSelectionList.mouseClicked(AbstractSelectionList.java:315) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.MouseHandler.lambda$onPress$0(MouseHandler.java:98) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:451) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:95) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.MouseHandler.lambda$setup$4(MouseHandler.java:202) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:98) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.MouseHandler.lambda$setup$5(MouseHandler.java:202) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at MC-BOOTSTRAP/org.lwjgl.glfw@3.3.3+5/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) ~[lwjgl-glfw-3.3.3.jar%23173!/:build 5]
+	at MC-BOOTSTRAP/org.lwjgl@3.3.3+5/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar%23185!/:build 5]
+	at MC-BOOTSTRAP/org.lwjgl.glfw@3.3.3+5/org.lwjgl.glfw.GLFW.glfwPollEvents(GLFW.java:3438) ~[lwjgl-glfw-3.3.3.jar%23173!/:build 5]
+	at TRANSFORMER/minecraft@1.21.1/com.mojang.blaze3d.systems.RenderSystem.pollEvents(RenderSystem.java:134) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/com.mojang.blaze3d.systems.RenderSystem.flipFrame(RenderSystem.java:147) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/com.mojang.blaze3d.platform.Window.updateDisplay(Window.java:292) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.Minecraft.runTick(Minecraft.java:1217) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.Minecraft.run(Minecraft.java:807) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.main.Main.main(Main.java:230) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[?:?]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+	at MC-BOOTSTRAP/fml_loader@4.0.45/net.neoforged.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:136) ~[loader-4.0.45.jar%23107!/:4.0]
+	at MC-BOOTSTRAP/fml_loader@4.0.45/net.neoforged.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:124) ~[loader-4.0.45.jar%23107!/:4.0]
+	at MC-BOOTSTRAP/fml_loader@4.0.45/net.neoforged.fml.loading.targets.CommonClientLaunchHandler.runService(CommonClientLaunchHandler.java:32) ~[loader-4.0.45.jar%23107!/:4.0]
+	at MC-BOOTSTRAP/fml_loader@4.0.45/net.neoforged.fml.loading.targets.CommonLaunchHandler.lambda$launchService$4(CommonLaunchHandler.java:118) ~[loader-4.0.45.jar%23107!/:4.0]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.Launcher.run(Launcher.java:103) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.Launcher.main(Launcher.java:74) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) [modlauncher-11.0.5.jar%23112!/:?]
+	at cpw.mods.bootstraplauncher@2.0.2/cpw.mods.bootstraplauncher.BootstrapLauncher.run(BootstrapLauncher.java:210) [bootstraplauncher-2.0.2.jar:?]
+	at cpw.mods.bootstraplauncher@2.0.2/cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:69) [bootstraplauncher-2.0.2.jar:?]
+[31Oct2026 18:03:01.730] [Render thread/ERROR] [com.teamabnormals.blueprint.core.Blueprint/]: Parsing error loading Advancement Modifier Group: savage_and_ravage:adventure/kill_a_mob
+com.google.gson.JsonParseException: No key should_replace_requirements in MapLike[{"criteria":{"savage_and_ravage:creepie":{"conditions":{"entity":[{"condition":"minecraft:entity_properties","entity":"this","predicate":{"type":"savage_and_ravage:creepie"}}]},"trigger":"minecraft:player_killed_entity"},"savage_and_ravage:executioner":{"conditions":{"entity":[{"condition":"minecraft:entity_properties","entity":"this","predicate":{"type":"savage_and_ravage:executioner"}}]},"trigger":"minecraft:player_killed_entity"},"savage_and_ravage:iceologer":{"conditions":{"entity":[{"condition":"minecraft:entity_properties","entity":"this","predicate":{"type":"savage_and_ravage:iceologer"}}]},"trigger":"minecraft:player_killed_entity"},"savage_and_ravage:skeleton_villager":{"conditions":{"entity":[{"condition":"minecraft:entity_properties","entity":"this","predicate":{"type":"savage_and_ravage:skeleton_villager"}}]},"trigger":"minecraft:player_killed_entity"},"savage_and_ravage:trickster":{"conditions":{"entity":[{"condition":"minecraft:entity_properties","entity":"this","predicate":{"type":"savage_and_ravage:trickster"}}]},"trigger":"minecraft:player_killed_entity"}},"indexed_requirements":[{"index":0,"replace":false,"requirements":["savage_and_ravage:skeleton_villager","savage_and_ravage:creepie","savage_and_ravage:iceologer","savage_and_ravage:executioner","savage_and_ravage:trickster"]}]}]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.common.advancement.modification.modifiers.CriteriaModifier$Serializer.deserialize(CriteriaModifier.java:100) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.common.advancement.modification.modifiers.CriteriaModifier$Serializer.deserialize(CriteriaModifier.java:76) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.core.util.modification.ObjectModifierGroup.lambda$deserialize$0(ObjectModifierGroup.java:84) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at java.base/java.lang.Iterable.forEach(Unknown Source) ~[?:?]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.core.util.modification.ObjectModifierGroup.deserialize(ObjectModifierGroup.java:76) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.core.util.modification.ObjectModificationManager.apply(ObjectModificationManager.java:91) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at TRANSFORMER/blueprint@8.2.0/com.teamabnormals.blueprint.core.util.modification.ObjectModificationManager.apply(ObjectModificationManager.java:33) ~[blueprint-1.21.1-8.2.0.jar%23255!/:8.2.0]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.packs.resources.SimplePreparableReloadListener.lambda$reload$1(SimplePreparableReloadListener.java:19) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at java.base/java.util.concurrent.CompletableFuture$UniAccept.tryFire(Unknown Source) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture$Completion.run(Unknown Source) ~[?:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.server.packs.resources.SimpleReloadInstance.lambda$new$3(SimpleReloadInstance.java:69) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:148) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:122) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.BlockableEventLoop.managedBlock(BlockableEventLoop.java:132) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldDataBlocking(WorldOpenFlows.java:201) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.loadWorldStem(WorldOpenFlows.java:142) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelStem(WorldOpenFlows.java:346) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldCheckVersionCompatibility(WorldOpenFlows.java:335) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorldLoadLevelData(WorldOpenFlows.java:297) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.openWorld(WorldOpenFlows.java:261) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.joinWorld(WorldSelectionList.java:498) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.worldselection.WorldSelectionList$WorldListEntry.mouseClicked(WorldSelectionList.java:481) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.components.AbstractSelectionList.mouseClicked(AbstractSelectionList.java:315) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.components.events.ContainerEventHandler.mouseClicked(ContainerEventHandler.java:38) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.MouseHandler.lambda$onPress$0(MouseHandler.java:98) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.gui.screens.Screen.wrapScreenError(Screen.java:451) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.MouseHandler.onPress(MouseHandler.java:95) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.MouseHandler.lambda$setup$4(MouseHandler.java:202) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.util.thread.BlockableEventLoop.execute(BlockableEventLoop.java:98) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.MouseHandler.lambda$setup$5(MouseHandler.java:202) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at MC-BOOTSTRAP/org.lwjgl.glfw@3.3.3+5/org.lwjgl.glfw.GLFWMouseButtonCallbackI.callback(GLFWMouseButtonCallbackI.java:43) ~[lwjgl-glfw-3.3.3.jar%23173!/:build 5]
+	at MC-BOOTSTRAP/org.lwjgl@3.3.3+5/org.lwjgl.system.JNI.invokeV(Native Method) ~[lwjgl-3.3.3.jar%23185!/:build 5]
+	at MC-BOOTSTRAP/org.lwjgl.glfw@3.3.3+5/org.lwjgl.glfw.GLFW.glfwPollEvents(GLFW.java:3438) ~[lwjgl-glfw-3.3.3.jar%23173!/:build 5]
+	at TRANSFORMER/minecraft@1.21.1/com.mojang.blaze3d.systems.RenderSystem.pollEvents(RenderSystem.java:134) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/com.mojang.blaze3d.systems.RenderSystem.flipFrame(RenderSystem.java:147) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/com.mojang.blaze3d.platform.Window.updateDisplay(Window.java:292) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.Minecraft.runTick(Minecraft.java:1217) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.Minecraft.run(Minecraft.java:807) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at TRANSFORMER/minecraft@1.21.1/net.minecraft.client.main.Main.main(Main.java:230) ~[client-1.21.1-20240808.144430-srg.jar%23240!/:?]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source) ~[?:?]
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source) ~[?:?]
+	at MC-BOOTSTRAP/fml_loader@4.0.45/net.neoforged.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:136) ~[loader-4.0.45.jar%23107!/:4.0]
+	at MC-BOOTSTRAP/fml_loader@4.0.45/net.neoforged.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:124) ~[loader-4.0.45.jar%23107!/:4.0]
+	at MC-BOOTSTRAP/fml_loader@4.0.45/net.neoforged.fml.loading.targets.CommonClientLaunchHandler.runService(CommonClientLaunchHandler.java:32) ~[loader-4.0.45.jar%23107!/:4.0]
+	at MC-BOOTSTRAP/fml_loader@4.0.45/net.neoforged.fml.loading.targets.CommonLaunchHandler.lambda$launchService$4(CommonLaunchHandler.java:118) ~[loader-4.0.45.jar%23107!/:4.0]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.Launcher.run(Launcher.java:103) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.Launcher.main(Launcher.java:74) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) [modlauncher-11.0.5.jar%23112!/:?]
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.5/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) [modlauncher-11.0.5.jar%23112!/:?]
+	at cpw.mods.bootstraplauncher@2.0.2/cpw.mods.bootstraplauncher.BootstrapLauncher.run(BootstrapLauncher.java:210) [bootstraplauncher-2.0.2.jar:?]
+	at cpw.mods.bootstraplauncher@2.0.2/cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:69) [bootstraplauncher-2.0.2.jar:?]
+[31Oct2026 18:03:01.732] [Render thread/INFO] [com.teamabnormals.blueprint.core.Blueprint/]: Advancement Modification Manager has loaded 3 modifier groups
+[31Oct2026 18:03:02.051] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 3526 advancements
+[31Oct2026 18:03:02.068] [Render thread/INFO] [Curios API/]: Loaded 11 curio slots
+[31Oct2026 18:03:02.070] [Render thread/INFO] [Curios API/]: Loaded 1 curio entities
+[31Oct2026 18:03:02.083] [Render thread/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 1 calls to Enchantment#getMaxLevel() in net/minecraft/world/entity/npc/VillagerTrades$EnchantBookForEmeralds
+[31Oct2026 18:03:02.104] [Render thread/INFO] [Moonlight/]: Applied 17 data villager trades
+[31Oct2026 18:03:02.110] [Render thread/INFO] [Moonlight/]: Failed to load custom color set definition {"id":"quark:rune","colors":{"default":"quark:blank_rune"},"replace":false}. Ignoring
+[31Oct2026 18:03:02.110] [Render thread/INFO] [Moonlight/]: Failed to load custom color set definition {"id":"quark:shard","colors":{"default":"quark:clear_shard"},"replace":false}. Ignoring
+[31Oct2026 18:03:02.114] [Render thread/INFO] [com.teamabnormals.blueprint.core.Blueprint/]: Chunk Generator Modification Manager has loaded 0 modifier groups
+[31Oct2026 18:03:02.122] [Render thread/INFO] [Supplementaries/]: Loaded 36 flute songs
+[31Oct2026 18:03:02.174] [Render thread/INFO] [placebo/]: Registered 30 gear_sets.
+[31Oct2026 18:03:02.185] [Render thread/INFO] [placebo/]: Registered 36 wanderer_trades.
+[31Oct2026 18:03:02.191] [Render thread/INFO] [placebo/]: Registered 37 brewing_mixes.
+[31Oct2026 18:03:02.192] [Render thread/INFO] [Apotheosis : Enchantment/]: Registered 26 enchanting_stats.
+[31Oct2026 18:03:02.194] [Render thread/INFO] [apotheosis/]: Registered 5 rarities.
+[31Oct2026 18:03:02.203] [Render thread/INFO] [apotheosis/]: Registered 3 rarity_override.
+[31Oct2026 18:03:02.235] [Render thread/INFO] [apotheosis/]: Registered 174 affixes.
+[31Oct2026 18:03:02.238] [Render thread/INFO] [apotheosis/]: Registered 14 extra_gem_bonuses.
+[31Oct2026 18:03:02.248] [Render thread/INFO] [apotheosis/]: Registered 31 gems.
+[31Oct2026 18:03:02.251] [Render thread/INFO] [apotheosis/]: Registered 50 affix_loot_entries.
+[31Oct2026 18:03:02.267] [Render thread/INFO] [apotheosis/]: Registered 23 apothic_invaders.
+[31Oct2026 18:03:02.270] [Render thread/INFO] [apotheosis/]: Registered 9 rogue_spawners.
+[31Oct2026 18:03:02.271] [Render thread/INFO] [apotheosis/]: Registered 4 apothic_elites.
+[31Oct2026 18:03:02.272] [Render thread/INFO] [apotheosis/]: Registered 1 purity_weights.
+[31Oct2026 18:03:02.273] [Render thread/INFO] [apotheosis/]: Registered 1 apothic_augments.
+[31Oct2026 18:03:02.274] [Render thread/INFO] [apotheosis/]: Registered 27 tier_augments.
+[31Oct2026 18:03:02.290] [Render thread/WARN] [net.minecraft.core.MappedRegistry/]: Not all defined tags for registry ResourceKey[minecraft:root / irons_jewelry:pattern] are present in data pack: irons_jewelry:nether_findable
+[31Oct2026 18:03:02.535] [Render thread/ERROR] [net.neoforged.neoforge.registries.DataMapLoader/]: Object with ID modid:example specified in data map for registry minecraft:dimension doesn't exist
+[31Oct2026 18:03:02.567] [Render thread/INFO] [Supplementaries/]: Registering custom dispenser behaviors
+[31Oct2026 18:03:02.600] [Render thread/WARN] [ModernFix/]: Initial datapack load took 3.588 s
+[31Oct2026 18:03:02.742] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Starting integrated minecraft server version 1.21.1
+[31Oct2026 18:03:02.742] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[31Oct2026 18:03:02.936] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Creating physics pipeline for ResourceKey[minecraft:dimension / minecraft:overworld] using RapierPhysicsPipelineProvider
+[31Oct2026 18:03:02.944] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Using game directory relative Sable Rapier native directory C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\.sable\natives
+[31Oct2026 18:03:03.483] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Creating physics pipeline for ResourceKey[minecraft:dimension / minecraft:the_end] using RapierPhysicsPipelineProvider
+[31Oct2026 18:03:03.518] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Creating physics pipeline for ResourceKey[minecraft:dimension / requiem:construct_workshop] using RapierPhysicsPipelineProvider
+[31Oct2026 18:03:03.534] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Creating physics pipeline for ResourceKey[minecraft:dimension / requiem:nucleus] using RapierPhysicsPipelineProvider
+[31Oct2026 18:03:03.548] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Creating physics pipeline for ResourceKey[minecraft:dimension / irons_spellbooks:pocket_dimension] using RapierPhysicsPipelineProvider
+[31Oct2026 18:03:03.562] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Creating physics pipeline for ResourceKey[minecraft:dimension / minecraft:the_nether] using RapierPhysicsPipelineProvider
+[31Oct2026 18:03:03.579] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[31Oct2026 18:03:03.863] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[31Oct2026 18:03:03.962] [Server thread/INFO] [net.neoforged.neoforge.server.permission.PermissionAPI/]: Successfully initialized permission handler neoforge:default_handler
+[31Oct2026 18:03:03.975] [Server thread/INFO] [com.animalia.Animalia/]: Animalia server setup complete
+[31Oct2026 18:03:03.976] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 392 ms
+[31Oct2026 18:03:03.996] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Creating physics pipeline for ResourceKey[minecraft:dimension / minecraft:server_faucet_test_level] using RapierPhysicsPipelineProvider
+[31Oct2026 18:03:04.051] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Creating physics pipeline for ResourceKey[minecraft:dimension / minecraft:server_projectile_test_level] using RapierPhysicsPipelineProvider
+[31Oct2026 18:03:04.059] [Server thread/INFO] [patchouli/]: Sending reload packet to clients
+[31Oct2026 18:03:04.207] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing view distance to 12, from 10
+[31Oct2026 18:03:04.208] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing simulation distance to 12, from 0
+[31Oct2026 18:03:04.354] [Render thread/INFO] [dev.ryanhcode.sable.Sable/]: Adding local UDP server channel future
+[31Oct2026 18:03:04.363] [Render thread/WARN] [io.netty.bootstrap.Bootstrap/]: Unknown channel option 'SO_BROADCAST' for channel '[id: 0x4a4b6f19]'
+[31Oct2026 18:03:04.370] [Netty Server IO #1/INFO] [dev.ryanhcode.sable.Sable/]: Server UDP channel active
+[31Oct2026 18:03:04.384] [Render thread/INFO] [dev.ryanhcode.sable.Sable/]: Starting local client UDP channel future
+[31Oct2026 18:03:04.387] [Netty Local Client IO #1/INFO] [dev.ryanhcode.sable.Sable/]: Client UDP channel active
+[31Oct2026 18:03:04.625] [Render thread/INFO] [com.simibubi.create.Create/]: Created 157 recipes which will be injected into the game
+[31Oct2026 18:03:04.627] [Render thread/INFO] [com.simibubi.create.Create/]: Created 0 tags which will be injected into the game
+[31Oct2026 18:03:04.678] [ForkJoinPool.commonPool-worker-11/INFO] [io.redspace.ironslib.IronsLib/]: Loaded 263
+[31Oct2026 18:03:04.975] [Server thread/INFO] [net.minecraft.server.players.PlayerList/]: Rep3ater[local:E:19922770] logged in with entity id 14 at (-217.30000001192093, 70.0, 191.17289431209514)
+[31Oct2026 18:03:04.976] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Beginning attempted authentication with player Rep3ater
+[31Oct2026 18:03:05.028] [Render thread/INFO] [Iris/]: Reloading pipeline on dimension change: minecraft:overworld => minecraft:overworld
+[31Oct2026 18:03:05.028] [Render thread/INFO] [Iris/]: Destroying pipeline minecraft:overworld
+[31Oct2026 18:03:05.029] [Render thread/INFO] [Iris/]: Creating pipeline for dimension minecraft:overworld
+[31Oct2026 18:03:05.063] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Rep3ater joined the game
+[31Oct2026 18:03:05.243] [Render thread/INFO] [ChunkBuilder/]: Started 6 worker threads
+[31Oct2026 18:03:05.244] [Server thread/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 1 calls to Enchantment#getMaxLevel() in net/minecraft/world/item/enchantment/EnchantmentHelper
+[31Oct2026 18:03:05.374] [Render thread/INFO] [io.redspace.atlasapi.AtlasApi/]: Atlas irons_jewelry:atlas/jewelry: Building custom contents start
+[31Oct2026 18:03:05.425] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x512x0 irons_jewelry:atlas/jewelry-atlas
+[31Oct2026 18:03:05.430] [Render thread/INFO] [io.redspace.atlasapi.AtlasApi/]: Built Atlas: irons_jewelry:atlas/jewelry (1024x512, 1081 sprites, 56 ms)
+[31Oct2026 18:03:05.440] [Render thread/INFO] [flywheel/]: Started 6 worker threads
+[31Oct2026 18:03:05.459] [Render thread/INFO] [Moonlight/]: Synced Custom World Data [supplementaries_globe_data]
+[31Oct2026 18:03:05.460] [Render thread/INFO] [io.redspace.ironsspellbooks.IronsSpellbooks/]: Handling spell config sync 0 files
+[31Oct2026 18:03:05.466] [Render thread/INFO] [Supplementaries/]: Synced Captured Mobs settings
+[31Oct2026 18:03:05.466] [Render thread/INFO] [Supplementaries/]: Synced Hourglass data
+[31Oct2026 18:03:05.471] [Render thread/INFO] [placebo/]: Starting sync for brewing_mixes
+[31Oct2026 18:03:05.474] [Render thread/INFO] [placebo/]: Registered 37 brewing_mixes.
+[31Oct2026 18:03:05.474] [Render thread/INFO] [placebo/]: Completed sync for brewing_mixes
+[31Oct2026 18:03:05.474] [Render thread/INFO] [placebo/]: Starting sync for enchanting_stats
+[31Oct2026 18:03:05.475] [Render thread/INFO] [Apotheosis : Enchantment/]: Registered 26 enchanting_stats.
+[31Oct2026 18:03:05.475] [Render thread/INFO] [placebo/]: Completed sync for enchanting_stats
+[31Oct2026 18:03:05.476] [Render thread/INFO] [placebo/]: Starting sync for rarities
+[31Oct2026 18:03:05.477] [Render thread/INFO] [apotheosis/]: Registered 5 rarities.
+[31Oct2026 18:03:05.477] [Render thread/INFO] [placebo/]: Completed sync for rarities
+[31Oct2026 18:03:05.477] [Render thread/INFO] [placebo/]: Starting sync for rarity_override
+[31Oct2026 18:03:05.478] [Render thread/INFO] [apotheosis/]: Registered 3 rarity_override.
+[31Oct2026 18:03:05.478] [Render thread/INFO] [placebo/]: Completed sync for rarity_override
+[31Oct2026 18:03:05.479] [Render thread/INFO] [placebo/]: Starting sync for affixes
+[31Oct2026 18:03:05.499] [Render thread/INFO] [apotheosis/]: Registered 174 affixes.
+[31Oct2026 18:03:05.499] [Render thread/INFO] [placebo/]: Completed sync for affixes
+[31Oct2026 18:03:05.499] [Render thread/INFO] [placebo/]: Starting sync for extra_gem_bonuses
+[31Oct2026 18:03:05.501] [Render thread/INFO] [apotheosis/]: Registered 14 extra_gem_bonuses.
+[31Oct2026 18:03:05.501] [Render thread/INFO] [placebo/]: Completed sync for extra_gem_bonuses
+[31Oct2026 18:03:05.501] [Render thread/INFO] [placebo/]: Starting sync for gems
+[31Oct2026 18:03:05.508] [Render thread/INFO] [apotheosis/]: Registered 31 gems.
+[31Oct2026 18:03:05.508] [Render thread/INFO] [placebo/]: Completed sync for gems
+[31Oct2026 18:03:05.508] [Render thread/INFO] [placebo/]: Starting sync for purity_weights
+[31Oct2026 18:03:05.509] [Render thread/INFO] [apotheosis/]: Registered 1 purity_weights.
+[31Oct2026 18:03:05.509] [Render thread/INFO] [placebo/]: Completed sync for purity_weights
+[31Oct2026 18:03:05.509] [Render thread/INFO] [placebo/]: Starting sync for tier_augments
+[31Oct2026 18:03:05.510] [Render thread/INFO] [apotheosis/]: Registered 27 tier_augments.
+[31Oct2026 18:03:05.510] [Render thread/INFO] [placebo/]: Completed sync for tier_augments
+[31Oct2026 18:03:05.546] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Starting JEI...
+[31Oct2026 18:03:05.546] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Configuring JEI...
+[31Oct2026 18:03:05.548] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Configuring JEI took 1.200 milliseconds
+[31Oct2026 18:03:05.559] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering item subtypes...
+[31Oct2026 18:03:05.570] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering item subtypes took 10.19 milliseconds
+[31Oct2026 18:03:05.570] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering fluid subtypes...
+[31Oct2026 18:03:05.572] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering fluid subtypes took 2.002 milliseconds
+[31Oct2026 18:03:05.574] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering ingredients...
+[31Oct2026 18:03:05.867] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering ingredients: jei:minecraft took 292.5 milliseconds
+[31Oct2026 18:03:05.868] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering ingredients took 293.2 milliseconds
+[31Oct2026 18:03:05.868] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering extra ingredients...
+[31Oct2026 18:03:05.876] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering extra ingredients took 8.349 milliseconds
+[31Oct2026 18:03:05.877] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering search ingredient aliases...
+[31Oct2026 18:03:05.878] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering search ingredient aliases took 896.8 microseconds
+[31Oct2026 18:03:05.894] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering Mod Info...
+[31Oct2026 18:03:05.895] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering Mod Info took 738.4 microseconds
+[31Oct2026 18:03:05.920] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering advanced search...
+[31Oct2026 18:03:05.921] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering advanced search took 730.7 microseconds
+[31Oct2026 18:03:05.923] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering categories...
+[31Oct2026 18:03:05.979] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering categories: jei:minecraft took 56.00 milliseconds
+[31Oct2026 18:03:06.030] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering categories: create:jei_plugin took 43.36 milliseconds
+[31Oct2026 18:03:06.050] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering categories took 126.9 milliseconds
+[31Oct2026 18:03:06.051] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering vanilla category extensions...
+[31Oct2026 18:03:06.064] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering vanilla category extensions took 13.01 milliseconds
+[31Oct2026 18:03:06.065] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering recipe catalysts...
+[31Oct2026 18:03:06.069] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering recipe catalysts took 3.311 milliseconds
+[31Oct2026 18:03:06.070] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Building recipe registry...
+[31Oct2026 18:03:06.099] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Building recipe registry took 28.93 milliseconds
+[31Oct2026 18:03:06.102] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering advanced plugins...
+[31Oct2026 18:03:06.142] [Render thread/INFO] [mezz.jei.library.load.registration.AdvancedRegistration/]: Added typed recipe manager plugin: class mezz.jei.library.plugins.vanilla.crafting.FireworkStarRecipeManagerPlugin
+[31Oct2026 18:03:06.144] [Render thread/INFO] [mezz.jei.library.load.registration.AdvancedRegistration/]: Added typed recipe manager plugin: class mezz.jei.library.plugins.vanilla.crafting.FireworkRocketRecipeManagerPlugin
+[31Oct2026 18:03:06.144] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering advanced plugins: jei:minecraft took 41.12 milliseconds
+[31Oct2026 18:03:06.145] [Render thread/INFO] [mezz.jei.library.load.registration.AdvancedRegistration/]: Added typed recipe manager plugin: class io.redspace.ironsspellbooks.jei.AlchemistCauldronAdvancedHandler
+[31Oct2026 18:03:06.146] [Render thread/INFO] [mezz.jei.library.load.registration.AdvancedRegistration/]: Added typed recipe manager plugin: class io.redspace.ironsjewelry.compat.jei.AdvancedPatternJeiHandler
+[31Oct2026 18:03:06.146] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering advanced plugins took 43.89 milliseconds
+[31Oct2026 18:03:06.147] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering recipes...
+[31Oct2026 18:03:06.407] [Render thread/INFO] [net.neoforged.coremod.CoreMod.apothic_enchanting/COREMODLOG]: Replaced 1 calls to Enchantment#getMaxLevel() in mezz/jei/library/plugins/vanilla/anvil/AnvilRecipeMaker$EnchantmentData
+[31Oct2026 18:03:07.214] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering recipes: jei:minecraft took 1.065 seconds
+[31Oct2026 18:03:07.228] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering recipes: supplementaries:jei_plugin took 12.36 milliseconds
+[31Oct2026 18:03:07.298] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering recipes: farmersdelight:jei_plugin took 69.14 milliseconds
+[31Oct2026 18:03:07.437] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering recipes: create:jei_plugin took 128.3 milliseconds
+[31Oct2026 18:03:07.657] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering recipes: irons_spellbooks:jei_plugin took 219.5 milliseconds
+[31Oct2026 18:03:07.687] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering recipes: apotheosis:adventure_module took 27.57 milliseconds
+[31Oct2026 18:03:07.766] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering recipes: jei:internal took 74.44 milliseconds
+[31Oct2026 18:03:07.767] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering recipes took 1.619 seconds
+[31Oct2026 18:03:07.782] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering recipes transfer handlers...
+[31Oct2026 18:03:07.789] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering recipes transfer handlers took 6.113 milliseconds
+[31Oct2026 18:03:07.790] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Building runtime...
+[31Oct2026 18:03:07.793] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering gui handlers...
+[31Oct2026 18:03:07.799] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering gui handlers took 7.326 milliseconds
+[31Oct2026 18:03:07.802] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering Runtime...
+[31Oct2026 18:03:07.804] [Render thread/INFO] [mezz.jei.gui.startup.JeiGuiStarter/]: Starting JEI GUI
+[31Oct2026 18:03:07.805] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Building ingredient list...
+[31Oct2026 18:03:07.856] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Building ingredient list took 50.27 milliseconds
+[31Oct2026 18:03:07.856] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Building ingredient filter...
+[31Oct2026 18:03:08.946] [Render thread/INFO] [mezz.jei.gui.ingredients.IngredientFilter/]: Adding 4992 ingredients
+[31Oct2026 18:03:08.960] [Render thread/INFO] [mezz.jei.gui.ingredients.IngredientFilter/]: Added 4992 ingredients
+[31Oct2026 18:03:08.961] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Building ingredient filter took 1.105 seconds
+[31Oct2026 18:03:09.141] [Render thread/INFO] [mezz.jei.library.load.PluginCallerTimerRunnable/]: Registering Runtime: jei:neoforge_gui took 1.339 seconds
+[31Oct2026 18:03:09.142] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Registering Runtime took 1.339 seconds
+[31Oct2026 18:03:09.142] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Building runtime took 1.352 seconds
+[31Oct2026 18:03:09.142] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Sending Runtime...
+[31Oct2026 18:03:09.143] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Sending Runtime took 577.5 microseconds
+[31Oct2026 18:03:09.143] [Render thread/INFO] [mezz.jei.common.util.LoggedTimer/]: Starting JEI took 3.596 seconds
+[31Oct2026 18:03:09.161] [Render thread/INFO] [Moonlight/]: Overriding configs supplementaries-common.toml with synced configs (editable)
+[31Oct2026 18:03:09.171] [Render thread/INFO] [Moonlight/]: Synced supplementaries-common.toml configs
+[31Oct2026 18:03:09.171] [Render thread/INFO] [Moonlight/]: Overriding configs moonlight-common.toml with synced configs (editable)
+[31Oct2026 18:03:09.174] [Render thread/INFO] [Moonlight/]: Synced moonlight-common.toml configs
+[31Oct2026 18:03:09.181] [Render thread/INFO] [snownee.jade.Jade/]: Received config from the server: 
+[31Oct2026 18:03:09.917] [Render thread/INFO] [Veil/]: Multi-Bind supported, using core
+[31Oct2026 18:03:10.057] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 213 advancements
+[31Oct2026 18:03:10.063] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 2.183 ms
+[31Oct2026 18:03:10.071] [Render thread/WARN] [patchouli/]: Queried for unknown config flag: apotheosis:village
+[31Oct2026 18:03:10.074] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 1.346 ms
+[31Oct2026 18:03:10.093] [Render thread/WARN] [patchouli/]: Queried for unknown config flag: apotheosis:village
+[31Oct2026 18:03:10.105] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 1.397 ms
+[31Oct2026 18:03:10.110] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 148.4 μs
+[31Oct2026 18:03:10.110] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 131.4 μs
+[31Oct2026 18:03:10.120] [Render thread/INFO] [patchouli/]: BookContentResourceListenerLoader: Files found in 136.5 μs
+[31Oct2026 18:03:10.120] [Render thread/WARN] [patchouli/]: Recipe irons_spellbooks:cryomancer_helmet (of type minecraft:crafting) not found
+[31Oct2026 18:03:10.120] [Render thread/WARN] [patchouli/]: Recipe irons_spellbooks:pyromancer_helmet (of type minecraft:crafting) not found
+[31Oct2026 18:03:10.137] [Render thread/INFO] [ModernFix/]: Cleared 0 unneeded book NBT tags
+[31Oct2026 18:03:11.053] [sayitenglish-vosk-setup/INFO] [sayitenglish/]: Vosk model ready: C:\Users\gusta\curseforge\minecraft\Instances\kosmos 21.1\config\sayitenglish\models\vosk-model-small-es-0.42
+[31Oct2026 18:03:11.271] [Render thread/WARN] [ModernFix/]: Time from main menu to in-game was 8.646695 seconds
+[31Oct2026 18:03:11.271] [Render thread/WARN] [ModernFix/]: Total time to load game and open world was 42.110695 seconds
+[31Oct2026 18:03:11.356] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Unable to play empty soundEvent: minecraft:entity.salmon.ambient
+[31Oct2026 18:03:20.951] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Rep3ater: Say It English disabled for 1 player(s).]
+[31Oct2026 18:03:20.959] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Say It English disabled for 1 player(s).
+[31Oct2026 18:03:36.908] [Render thread/INFO] [net.minecraft.advancements.AdvancementTree/]: Loaded 217 advancements
+[31Oct2026 18:03:43.707] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Rep3ater: Requiem speech bubbles enabled for 1 player(s).]
+[31Oct2026 18:03:43.709] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Requiem speech bubbles enabled for 1 player(s).
+[31Oct2026 18:03:45.658] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Rep3ater: Set the time to 1000]
+[31Oct2026 18:03:45.659] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Set the time to 1000
+[31Oct2026 18:03:48.277] [Requiem-Speech-Translation/WARN] [Requiem/]: [Requiem] Speech translation provider 'google' failed; showing the original text (IOException)
+[31Oct2026 18:04:17.861] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Rep3ater: Speech translation provider set to libretranslate.]
+[31Oct2026 18:04:17.874] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Speech translation provider set to libretranslate.
+[31Oct2026 18:04:24.409] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: [Rep3ater: Speech translation provider set to google.]
+[31Oct2026 18:04:24.410] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Speech translation provider set to google.
+[31Oct2026 18:04:30.724] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
+[31Oct2026 18:04:30.745] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[31Oct2026 18:04:30.745] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/minecraft:overworld
+[31Oct2026 18:04:30.794] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[31Oct2026 18:04:30.794] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/minecraft:the_end
+[31Oct2026 18:04:30.794] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/requiem:construct_workshop
+[31Oct2026 18:04:30.794] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/requiem:construct_workshop
+[31Oct2026 18:04:30.794] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/requiem:nucleus
+[31Oct2026 18:04:30.794] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/requiem:nucleus
+[31Oct2026 18:04:30.794] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/irons_spellbooks:pocket_dimension
+[31Oct2026 18:04:30.794] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/irons_spellbooks:pocket_dimension
+[31Oct2026 18:04:30.795] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[31Oct2026 18:04:30.795] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/minecraft:the_nether
+[31Oct2026 18:04:33.942] [Render thread/INFO] [mezz.jei.library.startup.JeiStarter/]: Stopping JEI
+[31Oct2026 18:04:33.943] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Sending Runtime Unavailable...
+[31Oct2026 18:04:33.943] [Render thread/INFO] [mezz.jei.neoforge.plugins.neoforge.NeoForgeGuiPlugin/]: Stopping JEI GUI
+[31Oct2026 18:04:33.948] [Render thread/INFO] [mezz.jei.library.load.PluginCaller/]: Sending Runtime Unavailable took 5.873 milliseconds
+[31Oct2026 18:04:33.958] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Stopping!
+[31Oct2026 18:04:33.959] [CullThread/INFO] [STDOUT/]: [dev.tr7zw.entityculling.CullTask:run:81]: Shutting down culling task!
+[31Oct2026 18:04:33.960] [Netty Local Client IO #1/INFO] [dev.ryanhcode.sable.Sable/]: Client UDP channel inactive
+[31Oct2026 18:04:33.960] [Netty Local Client IO #1/INFO] [dev.ryanhcode.sable.Sable/]: Closed UDP channel!
+[31Oct2026 18:04:34.038] [Server thread/INFO] [net.minecraft.server.network.ServerGamePacketListenerImpl/]: Rep3ater lost connection: Disconnected
+[31Oct2026 18:04:34.038] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Rep3ater left the game
+[31Oct2026 18:04:34.055] [Server thread/INFO] [net.minecraft.server.network.ServerCommonPacketListenerImpl/]: Stopping singleplayer server as player logged out
+[31Oct2026 18:04:34.113] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server
+[31Oct2026 18:04:34.114] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving players
+[31Oct2026 18:04:34.114] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving worlds
+[31Oct2026 18:04:34.261] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[31Oct2026 18:04:34.261] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/minecraft:overworld
+[31Oct2026 18:04:34.428] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[31Oct2026 18:04:34.428] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/minecraft:the_end
+[31Oct2026 18:04:34.439] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/requiem:construct_workshop
+[31Oct2026 18:04:34.439] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/requiem:construct_workshop
+[31Oct2026 18:04:34.451] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/requiem:nucleus
+[31Oct2026 18:04:34.451] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/requiem:nucleus
+[31Oct2026 18:04:34.462] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/irons_spellbooks:pocket_dimension
+[31Oct2026 18:04:34.462] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/irons_spellbooks:pocket_dimension
+[31Oct2026 18:04:34.473] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[31Oct2026 18:04:34.473] [Server thread/INFO] [dev.ryanhcode.sable.Sable/]: Saving sub-levels for level 'ServerLevel[New World]'/minecraft:the_nether
+[31Oct2026 18:04:34.490] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (New World): All chunks are saved
+[31Oct2026 18:04:34.490] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[31Oct2026 18:04:34.490] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (construct_workshop): All chunks are saved
+[31Oct2026 18:04:34.490] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (nucleus): All chunks are saved
+[31Oct2026 18:04:34.490] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (pocket_dimension): All chunks are saved
+[31Oct2026 18:04:34.490] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[31Oct2026 18:04:34.490] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage: All dimensions are saved
+[31Oct2026 18:04:34.543] [Render thread/INFO] [ChunkBuilder/]: Stopping worker threads
