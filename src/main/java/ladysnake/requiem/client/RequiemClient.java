@@ -59,6 +59,7 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
@@ -109,6 +110,7 @@ public final class RequiemClient {
         modEventBus.addListener(RequiemClient::onRegisterParticleProviders);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderPlayerPre);
+        NeoForge.EVENT_BUS.addListener(ladysnake.requiem.client.render.ParmenidesChunkPreviewRenderer::render);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderLivingPre);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderHand);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderGuiPost);
