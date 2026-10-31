@@ -59,6 +59,7 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
@@ -118,7 +119,7 @@ public final class RequiemClient {
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderGuiPost);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onInteractionKeyMapping);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onLoggingOut);
-        NeoForge.EVENT_BUS.addListener(ladysnake.requiem.client.render.SpeechBubbleRenderer::renderPlayerBubble);
+        NeoForge.EVENT_BUS.addListener(ladysnake.requiem.client.render.SpeechBubbleRenderer::renderWorldBubbles);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
