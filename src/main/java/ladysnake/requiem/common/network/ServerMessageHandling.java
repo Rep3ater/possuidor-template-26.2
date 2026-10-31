@@ -188,6 +188,7 @@ public final class ServerMessageHandling {
         registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.ParmenidesStatePayload.TYPE, RequiemNetworking.ParmenidesStatePayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.OutOfBodyBodyPayload.TYPE, RequiemNetworking.OutOfBodyBodyPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.ParmenidesPreviewDataPayload.TYPE, RequiemNetworking.ParmenidesPreviewDataPayload.STREAM_CODEC, (payload, context) -> {});
     }
 
 
