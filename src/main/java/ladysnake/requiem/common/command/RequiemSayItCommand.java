@@ -2,6 +2,7 @@ package ladysnake.requiem.common.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import ladysnake.requiem.common.SayItCompatibilityManager;
+import ladysnake.requiem.common.RequiemConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
@@ -26,6 +27,12 @@ public final class RequiemSayItCommand {
                 context.getSource().sendSuccess(() -> Component.literal("Say It English challenges are disabled server-wide."), true);
                 return 1;
             }))
+            .then(literal("translation")
+                .then(literal("enable").executes(context -> setTranslationEnabled(context.getSource(), true)))
+                .then(literal("disable").executes(context -> setTranslationEnabled(context.getSource(), false)))
+                .then(literal("provider")
+                    .then(literal("google").executes(context -> setTranslationProvider(context.getSource(), "google")))
+                    .then(literal("libretranslate").executes(context -> setTranslationProvider(context.getSource(), "libretranslate")))))
             .then(argument("players", EntityArgument.players())
                 .then(literal("enable")
                     .then(literal("sayit").executes(context -> setPlayers(context.getSource(),
@@ -38,6 +45,21 @@ public final class RequiemSayItCommand {
                     .then(literal("requiem").executes(context -> setPlayers(context.getSource(),
                         EntityArgument.getPlayers(context, "players"), SayItCompatibilityManager.Mode.REQUIEM, false))))
             );
+    }
+
+    private static int setTranslationEnabled(CommandSourceStack source, boolean enabled) {
+        RequiemConfig.speech.translateBubbles = enabled;
+        RequiemConfig.save();
+        source.sendSuccess(() -> Component.literal("Requiem speech bubble translation "
+            + (enabled ? "enabled." : "disabled.")), true);
+        return 1;
+    }
+
+    private static int setTranslationProvider(CommandSourceStack source, String provider) {
+        RequiemConfig.speech.translationProvider = provider;
+        RequiemConfig.save();
+        source.sendSuccess(() -> Component.literal("Speech translation provider set to " + provider + "."), true);
+        return 1;
     }
 
     private static int setPlayers(CommandSourceStack source, Collection<ServerPlayer> players,
