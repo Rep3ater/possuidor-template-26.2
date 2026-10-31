@@ -24,7 +24,7 @@ public final class ClientMessageHandling {
                     "[Requiem] Client received speech bubble packet: entity={}, loadedLocally={}, text='{}'",
                     payload.entityId(), entityLoaded, payload.text());
                 ladysnake.requiem.client.SpeechBubbleClientState.show(payload.entityId(), payload.text());
-            })));
+            }));
         registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC, (payload, context) -> {});
