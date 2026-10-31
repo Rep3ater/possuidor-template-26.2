@@ -72,7 +72,7 @@ public final class SpeechBubbleRenderer {
         if (!SpeechBubbleClientState.isGesturing(player.getId())) return;
 
         PlayerModel<?> model = event.getRenderer().getModel();
-        float phase = (player.tickCount + Minecraft.getInstance().getFrameTime()) * 0.72F;
+        float phase = (player.tickCount + 0.0F) * 0.72F;
         model.rightArm.xRot = -1.05F + Mth.sin(phase) * 0.42F;
         model.rightArm.yRot = -0.48F + Mth.cos(phase * 0.83F) * 0.48F;
         model.leftArm.xRot = -1.08F + Mth.cos(phase * 1.07F) * 0.38F;
