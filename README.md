@@ -23,3 +23,37 @@ Additional Resources:
 ==========
 Community Documentation: https://docs.neoforged.net/  
 NeoForged Discord: https://discord.neoforged.net/
+
+Speech bubble translation
+=========================
+
+Requiem's optional Say It English compatibility adds in-world speech bubbles. When a player is
+put into Requiem speech mode, their messages are translated separately for nearby viewers using
+each viewer's selected Minecraft language. The translation is performed on the server and does
+not require viewers to install a separate translator mod.
+
+Translation uses the following settings in `config/requiem.json` (created when the mod starts):
+
+```json
+{
+  "translateBubbles": true,
+  "translationProvider": "google",
+  "libreTranslateUrl": "http://127.0.0.1:5000",
+  "libreTranslateApiKey": "",
+  "defaultLanguage": "en",
+  "timeoutSeconds": 8
+}
+```
+
+- `google` is the default keyless provider. It uses Google's public web translation endpoint,
+  which is undocumented and may be throttled or changed without notice.
+- `libretranslate` sends requests to the configured LibreTranslate server. Self-hosted
+  instances can be used without a key; hosted instances may require `libreTranslateApiKey`.
+- `translateBubbles: false` disables translation and leaves the original text in the bubble.
+- `defaultLanguage` is used until a client reports its Minecraft language.
+- `timeoutSeconds` is clamped to 2–15 seconds. Translations happen asynchronously, and a
+  failed/empty response falls back to the original message.
+
+**Privacy:** when translation is enabled, Requiem speech-mode messages are sent from the game
+server to the selected external translation provider. Use a private LibreTranslate instance or
+set `translateBubbles` to `false` when messages must not leave your server.
