@@ -260,7 +260,7 @@ public final class ServerMessageHandling {
                                     boolean exposed = false;
                                     for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
                                         neighbor.move(direction);
-                                        boolean air = chunk.getBlockState(neighbor).isAir();
+                                        boolean air = counterpart.getBlockState(neighbor).isAir();
                                         neighbor.move(direction.getOpposite());
                                         if (air) {
                                             exposed = true;
