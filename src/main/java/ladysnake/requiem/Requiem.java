@@ -110,6 +110,7 @@ public final class Requiem {
 
         modEventBus.addListener(ServerMessageHandling::registerPayloadHandlers);
         modEventBus.addListener(io.github.ladysnake.blabber.impl.common.BlabberDynamicMetaregistry::onNewDatapackRegistry);
+        modEventBus.addListener(ladysnake.requiem.data.RequiemDataGeneration::gatherServerData);
 
         modEventBus.addListener(this::onRegister);
         RequiemGamerules.init();
@@ -165,6 +166,7 @@ public final class Requiem {
         event.put(RequiemEntities.CURED_PIGLIN, Piglin.createAttributes().build());
         event.put(RequiemEntities.CURED_PIGLIN_BRUTE, PiglinBrute.createAttributes().build());
         event.put(RequiemEntities.PLAYER_SHELL, PlayerShellEntity.createPlayerShellAttributes().build());
+        event.put(RequiemEntities.PARMENIDES_PROJECTION, PlayerShellEntity.createPlayerShellAttributes().build());
         event.put(RequiemEntities.MORTICIAN, MorticianEntity.createMorticianAttributes().build());
         event.put(RequiemEntities.ROBOTIC_CONSTRUCT, ladysnake.requiem.common.construct.entity.RoboticConstructEntity.createAttributes().build());
         event.put(RequiemEntities.HOMUNCULUS, ladysnake.requiem.common.entity.HomunculusEntity.createAttributes().build());

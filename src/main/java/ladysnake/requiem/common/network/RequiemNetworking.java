@@ -76,6 +76,9 @@ public final class RequiemNetworking {
     public static final ResourceLocation SHELL_PROFILE_SYNC = Requiem.id("shell_profile_sync");
     public static final ResourceLocation LOCKI_STATE = Requiem.id("locki_state");
     public static final ResourceLocation HOMUNCULUS_BRAIN_OPEN = Requiem.id("homunculus_brain_open");
+    public static final ResourceLocation PARMENIDES_SWITCH = Requiem.id("parmenides_switch");
+    public static final ResourceLocation PARMENIDES_STATE = Requiem.id("parmenides_state");
+    public static final ResourceLocation OUT_OF_BODY_BODY = Requiem.id("out_of_body_body");
 
     // Client -> Server
     public static final ResourceLocation HOMUNCULUS_BRAIN_SAVE = Requiem.id("homunculus_brain_save");
@@ -216,6 +219,32 @@ public final class RequiemNetworking {
     public record EtherealFracturePayload() implements CustomPacketPayload {
         public static final Type<EtherealFracturePayload> TYPE = new Type<>(ETHEREAL_FRACTURE);
         public static final StreamCodec<RegistryFriendlyByteBuf, EtherealFracturePayload> STREAM_CODEC = StreamCodec.unit(new EtherealFracturePayload());
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public record ParmenidesSwitchPayload() implements CustomPacketPayload {
+        public static final Type<ParmenidesSwitchPayload> TYPE = new Type<>(PARMENIDES_SWITCH);
+        public static final StreamCodec<RegistryFriendlyByteBuf, ParmenidesSwitchPayload> STREAM_CODEC = StreamCodec.unit(new ParmenidesSwitchPayload());
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public record ParmenidesStatePayload(int entityId, boolean active) implements CustomPacketPayload {
+        public static final Type<ParmenidesStatePayload> TYPE = new Type<>(PARMENIDES_STATE);
+        public static final StreamCodec<RegistryFriendlyByteBuf, ParmenidesStatePayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ParmenidesStatePayload::entityId,
+            ByteBufCodecs.BOOL, ParmenidesStatePayload::active,
+            ParmenidesStatePayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public record OutOfBodyBodyPayload(int entityId, boolean active) implements CustomPacketPayload {
+        public static final Type<OutOfBodyBodyPayload> TYPE = new Type<>(OUT_OF_BODY_BODY);
+        public static final StreamCodec<RegistryFriendlyByteBuf, OutOfBodyBodyPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, OutOfBodyBodyPayload::entityId,
+            ByteBufCodecs.BOOL, OutOfBodyBodyPayload::active,
+            OutOfBodyBodyPayload::new
+        );
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     }
 

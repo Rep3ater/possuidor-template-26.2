@@ -1,0 +1,50 @@
+{
+  "targets": {
+    "swap": {},
+    "ghost_particles": {
+      "persistent": true
+    }
+  },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        }
+      ],
+      "output": "swap",
+      "uniforms": {
+        "BlitConfig": [
+          {
+            "name": "ColorModulate",
+            "type": "vec4",
+            "value": [
+              1,
+              1,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "requiem:post/combine",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        },
+        {
+          "sampler_name": "Overlay",
+          "target": "ghost_particles"
+        }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

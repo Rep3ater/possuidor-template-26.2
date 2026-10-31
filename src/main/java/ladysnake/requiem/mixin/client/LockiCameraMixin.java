@@ -6,7 +6,8 @@ import net.minecraft.client.Camera;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.client.DeltaTracker;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,8 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class LockiCameraMixin {
     @Shadow protected abstract void setPosition(double x, double y, double z);
 
-    @Inject(method = "update", at = @At("TAIL"))
-    private void requiem$lockiCamera(DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", at = @At("TAIL"))
+    private void requiem$lockiCamera(BlockGetter level, Entity focusedEntity, boolean thirdPerson,
+                                     boolean inverseView, float partialTick, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || !LockiClientState.isLockiModeActive()) return;
 

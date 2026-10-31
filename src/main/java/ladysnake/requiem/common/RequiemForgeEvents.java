@@ -111,6 +111,13 @@ public final class RequiemForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            ladysnake.requiem.common.ghost.ParmenidesManager.clearProjections(player);
+        }
+    }
+
+    @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ladysnake.requiem.common.entity.ImmortalHomunculusEntity attacker
                 && attacker.level() instanceof ServerLevel level) {
@@ -453,6 +460,22 @@ public final class RequiemForgeEvents {
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         if (MarbasAbilitySystem.onBerserkDamage(event)) return;
+        if (event.getEntity() instanceof PlayerShellEntity shell
+                && ladysnake.requiem.common.ghost.ParmenidesManager.isProjection(shell)) {
+            if (event.getSource().is(DamageTypeTags.IS_FIRE)) {
+                event.setCanceled(true);
+                return;
+            }
+            if (event.getSource().getEntity() instanceof ServerPlayer attacker) {
+                java.util.UUID ownerId = ladysnake.requiem.common.ghost.ParmenidesManager.projectionOwner(shell);
+                ServerPlayer owner = ownerId == null ? null : attacker.getServer().getPlayerList().getPlayer(ownerId);
+                if (owner != null && owner != attacker) {
+                    owner.hurt(event.getSource(), event.getAmount());
+                }
+            }
+            event.setCanceled(true);
+            return;
+        }
         if (event.getEntity() instanceof Player player) {
             if (RemnantComponent.isIncorporeal(player)) {
                 if (!event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
@@ -539,6 +562,12 @@ public final class RequiemForgeEvents {
 
     @SubscribeEvent
     public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
+        if (event.getNewAboutToBeSetTarget() instanceof PlayerShellEntity shell
+                && ladysnake.requiem.common.ghost.ParmenidesManager.isProjection(shell)) {
+            event.setNewAboutToBeSetTarget(null);
+            event.setCanceled(true);
+            return;
+        }
         if (event.getNewAboutToBeSetTarget() instanceof Player player && RemnantComponent.isIncorporeal(player)) {
             event.setNewAboutToBeSetTarget(null);
             event.setCanceled(true);
@@ -555,6 +584,19 @@ public final class RequiemForgeEvents {
             alterer.clientTick();
         } else {
             alterer.serverTick();
+            if (player instanceof ServerPlayer serverPlayer) {
+                ladysnake.requiem.common.ghost.ParmenidesManager.tick(serverPlayer);
+                if (serverPlayer.tickCount % 20 == 0) {
+                    net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                        serverPlayer,
+                        new ladysnake.requiem.common.network.RequiemNetworking.ParmenidesStatePayload(
+                            serverPlayer.getId(), ladysnake.requiem.common.ghost.ParmenidesRole.isParmenides(serverPlayer))
+                    );
+                    if (RemnantComponent.isIncorporeal(serverPlayer)) {
+                        PlayerSplitter.syncOutOfBodyBody(serverPlayer);
+                    }
+                }
+            }
         }
 
         if (alterer.isNoClipping()) {

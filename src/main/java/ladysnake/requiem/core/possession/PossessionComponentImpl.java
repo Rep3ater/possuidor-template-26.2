@@ -286,9 +286,7 @@ public final class PossessionComponentImpl implements PossessionComponent {
             if (possessed.getType().builtInRegistryHolder().is(RequiemCoreTags.Entity.INVENTORY_CARRIERS)) {
                 PossessedData.KEY.get(possessed).moveItems(player.getInventory(), true);
             }
-            if (player.level() instanceof ServerLevel serverLevel) {
-                ((LivingEntityAccessor) player).requiem$invokeDropEquipment(serverLevel);
-            }
+            ((LivingEntityAccessor) player).requiem$invokeDropEquipment();
         }
         player.removeAllEffects();
         if (player.level().getLevelData().isHardcore()) {

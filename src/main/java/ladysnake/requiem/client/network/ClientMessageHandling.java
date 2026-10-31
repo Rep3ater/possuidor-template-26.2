@@ -28,6 +28,10 @@ public final class ClientMessageHandling {
         registrar.playToClient(RequiemNetworking.LockiStatePayload.TYPE, RequiemNetworking.LockiStatePayload.STREAM_CODEC,
             (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.locki.LockiClientState.accept(payload)));
         registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, ClientMessageHandling::handleHomunculusBrainOpen);
+        registrar.playToClient(RequiemNetworking.ParmenidesStatePayload.TYPE, RequiemNetworking.ParmenidesStatePayload.STREAM_CODEC,
+            (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.ParmenidesClientState.update(payload.entityId(), payload.active())));
+        registrar.playToClient(RequiemNetworking.OutOfBodyBodyPayload.TYPE, RequiemNetworking.OutOfBodyBodyPayload.STREAM_CODEC,
+            (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.ParmenidesClientState.updateBody(payload.entityId(), payload.active())));
     }
 
     private static void handleOpenDialogue(RequiemNetworking.OpenDialoguePayload payload, net.neoforged.neoforge.network.handling.IPayloadContext context) {

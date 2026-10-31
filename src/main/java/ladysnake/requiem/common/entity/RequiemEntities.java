@@ -18,6 +18,7 @@
 package ladysnake.requiem.common.entity;
 
 import baritone.api.fakeplayer.FakePlayers;
+import ladysnake.requiem.common.ghost.ParmenidesProjectionEntity;
 import com.google.common.collect.ImmutableMap;
 import ladysnake.requiem.Requiem;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -79,6 +80,14 @@ public final class RequiemEntities {
         .noSummon()
         .build(Requiem.id("player_shell").toString());
 
+    public static final EntityType<ParmenidesProjectionEntity> PARMENIDES_PROJECTION = EntityType.Builder.<ParmenidesProjectionEntity>of(
+            FakePlayers.entityFactory(ParmenidesProjectionEntity::new), MobCategory.MISC)
+        .sized(0.6f, 1.8f)
+        .clientTrackingRange(8)
+        .updateInterval(1)
+        .noSummon()
+        .build(Requiem.id("parmenides_projection").toString());
+
     public static final EntityType<MorticianEntity> MORTICIAN = EntityType.Builder.<MorticianEntity>of(MorticianEntity::new, MobCategory.CREATURE)
         .sized(0.6f, 1.95f)
         .build(Requiem.id("mortician").toString());
@@ -99,6 +108,7 @@ public final class RequiemEntities {
 
     public static void register(RegisterEvent.RegisterHelper<EntityType<?>> helper) {
         helper.register(Requiem.id("player_shell"), PLAYER_SHELL);
+        helper.register(Requiem.id("parmenides_projection"), PARMENIDES_PROJECTION);
         helper.register(Requiem.id("obelisk_soul"), OBELISK_SOUL);
         helper.register(Requiem.id("released_soul"), RELEASED_SOUL);
         helper.register(Requiem.id("cured_villager"), CURED_VILLAGER);

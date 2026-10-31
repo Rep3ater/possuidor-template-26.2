@@ -86,6 +86,11 @@ public final class ServerMessageHandling {
             ServerMessageHandling::handleEtherealFracture
         );
         registrar.playToServer(
+            RequiemNetworking.ParmenidesSwitchPayload.TYPE,
+            RequiemNetworking.ParmenidesSwitchPayload.STREAM_CODEC,
+            ServerMessageHandling::handleParmenidesSwitch
+        );
+        registrar.playToServer(
             RequiemNetworking.OpenCraftingPayload.TYPE,
             RequiemNetworking.OpenCraftingPayload.STREAM_CODEC,
             ServerMessageHandling::handleOpenCrafting
@@ -171,6 +176,8 @@ public final class ServerMessageHandling {
         registrar.playToClient(RequiemNetworking.ShellProfileSyncPayload.TYPE, RequiemNetworking.ShellProfileSyncPayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.LockiStatePayload.TYPE, RequiemNetworking.LockiStatePayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.HomunculusBrainOpenPayload.TYPE, RequiemNetworking.HomunculusBrainOpenPayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.ParmenidesStatePayload.TYPE, RequiemNetworking.ParmenidesStatePayload.STREAM_CODEC, (payload, context) -> {});
+        registrar.playToClient(RequiemNetworking.OutOfBodyBodyPayload.TYPE, RequiemNetworking.OutOfBodyBodyPayload.STREAM_CODEC, (payload, context) -> {});
     }
 
 
@@ -196,7 +203,17 @@ public final class ServerMessageHandling {
 
     private static void handleEtherealFracture(RequiemNetworking.EtherealFracturePayload payload, IPayloadContext context) {
         if (context.player() instanceof ServerPlayer player) {
-            InitiateFractureCallback.EVENT.invoker().performFracture(player);
+            if (ladysnake.requiem.common.ghost.ParmenidesRole.isParmenides(player)) {
+                ladysnake.requiem.common.ghost.ParmenidesManager.switchDimension(player);
+            } else {
+                InitiateFractureCallback.EVENT.invoker().performFracture(player);
+            }
+        }
+    }
+
+    private static void handleParmenidesSwitch(RequiemNetworking.ParmenidesSwitchPayload payload, IPayloadContext context) {
+        if (context.player() instanceof ServerPlayer player) {
+            ladysnake.requiem.common.ghost.ParmenidesManager.switchDimension(player);
         }
     }
 

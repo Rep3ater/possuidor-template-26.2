@@ -48,6 +48,7 @@ import ladysnake.requiem.api.v1.remnant.PlayerSplitResult;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
 import ladysnake.requiem.api.v1.remnant.SoulbindingRegistry;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
+import ladysnake.requiem.common.network.RequiemNetworking;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.core.RequiemCore;
 import ladysnake.requiem.core.record.EntityPositionClerk;
@@ -104,6 +105,8 @@ public final class PlayerSplitter {
         soul.giveExperiencePoints(experience);
         transferSoulboundItems(shell, soul);
         soul.level().addFreshEntity(shell);
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+            shell, new RequiemNetworking.OutOfBodyBodyPayload(shell.getId(), true));
         if (mount != null) shell.startRiding(mount);
         PlayerBodyTracker.get(soul).setAnchor(EntityPositionClerk.get(shell).getOrCreateRecord());
         PlayerShellEvents.PLAYER_SPLIT.invoker().onPlayerSplit(whole, soul, shell);
@@ -152,7 +155,19 @@ public final class PlayerSplitter {
         return shell;
     }
 
+    public static void syncOutOfBodyBody(ServerPlayer soul) {
+        PlayerBodyTracker.get(soul).getAnchor()
+            .flatMap(record -> record.get(ladysnake.requiem.common.RequiemRecordTypes.ENTITY_REF))
+            .flatMap(ptr -> ptr.resolve(soul.level().getServer()))
+            .filter(PlayerShellEntity.class::isInstance)
+            .map(PlayerShellEntity.class::cast)
+            .ifPresent(shell -> net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+                shell, new RequiemNetworking.OutOfBodyBodyPayload(shell.getId(), true)));
+    }
+
     public static void doMerge(PlayerShellEntity shell, ServerPlayer soul) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntityAndSelf(
+            shell, new RequiemNetworking.OutOfBodyBodyPayload(shell.getId(), false));
         Entity mount = shell.getVehicle();
         shell.stopRiding();
         mergeInventories(shell, soul);

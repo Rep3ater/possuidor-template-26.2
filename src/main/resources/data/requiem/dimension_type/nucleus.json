@@ -1,39 +1,19 @@
 {
-  "ambient_light": 0.25,
-  "attributes": {
-    "minecraft:audio/ambient_sounds": {
-      "mood": {
-        "block_search_extent": 8,
-        "offset": 2,
-        "sound": "minecraft:ambient.cave",
-        "tick_delay": 6000
-      }
-    },
-    "minecraft:gameplay/bed_rule": {
-      "can_set_spawn": "never",
-      "can_sleep": "never",
-      "explodes": false
-    },
-    "minecraft:gameplay/respawn_anchor_works": false,
-    "minecraft:visual/ambient_light_color": "#ff6a24",
-    "minecraft:visual/fog_color": "#7b2007",
-    "minecraft:visual/sky_color": "#d94a16",
-    "minecraft:visual/sky_light_color": "#ff8b36",
-    "minecraft:visual/sky_light_factor": 0.55,
-    "minecraft:visual/sunrise_sunset_color": "#ffff4b1a"
-  },
-  "coordinate_scale": 1,
-  "default_clock": "minecraft:overworld",
-  "has_ceiling": false,
-  "has_ender_dragon_fight": false,
-  "has_fixed_time": false,
+  "ultrawarm": false,
+  "natural": false,
+  "coordinate_scale": 1.0,
   "has_skylight": true,
-  "height": 256,
+  "has_ceiling": false,
+  "ambient_light": 0.25,
   "infiniburn": "#minecraft:infiniburn_nether",
+  "effects": "minecraft:overworld",
   "logical_height": 256,
   "min_y": 0,
-  "monster_spawn_block_light_limit": 0,
+  "height": 256,
+  "piglin_safe": false,
+  "bed_works": false,
+  "respawn_anchor_works": false,
+  "has_raids": false,
   "monster_spawn_light_level": 0,
-  "skybox": "overworld",
-  "timelines": "#minecraft:in_overworld"
+  "monster_spawn_block_light_limit": 0
 }
