@@ -327,17 +327,21 @@ public final class RequiemClient {
                 boolean changedChunk = chunkX != parmenidesPreviewRequestedChunkX
                     || chunkZ != parmenidesPreviewRequestedChunkZ
                     || dimension != parmenidesPreviewDimension;
-                if (!parmenidesPreviewKeyDown || changedChunk) {
-                    ParmenidesClientState.clearPreview();
-                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
-                    parmenidesPreviewRequestedChunkX = chunkX;
-                    parmenidesPreviewRequestedChunkZ = chunkZ;
-                    parmenidesPreviewDimension = dimension;
-                    parmenidesPreviewRequestCooldown = 20;
-                } else if (!ParmenidesClientState.hasPreview() && parmenidesPreviewRequestCooldown-- <= 0) {
+                if (!parmenidesPreviewKeyDown) {
+                    ParmenidesClientState.beginPreview(mc.level.getGameTime(), chunkX, chunkZ, dimension == 1);
                     PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
                     parmenidesPreviewRequestCooldown = 20;
+                } else if (changedChunk) {
+                    ParmenidesClientState.movePreviewCenter(chunkX, chunkZ, dimension == 1);
+                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
+                    parmenidesPreviewRequestCooldown = 20;
+                } else if (parmenidesPreviewRequestCooldown-- <= 0) {
+                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
+                    parmenidesPreviewRequestCooldown = 40;
                 }
+                parmenidesPreviewRequestedChunkX = chunkX;
+                parmenidesPreviewRequestedChunkZ = chunkZ;
+                parmenidesPreviewDimension = dimension;
                 parmenidesPreviewKeyDown = true;
             } else {
                 if (parmenidesPreviewKeyDown) {
