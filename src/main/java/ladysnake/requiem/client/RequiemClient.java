@@ -339,9 +339,6 @@ public final class RequiemClient {
                     }
                     PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
                     parmenidesPreviewRequestCooldown = 20;
-                } else if (parmenidesPreviewRequestCooldown-- <= 0) {
-                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
-                    parmenidesPreviewRequestCooldown = 40;
                 }
                 parmenidesPreviewRequestedChunkX = chunkX;
                 parmenidesPreviewRequestedChunkZ = chunkZ;
@@ -358,6 +355,7 @@ public final class RequiemClient {
                 parmenidesPreviewDimension = -1;
                 ParmenidesClientState.clearPreview();
             }
+            ParmenidesClientState.refreshHiddenTerrainIfNeeded();
             // Let the server know which keys are held, so controlled mobs can mimic attacking and using
             boolean inGame = mc.mouseHandler.isMouseGrabbed();
             boolean attackHeld = inGame && mc.options.keyAttack.isDown();
