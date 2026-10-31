@@ -48,6 +48,7 @@ public final class RequiemConfig {
     private static final Path CONFIG_PATH = Path.of("config", "requiem.json");
 
     public static final Graphics graphics = new Graphics();
+    public static final Speech speech = new Speech();
 
     public static class Graphics {
         public boolean fancyDemonRender = true;
@@ -57,10 +58,31 @@ public final class RequiemConfig {
         public float particleDensity = 1.0f;
     }
 
+    public static class Speech {
+        /** Automatically translate Requiem speech bubbles into each viewer's Minecraft language. */
+        public boolean translateBubbles = true;
+        /** "google" uses Google's undocumented free web endpoint; "libretranslate" uses the URL below. */
+        public String translationProvider = "google";
+        /** Base URL of a LibreTranslate instance; /translate is appended automatically. */
+        public String libreTranslateUrl = "http://127.0.0.1:5000";
+        /** Optional key for hosted/self-hosted LibreTranslate instances. */
+        public String libreTranslateApiKey = "";
+        /** Used until a client reports its Minecraft language. */
+        public String defaultLanguage = "en";
+        /** HTTP timeout in seconds. */
+        public int timeoutSeconds = 8;
+    }
+
     private static class ConfigData {
         public boolean fancyDemonRender = true;
         public boolean reducedEffects = false;
         public float particleDensity = 1.0f;
+        public boolean translateBubbles = true;
+        public String translationProvider = "google";
+        public String libreTranslateUrl = "http://127.0.0.1:5000";
+        public String libreTranslateApiKey = "";
+        public String defaultLanguage = "en";
+        public int timeoutSeconds = 8;
     }
 
     public static void load() {
@@ -71,6 +93,15 @@ public final class RequiemConfig {
                     graphics.fancyDemonRender = data.fancyDemonRender;
                     graphics.reducedEffects = data.reducedEffects;
                     graphics.particleDensity = Math.max(0.0f, Math.min(1.0f, data.particleDensity));
+                    speech.translateBubbles = data.translateBubbles;
+                    speech.translationProvider = "libretranslate".equalsIgnoreCase(data.translationProvider)
+                        ? "libretranslate" : "google";
+                    speech.libreTranslateUrl = data.libreTranslateUrl == null || data.libreTranslateUrl.isBlank()
+                        ? "http://127.0.0.1:5000" : data.libreTranslateUrl.trim();
+                    speech.libreTranslateApiKey = data.libreTranslateApiKey == null ? "" : data.libreTranslateApiKey;
+                    speech.defaultLanguage = data.defaultLanguage == null || data.defaultLanguage.isBlank()
+                        ? "en" : data.defaultLanguage.trim().toLowerCase(java.util.Locale.ROOT);
+                    speech.timeoutSeconds = Math.max(2, Math.min(15, data.timeoutSeconds));
                 }
             } catch (Exception e) {
                 Requiem.LOGGER.error("[Requiem] Failed to load config", e);
@@ -89,6 +120,12 @@ public final class RequiemConfig {
                 data.fancyDemonRender = graphics.fancyDemonRender;
                 data.reducedEffects = graphics.reducedEffects;
                 data.particleDensity = graphics.particleDensity;
+                data.translateBubbles = speech.translateBubbles;
+                data.translationProvider = speech.translationProvider;
+                data.libreTranslateUrl = speech.libreTranslateUrl;
+                data.libreTranslateApiKey = speech.libreTranslateApiKey;
+                data.defaultLanguage = speech.defaultLanguage;
+                data.timeoutSeconds = speech.timeoutSeconds;
                 GSON.toJson(data, writer);
             }
         } catch (Exception e) {

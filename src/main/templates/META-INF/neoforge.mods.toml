@@ -40,3 +40,10 @@ file="META-INF/accesstransformer.cfg"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="sayitenglish"
+    type="optional"
+    versionRange="[1.1.0,)"
+    ordering="AFTER"
+    side="BOTH"

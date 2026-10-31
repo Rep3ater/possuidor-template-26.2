@@ -76,6 +76,8 @@ public final class RequiemForgeEvents {
 
     @SubscribeEvent
     public static void onServerChat(ServerChatEvent event) {
+        ladysnake.requiem.common.SayItCompatibilityManager.onChat(event);
+        if (event.isCanceled()) return;
         NucleusManager.onChat(event);
         if (event.isCanceled()) return;
         MarbasAbilitySystem.onChat(event);
@@ -114,6 +116,7 @@ public final class RequiemForgeEvents {
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ladysnake.requiem.common.ghost.ParmenidesManager.clearProjections(player);
+            ladysnake.requiem.common.SayItCompatibilityManager.onLogout(player);
         }
     }
 

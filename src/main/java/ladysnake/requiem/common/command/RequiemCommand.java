@@ -21,6 +21,7 @@ public final class RequiemCommand {
             .then(RequiemRemnantCommand.remnantSubcommand())
             .then(RequiemShellCommand.shellSubcommand())
             .then(RequiemSoulCommand.soulSubcommand())
+            .then(ladysnake.requiem.common.command.RequiemSayItCommand.sayItSubcommand())
         );
     }
 

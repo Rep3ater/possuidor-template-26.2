@@ -83,6 +83,11 @@ public final class ServerMessageHandling {
 
         // Requiem payloads
         registrar.playToServer(
+            RequiemNetworking.SpeechLanguagePayload.TYPE,
+            RequiemNetworking.SpeechLanguagePayload.STREAM_CODEC,
+            ServerMessageHandling::handleSpeechLanguage
+        );
+        registrar.playToServer(
             RequiemNetworking.UseIndirectAbilityPayload.TYPE,
             RequiemNetworking.UseIndirectAbilityPayload.STREAM_CODEC,
             ServerMessageHandling::handleUseIndirectAbility
@@ -142,6 +147,11 @@ public final class ServerMessageHandling {
         context.enqueueWork(() -> {});
     }
 
+    private static void handleSpeechLanguage(RequiemNetworking.SpeechLanguagePayload payload, IPayloadContext context) {
+        if (!(context.player() instanceof ServerPlayer player)) return;
+        context.enqueueWork(() -> ladysnake.requiem.common.SayItCompatibilityManager.setPlayerLanguage(player, payload.language()));
+    }
+
     private static void handleAnchorDamage(RequiemNetworking.AnchorDamagePayload payload, IPayloadContext context) {
         context.enqueueWork(() -> {});
     }
@@ -177,6 +187,7 @@ public final class ServerMessageHandling {
     private static void registerClientboundPayloads(PayloadRegistrar registrar) {
         // Keep the payload IDs/codecs available to the physical server. The client installs
         // the real handlers via RegisterClientPayloadHandlersEvent.
+        registrar.playToClient(RequiemNetworking.SpeechBubblePayload.TYPE, RequiemNetworking.SpeechBubblePayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC, (payload, context) -> {});

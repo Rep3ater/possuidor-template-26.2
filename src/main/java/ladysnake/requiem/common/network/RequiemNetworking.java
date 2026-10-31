@@ -81,6 +81,8 @@ public final class RequiemNetworking {
     public static final ResourceLocation OUT_OF_BODY_BODY = Requiem.id("out_of_body_body");
     public static final ResourceLocation PARMENIDES_PREVIEW_REQUEST = Requiem.id("parmenides_preview_request");
     public static final ResourceLocation PARMENIDES_PREVIEW_DATA = Requiem.id("parmenides_preview_data");
+    public static final ResourceLocation SPEECH_BUBBLE = Requiem.id("speech_bubble");
+    public static final ResourceLocation SPEECH_LANGUAGE = Requiem.id("speech_language");
 
     // Client -> Server
     public static final ResourceLocation HOMUNCULUS_BRAIN_SAVE = Requiem.id("homunculus_brain_save");
@@ -93,6 +95,26 @@ public final class RequiemNetworking {
     public static final ResourceLocation USE_RIFT = Requiem.id("use_rift");
     public static final ResourceLocation CONSTRUCT_ACTION = Requiem.id("construct_action");
     public static final ResourceLocation LOCKI_PLANT_CHOICE = Requiem.id("locki_plant_choice");
+
+    public record SpeechBubblePayload(int entityId, String text) implements CustomPacketPayload {
+        public static final Type<SpeechBubblePayload> TYPE = new Type<>(SPEECH_BUBBLE);
+        public static final StreamCodec<RegistryFriendlyByteBuf, SpeechBubblePayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, SpeechBubblePayload::entityId,
+            ByteBufCodecs.STRING_UTF8, SpeechBubblePayload::text,
+            SpeechBubblePayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    /** Client -> server: the language selected in Minecraft's language settings. */
+    public record SpeechLanguagePayload(String language) implements CustomPacketPayload {
+        public static final Type<SpeechLanguagePayload> TYPE = new Type<>(SPEECH_LANGUAGE);
+        public static final StreamCodec<RegistryFriendlyByteBuf, SpeechLanguagePayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, SpeechLanguagePayload::language,
+            SpeechLanguagePayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
 
     public record LockiStatePayload(int playerEntityId, String mode, int cameraEntityId, int cameraMode, int rotStage) implements CustomPacketPayload {
         public static final Type<LockiStatePayload> TYPE = new Type<>(LOCKI_STATE);

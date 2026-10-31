@@ -9,7 +9,8 @@
     "possession.gameplay.ability.BlazeEntityAccessor",
     "possession.gameplay.ability.EvokerEntityAccessor",
     "possession.gameplay.ability.PufferfishEntityAccessor",
-    "compat.AppleSkinSyncHandlerMixin"
+    "compat.AppleSkinSyncHandlerMixin",
+    "compat.SayItChallengeMixin"
   ],
   "injectors": {
     "defaultRequire": 1
