@@ -59,6 +59,7 @@ import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
@@ -77,6 +78,11 @@ public final class RequiemClient {
     private static final double SHARED_BODY_FADE_RADIANS = Math.toRadians(24.0);
 
     private static ResourceLocation activePostEffect;
+    private static boolean parmenidesPreviewKeyDown;
+    private static int parmenidesPreviewRequestCooldown;
+    private static int parmenidesPreviewRequestedChunkX = Integer.MIN_VALUE;
+    private static int parmenidesPreviewRequestedChunkZ = Integer.MIN_VALUE;
+    private static int parmenidesPreviewDimension = -1;
 
     public static ResourceLocation activePostEffect() {
         return activePostEffect;
@@ -107,6 +113,7 @@ public final class RequiemClient {
         modEventBus.addListener(RequiemClient::onRegisterParticleProviders);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onClientTick);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderPlayerPre);
+        NeoForge.EVENT_BUS.addListener(ladysnake.requiem.client.render.ParmenidesChunkPreviewRenderer::render);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderLivingPre);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderHand);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderGuiPost);
@@ -296,6 +303,12 @@ public final class RequiemClient {
 
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         SharedBodyClientState.reset();
+        parmenidesPreviewKeyDown = false;
+        parmenidesPreviewRequestCooldown = 0;
+        parmenidesPreviewRequestedChunkX = Integer.MIN_VALUE;
+        parmenidesPreviewRequestedChunkZ = Integer.MIN_VALUE;
+        parmenidesPreviewDimension = -1;
+        ParmenidesClientState.clearPreview();
         activePostEffect = null;
         ladysnake.requiem.client.locki.LockiClientState.reset();
     }
@@ -304,6 +317,39 @@ public final class RequiemClient {
         Minecraft mc = Minecraft.getInstance();
         ladysnake.requiem.client.locki.LockiClientState.tick();
         if (mc.level != null && mc.player != null) {
+            boolean previewHeld = mc.options.keyShift.isDown() && ParmenidesClientState.isParmenides(mc.player)
+                && (mc.level.dimension() == net.minecraft.world.level.Level.OVERWORLD
+                    || mc.level.dimension() == net.minecraft.world.level.Level.NETHER);
+            if (previewHeld) {
+                int chunkX = mc.player.chunkPosition().x;
+                int chunkZ = mc.player.chunkPosition().z;
+                int dimension = mc.level.dimension() == net.minecraft.world.level.Level.NETHER ? 1 : 0;
+                boolean changedChunk = chunkX != parmenidesPreviewRequestedChunkX
+                    || chunkZ != parmenidesPreviewRequestedChunkZ
+                    || dimension != parmenidesPreviewDimension;
+                if (!parmenidesPreviewKeyDown || changedChunk) {
+                    ParmenidesClientState.clearPreview();
+                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
+                    parmenidesPreviewRequestedChunkX = chunkX;
+                    parmenidesPreviewRequestedChunkZ = chunkZ;
+                    parmenidesPreviewDimension = dimension;
+                    parmenidesPreviewRequestCooldown = 20;
+                } else if (!ParmenidesClientState.hasPreview() && parmenidesPreviewRequestCooldown-- <= 0) {
+                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
+                    parmenidesPreviewRequestCooldown = 20;
+                }
+                parmenidesPreviewKeyDown = true;
+            } else {
+                if (parmenidesPreviewKeyDown) {
+                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(false, 0, 0));
+                }
+                parmenidesPreviewKeyDown = false;
+                parmenidesPreviewRequestCooldown = 0;
+                parmenidesPreviewRequestedChunkX = Integer.MIN_VALUE;
+                parmenidesPreviewRequestedChunkZ = Integer.MIN_VALUE;
+                parmenidesPreviewDimension = -1;
+                ParmenidesClientState.clearPreview();
+            }
             // Let the server know which keys are held, so controlled mobs can mimic attacking and using
             boolean inGame = mc.mouseHandler.isMouseGrabbed();
             boolean attackHeld = inGame && mc.options.keyAttack.isDown();
