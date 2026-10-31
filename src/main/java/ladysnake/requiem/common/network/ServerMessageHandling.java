@@ -240,13 +240,19 @@ public final class ServerMessageHandling {
             LevelChunk chunk = counterpart.getChunk(chunkX, chunkZ);
             int minY = counterpart.getMinBuildHeight();
             int height = counterpart.getMaxBuildHeight() - minY;
-            List<Integer> states = new ArrayList<>(16 * 16 * height);
+            // Sparse pairs: local block index followed by its block-state registry ID.
+            // Air is omitted to keep the packet and client render loop small.
+            List<Integer> states = new ArrayList<>();
             for (int y = 0; y < height; y++) {
                 int worldY = minY + y;
                 for (int z = 0; z < 16; z++) {
                     for (int x = 0; x < 16; x++) {
-                        states.add(Block.BLOCK_STATE_REGISTRY.getId(chunk.getBlockState(
-                            new net.minecraft.core.BlockPos((chunkX << 4) + x, worldY, (chunkZ << 4) + z))));
+                        net.minecraft.world.level.block.state.BlockState state = chunk.getBlockState(
+                            new net.minecraft.core.BlockPos((chunkX << 4) + x, worldY, (chunkZ << 4) + z));
+                        if (!state.isAir()) {
+                            states.add((y * 256) + (z * 16) + x);
+                            states.add(Block.BLOCK_STATE_REGISTRY.getId(state));
+                        }
                     }
                 }
             }
