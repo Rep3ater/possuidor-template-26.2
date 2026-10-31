@@ -599,7 +599,11 @@ public final class RequiemForgeEvents {
             }
         }
 
-        if (alterer.isNoClipping()) {
+        boolean parmenidesMaterializing = ladysnake.requiem.common.ghost.ParmenidesRole.isParmenides(player)
+            && player.isShiftKeyDown();
+        if (parmenidesMaterializing) {
+            player.noPhysics = false;
+        } else if (alterer.isNoClipping()) {
             player.noPhysics = true;
         }
 

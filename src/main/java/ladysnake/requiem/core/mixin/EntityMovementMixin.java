@@ -1,6 +1,7 @@
 package ladysnake.requiem.core.mixin;
 
 import ladysnake.requiem.api.v1.entity.MovementAlterer;
+import ladysnake.requiem.common.ghost.ParmenidesRole;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -16,7 +17,8 @@ public abstract class EntityMovementMixin {
     private void requiem$noClipCollide(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
         if ((Object) this instanceof Player player) {
             try {
-                if (MovementAlterer.get(player).isNoClipping()) {
+                boolean materializing = ParmenidesRole.isParmenides(player) && player.isShiftKeyDown();
+                if (MovementAlterer.get(player).isNoClipping() && !materializing) {
                     cir.setReturnValue(movement);
                 }
             } catch (Throwable ignored) {
