@@ -32,13 +32,13 @@ public final class ParmenidesChunkPreviewRenderer {
         int minY = ParmenidesClientState.previewMinY();
         int height = ParmenidesClientState.previewHeight();
 
-        // Keep the counterpart view immediately beside the real chunk, with a one-block gap.
-        int displayX = (chunkX << 4) + 17;
-        int displayZ = chunkZ << 4;
+        // Replace the visible terrain in this chunk with the counterpart dimension's
+        // terrain. Keeping the same world coordinates makes this a true counterpart view,
+        // rather than an unrelated miniature placed beside the player.
         PoseStack pose = event.getPoseStack();
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
         pose.pushPose();
-        pose.translate(displayX - camera.x, -camera.y, displayZ - camera.z);
+        pose.translate((chunkX << 4) - camera.x, -camera.y, (chunkZ << 4) - camera.z);
 
         for (int entry = 0; entry < ParmenidesClientState.previewBlockCount(); entry++) {
             int localIndex = ParmenidesClientState.previewLocalIndex(entry);
