@@ -187,6 +187,7 @@ public final class ServerMessageHandling {
     private static void registerClientboundPayloads(PayloadRegistrar registrar) {
         // Keep the payload IDs/codecs available to the physical server. The client installs
         // the real handlers via RegisterClientPayloadHandlersEvent.
+        registrar.playToClient(RequiemNetworking.SpeechBubblePayload.TYPE, RequiemNetworking.SpeechBubblePayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC, (payload, context) -> {});
