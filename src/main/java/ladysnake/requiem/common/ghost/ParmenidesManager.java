@@ -15,11 +15,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 /** Server authority for the Parmenides body and its dimension-local projections. */
 public final class ParmenidesManager {
     private static final String PROJECTION_PREFIX = "requiem_parmenides_projection:";
     private static final Set<UUID> CHECKED_INACTIVE_PLAYERS = ConcurrentHashMap.newKeySet();
+    private static final Map<UUID, String> LAST_DIMENSIONS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Integer> DIMENSION_STABLE_TICKS = new ConcurrentHashMap<>();
 
     private ParmenidesManager() { }
 
@@ -58,6 +61,24 @@ public final class ParmenidesManager {
         CHECKED_INACTIVE_PLAYERS.remove(player.getUUID());
         BlockPos position = player.blockPosition();
         ServerLevel activeLevel = (ServerLevel) player.level();
+
+        // Do not materialize a counterpart shell during rapid dimension transitions.
+        // Wait until the owner has remained in the new dimension for half a second.
+        String dimensionKey = activeLevel.dimension().location().toString();
+        String previousDimension = LAST_DIMENSIONS.put(player.getUUID(), dimensionKey);
+        if (previousDimension == null) {
+            DIMENSION_STABLE_TICKS.put(player.getUUID(), 10);
+        } else if (!previousDimension.equals(dimensionKey)) {
+            DIMENSION_STABLE_TICKS.put(player.getUUID(), 0);
+        }
+        int stableTicks = DIMENSION_STABLE_TICKS.merge(player.getUUID(), 1, Integer::sum);
+        if (stableTicks < 10) {
+            for (ServerLevel level : activeLevel.getServer().getAllLevels()) {
+                level.getEntitiesOfClass(ParmenidesProjectionEntity.class, new AABB(position).inflate(4.0),
+                    shell -> shell.getTags().contains(marker)).forEach(ParmenidesManager::discardProjection);
+            }
+            return;
+        }
 
         for (ServerLevel level : activeLevel.getServer().getAllLevels()) {
             List<ParmenidesProjectionEntity> nearby = level.getEntitiesOfClass(
@@ -104,6 +125,8 @@ public final class ParmenidesManager {
     public static void clearProjections(ServerPlayer player) {
         discardProjections(player, PROJECTION_PREFIX + player.getUUID());
         CHECKED_INACTIVE_PLAYERS.add(player.getUUID());
+        LAST_DIMENSIONS.remove(player.getUUID());
+        DIMENSION_STABLE_TICKS.remove(player.getUUID());
     }
 
     private static void discardProjections(ServerPlayer player, String marker) {
