@@ -172,9 +172,10 @@ public final class ParmenidesClientState {
     }
 
     /** Hide the entire original-dimension column in every counterpart chunk. */
-    public static boolean shouldHideOriginalBlock(BlockPos pos, Object level) {
-        Minecraft mc = Minecraft.getInstance();
-        return hasPreview() && mc.level == level && isInsideReveal(pos);
+    public static boolean shouldHideOriginalBlock(BlockPos pos) {
+        // renderBatched receives a RenderChunkRegion wrapper, not Minecraft.level itself.
+        // The mixin is client-only, so the active preview chunk key is the correct guard.
+        return hasPreview() && isInsideReveal(pos);
     }
 
     public static boolean shouldPreviewNether() {
