@@ -77,11 +77,16 @@ public final class ParmenidesClientState {
     public static int previewMinY() { return previewMinY; }
     public static int previewHeight() { return previewHeight; }
 
-    public static BlockState previewState(int x, int y, int z) {
-        int index = (y * 16 + z) * 16 + x;
-        List<Integer> states = previewStates;
-        if (index < 0 || index >= states.size()) return net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
-        BlockState state = Block.BLOCK_STATE_REGISTRY.byId(states.get(index));
+    public static int previewBlockCount() {
+        return previewStates.size() / 2;
+    }
+
+    public static int previewLocalIndex(int entry) {
+        return previewStates.get(entry * 2);
+    }
+
+    public static BlockState previewBlockState(int entry) {
+        BlockState state = Block.BLOCK_STATE_REGISTRY.byId(previewStates.get(entry * 2 + 1));
         return state == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : state;
     }
 
