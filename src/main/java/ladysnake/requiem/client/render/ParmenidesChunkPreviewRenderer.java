@@ -4,7 +4,6 @@ import ladysnake.requiem.client.ParmenidesClientState;
 import ladysnake.requiem.client.ParmenidesClientState.PreviewBlock;
 import ladysnake.requiem.client.ParmenidesClientState.PreviewChunk;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
