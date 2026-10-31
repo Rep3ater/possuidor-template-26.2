@@ -41,20 +41,20 @@ public final class ParmenidesChunkPreviewRenderer {
         pose.pushPose();
         pose.translate(displayX - camera.x, -camera.y, displayZ - camera.z);
 
-        for (int y = 0; y < height; y++) {
-            int worldY = minY + y;
-            for (int z = 0; z < 16; z++) {
-                for (int x = 0; x < 16; x++) {
-                    BlockState state = ParmenidesClientState.previewState(x, y, z);
-                    if (state.isAir()) continue;
-                    pose.pushPose();
-                    pose.translate(x, worldY, z);
-                    mc.getBlockRenderer().renderSingleBlock(
-                        state, pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY
-                    );
-                    pose.popPose();
-                }
-            }
+        for (int entry = 0; entry < ParmenidesClientState.previewBlockCount(); entry++) {
+            int localIndex = ParmenidesClientState.previewLocalIndex(entry);
+            int x = localIndex & 15;
+            int z = (localIndex >> 4) & 15;
+            int y = localIndex >> 8;
+            if (y >= height) continue;
+            BlockState state = ParmenidesClientState.previewBlockState(entry);
+            if (state.isAir()) continue;
+            pose.pushPose();
+            pose.translate(x, minY + y, z);
+            mc.getBlockRenderer().renderSingleBlock(
+                state, pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY
+            );
+            pose.popPose();
         }
 
         pose.popPose();
