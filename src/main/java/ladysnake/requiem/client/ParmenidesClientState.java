@@ -16,6 +16,7 @@ public final class ParmenidesClientState {
     private static volatile boolean netherPreview;
     private static volatile int previewChunkX;
     private static volatile int previewChunkZ;
+    private static volatile boolean previewPlayerInNether;
     private static volatile int previewMinY;
     private static volatile int previewHeight;
     private static volatile List<Integer> previewStates = List.of();
@@ -53,9 +54,10 @@ public final class ParmenidesClientState {
         netherPreview = active;
     }
 
-    public static void acceptPreview(int chunkX, int chunkZ, int minY, int height, List<Integer> states) {
+    public static void acceptPreview(int chunkX, int chunkZ, boolean playerInNether, int minY, int height, List<Integer> states) {
         previewChunkX = chunkX;
         previewChunkZ = chunkZ;
+        previewPlayerInNether = playerInNether;
         previewMinY = minY;
         previewHeight = height;
         previewStates = List.copyOf(states);
@@ -69,7 +71,13 @@ public final class ParmenidesClientState {
     }
 
     public static boolean hasPreview() {
-        return shouldPreviewNether() && previewHeight > 0 && !previewStates.isEmpty();
+        Minecraft mc = Minecraft.getInstance();
+        if (!shouldPreviewNether() || mc.player == null || !mc.options.keyShift.isDown()
+                || previewHeight <= 0 || previewStates.isEmpty()) return false;
+        boolean playerInNether = mc.level != null && mc.level.dimension() == net.minecraft.world.level.Level.NETHER;
+        return previewPlayerInNether == playerInNether
+            && previewChunkX == mc.player.chunkPosition().x
+            && previewChunkZ == mc.player.chunkPosition().z;
     }
 
     public static int previewChunkX() { return previewChunkX; }
