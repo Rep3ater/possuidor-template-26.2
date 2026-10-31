@@ -127,7 +127,7 @@ public final class ParmenidesClientState {
         terrainRefreshPending = false;
 
         double radius = revealRadius();
-        if (mc.player == null) return;
+        if (radius <= 0.0D || mc.player == null) return;
         double playerX = mc.player.getX();
         double playerZ = mc.player.getZ();
         for (int z = previewCenterChunkZ - 1; z <= previewCenterChunkZ + 1; z++) {
@@ -196,8 +196,8 @@ public final class ParmenidesClientState {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || previewStartedAt < 0L) return 0.0D;
         long elapsed = Math.max(0L, mc.level.getGameTime() - previewStartedAt);
-        // 52 blocks reaches beyond every corner of the 3x3 chunk square in five seconds.
-        return Math.min(52.0D, elapsed * 0.52D);
+        // The wave reaches the farthest corner of the 3x3 chunk area in about five seconds.
+        return Math.min(24.0D, elapsed * 0.24D);
     }
 
     public static boolean isInsideReveal(BlockPos pos) {
