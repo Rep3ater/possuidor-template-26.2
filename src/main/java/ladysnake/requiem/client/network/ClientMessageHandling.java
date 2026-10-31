@@ -32,6 +32,9 @@ public final class ClientMessageHandling {
             (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.ParmenidesClientState.update(payload.entityId(), payload.active())));
         registrar.playToClient(RequiemNetworking.OutOfBodyBodyPayload.TYPE, RequiemNetworking.OutOfBodyBodyPayload.STREAM_CODEC,
             (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.ParmenidesClientState.updateBody(payload.entityId(), payload.active())));
+        registrar.playToClient(RequiemNetworking.ParmenidesPreviewDataPayload.TYPE, RequiemNetworking.ParmenidesPreviewDataPayload.STREAM_CODEC,
+            (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.ParmenidesClientState.acceptPreview(
+                payload.chunkX(), payload.chunkZ(), payload.playerInNether(), payload.minY(), payload.height(), payload.states())));
     }
 
     private static void handleOpenDialogue(RequiemNetworking.OpenDialoguePayload payload, net.neoforged.neoforge.network.handling.IPayloadContext context) {
