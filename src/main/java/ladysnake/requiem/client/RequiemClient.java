@@ -304,6 +304,7 @@ public final class RequiemClient {
     }
 
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        ladysnake.requiem.client.SpeechLanguageSync.reset();
         ladysnake.requiem.client.SpeechBubbleClientState.clear();
         SharedBodyClientState.reset();
         parmenidesPreviewKeyDown = false;
@@ -319,6 +320,7 @@ public final class RequiemClient {
     public static void onClientTick(ClientTickEvent.Post event) {
         ladysnake.requiem.client.SpeechBubbleClientState.tick();
         Minecraft mc = Minecraft.getInstance();
+        ladysnake.requiem.client.SpeechLanguageSync.tick(mc);
         ladysnake.requiem.client.locki.LockiClientState.tick();
         if (mc.level != null && mc.player != null) {
             boolean previewHeld = mc.options.keyShift.isDown() && ParmenidesClientState.isParmenides(mc.player)
