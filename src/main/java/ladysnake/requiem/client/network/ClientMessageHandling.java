@@ -17,7 +17,14 @@ public final class ClientMessageHandling {
     public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1.0.0");
         registrar.playToClient(RequiemNetworking.SpeechBubblePayload.TYPE, RequiemNetworking.SpeechBubblePayload.STREAM_CODEC,
-            (payload, context) -> context.enqueueWork(() -> ladysnake.requiem.client.SpeechBubbleClientState.show(payload.entityId(), payload.text())));
+            (payload, context) -> context.enqueueWork(() -> {
+                Minecraft minecraft = Minecraft.getInstance();
+                boolean entityLoaded = minecraft.level != null && minecraft.level.getEntity(payload.entityId()) != null;
+                ladysnake.requiem.Requiem.LOGGER.info(
+                    "[Requiem] Client received speech bubble packet: entity={}, loadedLocally={}, text='{}'",
+                    payload.entityId(), entityLoaded, payload.text());
+                ladysnake.requiem.client.SpeechBubbleClientState.show(payload.entityId(), payload.text());
+            }));
         registrar.playToClient(RequiemNetworking.AnchorDamagePayload.TYPE, RequiemNetworking.AnchorDamagePayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.DataSyncPayload.TYPE, RequiemNetworking.DataSyncPayload.STREAM_CODEC, (payload, context) -> {});
         registrar.playToClient(RequiemNetworking.OpusUsePayload.TYPE, RequiemNetworking.OpusUsePayload.STREAM_CODEC, (payload, context) -> {});
