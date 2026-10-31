@@ -1,25 +1,38 @@
 package ladysnake.requiem.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import java.util.List;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Client copy of the server-only scoreboard role, keyed by tracked entity ID. */
+/** Client-side state for Parmenides' expanding counterpart-dimension vision. */
 public final class ParmenidesClientState {
+    public record PreviewChunk(int chunkX, int chunkZ, int minY, int height, List<Integer> states) {
+        public PreviewChunk {
+            states = List.copyOf(states);
+        }
+        public int blockCount() { return states.size() / 2; }
+        public int localIndex(int entry) { return states.get(entry * 2); }
+        public BlockState blockState(int entry) {
+            BlockState state = Block.BLOCK_STATE_REGISTRY.byId(states.get(entry * 2 + 1));
+            return state == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : state;
+        }
+    }
+
     private static final Set<Integer> ACTIVE_PLAYERS = ConcurrentHashMap.newKeySet();
     private static final Set<Integer> OUT_OF_BODY_BODIES = ConcurrentHashMap.newKeySet();
+    private static final Map<Long, PreviewChunk> PREVIEW_CHUNKS = new ConcurrentHashMap<>();
     private static volatile boolean netherPreview;
-    private static volatile int previewChunkX;
-    private static volatile int previewChunkZ;
     private static volatile boolean previewPlayerInNether;
-    private static volatile int previewMinY;
-    private static volatile int previewHeight;
-    private static volatile List<Integer> previewStates = List.of();
+    private static volatile int previewCenterChunkX;
+    private static volatile int previewCenterChunkZ;
+    private static volatile long previewStartedAt = -1L;
 
     private ParmenidesClientState() { }
 
@@ -36,9 +49,7 @@ public final class ParmenidesClientState {
     public static void clear() {
         ACTIVE_PLAYERS.clear();
         OUT_OF_BODY_BODIES.clear();
-        netherPreview = false;
-        previewStates = List.of();
-        previewHeight = 0;
+        clearPreview();
     }
 
     public static void updateBody(int entityId, boolean active) {
@@ -50,56 +61,84 @@ public final class ParmenidesClientState {
         return OUT_OF_BODY_BODIES.contains(entityId);
     }
 
-    public static void setNetherPreview(boolean active) {
-        netherPreview = active;
+    public static void beginPreview(long gameTime, int centerChunkX, int centerChunkZ, boolean playerInNether) {
+        netherPreview = true;
+        previewStartedAt = gameTime;
+        previewCenterChunkX = centerChunkX;
+        previewCenterChunkZ = centerChunkZ;
+        previewPlayerInNether = playerInNether;
+        PREVIEW_CHUNKS.clear();
+    }
+
+    public static void movePreviewCenter(int centerChunkX, int centerChunkZ, boolean playerInNether) {
+        if (centerChunkX != previewCenterChunkX || centerChunkZ != previewCenterChunkZ
+                || playerInNether != previewPlayerInNether) {
+            previewCenterChunkX = centerChunkX;
+            previewCenterChunkZ = centerChunkZ;
+            previewPlayerInNether = playerInNether;
+            PREVIEW_CHUNKS.clear();
+        }
     }
 
     public static void acceptPreview(int chunkX, int chunkZ, boolean playerInNether, int minY, int height, List<Integer> states) {
-        previewChunkX = chunkX;
-        previewChunkZ = chunkZ;
-        previewPlayerInNether = playerInNether;
-        previewMinY = minY;
-        previewHeight = height;
-        previewStates = List.copyOf(states);
+        if (playerInNether != previewPlayerInNether
+                || Math.abs(chunkX - previewCenterChunkX) > 1
+                || Math.abs(chunkZ - previewCenterChunkZ) > 1) return;
+        PREVIEW_CHUNKS.put(chunkKey(chunkX, chunkZ), new PreviewChunk(chunkX, chunkZ, minY, height, states));
         netherPreview = true;
     }
 
     public static void clearPreview() {
         netherPreview = false;
-        previewStates = List.of();
-        previewHeight = 0;
+        PREVIEW_CHUNKS.clear();
+        previewStartedAt = -1L;
     }
 
     public static boolean hasPreview() {
         Minecraft mc = Minecraft.getInstance();
-        if (!shouldPreviewNether() || mc.player == null || !mc.options.keyShift.isDown()
-                || previewHeight <= 0 || previewStates.isEmpty()) return false;
-        boolean playerInNether = mc.level != null && mc.level.dimension() == net.minecraft.world.level.Level.NETHER;
+        if (!shouldPreviewNether() || mc.player == null || mc.level == null || !mc.options.keyShift.isDown()
+                || PREVIEW_CHUNKS.isEmpty()) return false;
+        boolean playerInNether = mc.level.dimension() == net.minecraft.world.level.Level.NETHER;
         return previewPlayerInNether == playerInNether
-            && previewChunkX == mc.player.chunkPosition().x
-            && previewChunkZ == mc.player.chunkPosition().z;
+            && previewCenterChunkX == mc.player.chunkPosition().x
+            && previewCenterChunkZ == mc.player.chunkPosition().z;
     }
 
-    public static int previewChunkX() { return previewChunkX; }
-    public static int previewChunkZ() { return previewChunkZ; }
-    public static int previewMinY() { return previewMinY; }
-    public static int previewHeight() { return previewHeight; }
-
-    public static int previewBlockCount() {
-        return previewStates.size() / 2;
+    public static Map<Long, PreviewChunk> previewChunks() {
+        return Map.copyOf(PREVIEW_CHUNKS);
     }
 
-    public static int previewLocalIndex(int entry) {
-        return previewStates.get(entry * 2);
+    public static double revealRadius() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || previewStartedAt < 0L) return 0.0D;
+        long elapsed = Math.max(0L, mc.level.getGameTime() - previewStartedAt);
+        // The domain expands over five seconds to cover the complete 3x3 chunk square.
+        return Math.min(36.0D, elapsed / 100.0D * 36.0D);
     }
 
-    public static BlockState previewBlockState(int entry) {
-        BlockState state = Block.BLOCK_STATE_REGISTRY.byId(previewStates.get(entry * 2 + 1));
-        return state == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : state;
+    public static boolean isInsideReveal(BlockPos pos) {
+        if (!hasPreview()) return false;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return false;
+        int cx = pos.getX() >> 4;
+        int cz = pos.getZ() >> 4;
+        if (!PREVIEW_CHUNKS.containsKey(chunkKey(cx, cz))) return false;
+        double dx = pos.getX() + 0.5D - mc.player.getX();
+        double dz = pos.getZ() + 0.5D - mc.player.getZ();
+        double radius = revealRadius();
+        return dx * dx + dz * dz <= radius * radius;
+    }
+
+    public static boolean shouldHideOriginalBlock(BlockPos pos) {
+        return isInsideReveal(pos);
     }
 
     public static boolean shouldPreviewNether() {
         Minecraft mc = Minecraft.getInstance();
         return netherPreview && mc.player != null && isParmenides(mc.player);
+    }
+
+    private static long chunkKey(int x, int z) {
+        return ((long) x << 32) ^ (z & 0xffffffffL);
     }
 }
