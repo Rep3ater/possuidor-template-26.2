@@ -112,6 +112,33 @@ tasks.named('processResources', ProcessResources).configure {
 tasks.named('jar', Jar).configure {
     from('LICENSE-CODE')
     from('LICENSE-ART')
+
+    // Requiem's local Fabric compatibility shim compiles Event/EventFactory so the
+    // NeoForge project can build without a Fabric API compile dependency. Do not
+    // ship those two classes: fabric_api_base supplies the real API at runtime,
+    // and including both copies creates a JPMS split-package resolution failure.
+    exclude 'net/fabricmc/fabric/api/event/Event.class'
+    exclude 'net/fabricmc/fabric/api/event/EventFactory*.class'
+
+    // Guard the distributable JAR against reintroducing the fabric_api_base
+    // split-package conflict.
+    doLast {
+        def archive = new java.util.zip.ZipFile(archiveFile.get().asFile)
+        try {
+            def conflictingEntries = java.util.Collections.list(archive.entries()).findAll { entry ->
+                entry.name == 'net/fabricmc/fabric/api/event/Event.class' ||
+                    entry.name.startsWith('net/fabricmc/fabric/api/event/EventFactory')
+            }
+            if (!conflictingEntries.isEmpty()) {
+                throw new GradleException(
+                    "Requiem JAR still contains Fabric API base classes: " +
+                        conflictingEntries.collect { it.name }.join(', ')
+                )
+            }
+        } finally {
+            archive.close()
+        }
+    }
 }
 
 idea {
