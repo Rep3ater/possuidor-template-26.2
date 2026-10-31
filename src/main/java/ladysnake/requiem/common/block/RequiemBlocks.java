@@ -98,7 +98,7 @@ public final class RequiemBlocks {
         "parmenides_spectral",
         BlockBehaviour.Properties.ofFullCopy(Blocks.LIGHT_BLUE_STAINED_GLASS)
             .noOcclusion().noLootTable().strength(-1.0F, 3600000.0F)
-            .lightLevel(state -> 6).emissiveRendering(state -> true)
+            .lightLevel(state -> 6)
             .sound(net.minecraft.world.level.block.SoundType.GLASS)
     );
 
