@@ -247,6 +247,7 @@ public final class ServerMessageHandling {
                     int previewChunkZ = chunkZ + offsetZ;
                     LevelChunk chunk = counterpart.getChunk(previewChunkX, previewChunkZ);
                     List<Integer> states = new ArrayList<>();
+                    net.minecraft.core.BlockPos.MutableBlockPos neighbor = new net.minecraft.core.BlockPos.MutableBlockPos();
                     for (int y = 0; y < height; y++) {
                         int worldY = minY + y;
                         for (int z = 0; z < 16; z++) {
@@ -254,11 +255,13 @@ public final class ServerMessageHandling {
                                 net.minecraft.world.level.block.state.BlockState state = chunk.getBlockState(
                                     new net.minecraft.core.BlockPos((previewChunkX << 4) + x, worldY, (previewChunkZ << 4) + z));
                                 if (!state.isAir()) {
-                                    net.minecraft.core.BlockPos.MutableBlockPos neighbor = new net.minecraft.core.BlockPos.MutableBlockPos(
-                                        (previewChunkX << 4) + x, worldY, (previewChunkZ << 4) + z);
+                                    neighbor.set((previewChunkX << 4) + x, worldY, (previewChunkZ << 4) + z);
                                     boolean exposed = false;
                                     for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
-                                        if (chunk.getBlockState(neighbor.relative(direction)).isAir()) {
+                                        neighbor.move(direction);
+                                        boolean air = chunk.getBlockState(neighbor).isAir();
+                                        neighbor.move(direction.getOpposite());
+                                        if (air) {
                                             exposed = true;
                                             break;
                                         }
