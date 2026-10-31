@@ -77,6 +77,8 @@ public final class RequiemClient {
     private static final double SHARED_BODY_FADE_RADIANS = Math.toRadians(24.0);
 
     private static ResourceLocation activePostEffect;
+    private static boolean parmenidesPreviewKeyDown;
+    private static int parmenidesPreviewRequestCooldown;
 
     public static ResourceLocation activePostEffect() {
         return activePostEffect;
@@ -296,6 +298,9 @@ public final class RequiemClient {
 
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         SharedBodyClientState.reset();
+        parmenidesPreviewKeyDown = false;
+        parmenidesPreviewRequestCooldown = 0;
+        ParmenidesClientState.clearPreview();
         activePostEffect = null;
         ladysnake.requiem.client.locki.LockiClientState.reset();
     }
@@ -304,6 +309,26 @@ public final class RequiemClient {
         Minecraft mc = Minecraft.getInstance();
         ladysnake.requiem.client.locki.LockiClientState.tick();
         if (mc.level != null && mc.player != null) {
+            boolean previewHeld = mc.options.keyShift.isDown() && ParmenidesClientState.isParmenides(mc.player)
+                && (mc.level.dimension() == net.minecraft.world.level.Level.OVERWORLD
+                    || mc.level.dimension() == net.minecraft.world.level.Level.NETHER);
+            if (previewHeld) {
+                int chunkX = mc.player.chunkPosition().x;
+                int chunkZ = mc.player.chunkPosition().z;
+                if (!parmenidesPreviewKeyDown || parmenidesPreviewRequestCooldown-- <= 0
+                        || !ParmenidesClientState.hasPreview()) {
+                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(true, chunkX, chunkZ));
+                    parmenidesPreviewRequestCooldown = 10;
+                }
+                parmenidesPreviewKeyDown = true;
+            } else {
+                if (parmenidesPreviewKeyDown) {
+                    PacketDistributor.sendToServer(new RequiemNetworking.ParmenidesPreviewRequestPayload(false, 0, 0));
+                }
+                parmenidesPreviewKeyDown = false;
+                parmenidesPreviewRequestCooldown = 0;
+                ParmenidesClientState.clearPreview();
+            }
             // Let the server know which keys are held, so controlled mobs can mimic attacking and using
             boolean inGame = mc.mouseHandler.isMouseGrabbed();
             boolean attackHeld = inGame && mc.options.keyAttack.isDown();
