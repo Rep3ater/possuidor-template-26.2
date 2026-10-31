@@ -54,6 +54,15 @@ Translation uses the following settings in `config/requiem.json` (created when t
 - `timeoutSeconds` is clamped to 2–15 seconds. Translations happen asynchronously, and a
   failed/empty response falls back to the original message.
 
+Admins can also change the live settings in-game:
+
+- `/requiem sayit translation enable`
+- `/requiem sayit translation disable`
+- `/requiem sayit translation provider google`
+- `/requiem sayit translation provider libretranslate`
+
+The LibreTranslate URL and optional API key remain in `config/requiem.json`.
+
 **Privacy:** when translation is enabled, Requiem speech-mode messages are sent from the game
 server to the selected external translation provider. Use a private LibreTranslate instance or
 set `translateBubbles` to `false` when messages must not leave your server.
