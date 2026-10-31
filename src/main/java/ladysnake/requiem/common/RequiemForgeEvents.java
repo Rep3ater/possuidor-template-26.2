@@ -76,6 +76,8 @@ public final class RequiemForgeEvents {
 
     @SubscribeEvent
     public static void onServerChat(ServerChatEvent event) {
+        ladysnake.requiem.common.SayItCompatibilityManager.onChat(event);
+        if (event.isCanceled()) return;
         NucleusManager.onChat(event);
         if (event.isCanceled()) return;
         MarbasAbilitySystem.onChat(event);
