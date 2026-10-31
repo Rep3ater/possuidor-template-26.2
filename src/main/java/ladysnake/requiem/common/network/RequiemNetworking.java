@@ -252,11 +252,12 @@ public final class RequiemNetworking {
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     }
 
-    public record ParmenidesPreviewDataPayload(int chunkX, int chunkZ, int minY, int height, List<Integer> states) implements CustomPacketPayload {
+    public record ParmenidesPreviewDataPayload(int chunkX, int chunkZ, boolean playerInNether, int minY, int height, List<Integer> states) implements CustomPacketPayload {
         public static final Type<ParmenidesPreviewDataPayload> TYPE = new Type<>(PARMENIDES_PREVIEW_DATA);
         public static final StreamCodec<RegistryFriendlyByteBuf, ParmenidesPreviewDataPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, ParmenidesPreviewDataPayload::chunkX,
             ByteBufCodecs.VAR_INT, ParmenidesPreviewDataPayload::chunkZ,
+            ByteBufCodecs.BOOL, ParmenidesPreviewDataPayload::playerInNether,
             ByteBufCodecs.VAR_INT, ParmenidesPreviewDataPayload::minY,
             ByteBufCodecs.VAR_INT, ParmenidesPreviewDataPayload::height,
             ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), ParmenidesPreviewDataPayload::states,
