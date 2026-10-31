@@ -116,6 +116,7 @@ public final class RequiemForgeEvents {
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             ladysnake.requiem.common.ghost.ParmenidesManager.clearProjections(player);
+            ladysnake.requiem.common.SayItCompatibilityManager.onLogout(player);
         }
     }
 
