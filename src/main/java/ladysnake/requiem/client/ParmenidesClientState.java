@@ -80,7 +80,7 @@ public final class ParmenidesClientState {
 
     public static void beginPreview(long gameTime, int centerChunkX, int centerChunkZ, boolean playerInNether) {
         netherPreview = true;
-        previewStartedAt = gameTime;
+        previewStartedAt = -1L;
         previewCenterChunkX = centerChunkX;
         previewCenterChunkZ = centerChunkZ;
         previewPlayerInNether = playerInNether;
@@ -98,6 +98,7 @@ public final class ParmenidesClientState {
             previewCenterChunkX = centerChunkX;
             previewCenterChunkZ = centerChunkZ;
             previewPlayerInNether = playerInNether;
+            previewStartedAt = -1L;
             PREVIEW_CHUNKS.clear();
             terrainRefreshPending = false;
         }
@@ -109,7 +110,11 @@ public final class ParmenidesClientState {
                 || Math.abs(chunkZ - previewCenterChunkZ) > 1) return;
         PREVIEW_CHUNKS.put(chunkKey(chunkX, chunkZ), new PreviewChunk(chunkX, chunkZ, minY, height, states));
         netherPreview = true;
-        if (PREVIEW_CHUNKS.size() == 9) terrainRefreshPending = true;
+        if (PREVIEW_CHUNKS.size() == 9) {
+            terrainRefreshPending = true;
+            Minecraft mc = Minecraft.getInstance();
+            previewStartedAt = mc.level == null ? 0L : mc.level.getGameTime();
+        }
     }
 
     /** Rebuild local chunk meshes once after all nine counterpart snapshots arrive. */
