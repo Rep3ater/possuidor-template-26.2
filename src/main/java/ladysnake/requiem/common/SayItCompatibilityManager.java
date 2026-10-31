@@ -1,5 +1,6 @@
 package ladysnake.requiem.common;
 
+import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.network.RequiemNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -77,8 +78,7 @@ public final class SayItCompatibilityManager {
         ServerPlayer speaker = event.getPlayer();
         if (mode(speaker) != Mode.REQUIEM) return;
 
-        // Requiem mode replaces global chat with an in-world bubble. Each nearby
-        // viewer receives the text translated into their own Minecraft language.
+        // Requiem mode replaces global chat with an in-world bubble.
         event.setCanceled(true);
         String rawText = event.getMessage().getString();
         if (rawText == null || rawText.isBlank()) return;
@@ -97,32 +97,68 @@ public final class SayItCompatibilityManager {
                 .add(viewer.getUUID());
         }
 
+        // The speaker must always receive their own bubble, even if a modded player
+        // collection unexpectedly omits them from ServerLevel#players().
+        String speakerLanguage = languageFor(speaker);
+        List<UUID> speakerViewers = viewersByLanguage.computeIfAbsent(speakerLanguage, ignored -> new ArrayList<>());
+        if (!speakerViewers.contains(speakerId)) {
+            speakerViewers.add(speakerId);
+        }
+
+        // Deliver the original text immediately. Translation is an optional enhancement,
+        // not a prerequisite for chat delivery: an offline or slow translation service
+        // must never make a player's message disappear.
+        int recipientCount = 0;
+        for (List<UUID> viewerIds : viewersByLanguage.values()) {
+            recipientCount += sendBubble(server, speakerId, viewerIds, original);
+        }
+        Requiem.LOGGER.debug("Requiem chat from {} delivered to {} nearby viewer(s)",
+            speaker.getGameProfile().getName(), recipientCount);
+
+        if (!RequiemConfig.speech.translateBubbles) return;
+
+        // Replace the initial text with a translated version once each language group
+        // finishes translating. If translation fails, the already-delivered original
+        // bubble remains visible.
         for (Map.Entry<String, List<UUID>> group : viewersByLanguage.entrySet()) {
             String targetLanguage = group.getKey();
             List<UUID> viewerIds = List.copyOf(group.getValue());
             SpeechTranslationService.translate(original, targetLanguage).whenComplete((translated, error) -> {
-                String bubbleText = error == null && translated != null && !translated.isBlank()
-                    ? translated : original;
+                if (error != null || translated == null || translated.isBlank() || translated.equals(original)) {
+                    return;
+                }
                 try {
-                    server.execute(() -> {
-                        ServerPlayer currentSpeaker = server.getPlayerList().getPlayer(speakerId);
-                        if (currentSpeaker == null) return;
-                        for (UUID viewerId : viewerIds) {
-                            ServerPlayer currentViewer = server.getPlayerList().getPlayer(viewerId);
-                            if (currentViewer == null
-                                    || currentViewer.serverLevel() != currentSpeaker.serverLevel()
-                                    || (currentViewer != currentSpeaker
-                                        && currentViewer.distanceToSqr(currentSpeaker) > SPEECH_BUBBLE_TRACKING_DISTANCE_SQR)) {
-                                continue;
-                            }
-                            PacketDistributor.sendToPlayer(currentViewer,
-                                new RequiemNetworking.SpeechBubblePayload(currentSpeaker.getId(), bubbleText));
-                        }
-                    });
+                    server.execute(() -> sendBubble(server, speakerId, viewerIds, translated));
                 } catch (RuntimeException ignored) {
                     // The server may be shutting down while a remote translation is completing.
                 }
             });
         }
+    }
+
+    /**
+     * Sends a bubble only to players who are still online, in the speaker's dimension,
+     * and within the tracking range. This method is called on the logical server thread.
+     *
+     * @return number of recipients that received the payload
+     */
+    private static int sendBubble(MinecraftServer server, UUID speakerId, List<UUID> viewerIds, String text) {
+        ServerPlayer currentSpeaker = server.getPlayerList().getPlayer(speakerId);
+        if (currentSpeaker == null) return 0;
+
+        int sent = 0;
+        for (UUID viewerId : viewerIds) {
+            ServerPlayer currentViewer = server.getPlayerList().getPlayer(viewerId);
+            if (currentViewer == null
+                    || currentViewer.serverLevel() != currentSpeaker.serverLevel()
+                    || (currentViewer != currentSpeaker
+                        && currentViewer.distanceToSqr(currentSpeaker) > SPEECH_BUBBLE_TRACKING_DISTANCE_SQR)) {
+                continue;
+            }
+            PacketDistributor.sendToPlayer(currentViewer,
+                new RequiemNetworking.SpeechBubblePayload(currentSpeaker.getId(), text));
+            sent++;
+        }
+        return sent;
     }
 }
