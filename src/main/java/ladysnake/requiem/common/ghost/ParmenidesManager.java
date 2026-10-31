@@ -156,7 +156,8 @@ public final class ParmenidesManager {
             ServerLevel level = (ServerLevel) player.level();
             boolean contactOrJump = player.horizontalCollision || player.verticalCollision
                 || (!player.onGround() && player.getDeltaMovement().y > 0.04D);
-            updateBuilderBlocks(player, level, player.getUUID(), contactOrJump);
+            ServerLevel counterpartLevel = getCounterpartLevel(level);
+            updateBuilderBlocks(player, level, counterpartLevel, player.getUUID(), contactOrJump);
             if (player.tickCount % 4 == 0) {
                 level.sendParticles(RequiemParticleTypes.GHOST,
                     player.getX(), player.getY() + 0.15D, player.getZ(),
@@ -169,23 +170,39 @@ public final class ParmenidesManager {
     private static void tickProjectionSpectralTrail(ServerPlayer owner, ParmenidesProjectionEntity projection, ServerLevel level) {
         boolean contactOrJump = owner.horizontalCollision || owner.verticalCollision
             || (!owner.onGround() && owner.getDeltaMovement().y > 0.04D);
-        updateBuilderBlocks(projection, level, owner.getUUID(), contactOrJump);
+        updateBuilderBlocks(projection, level, (ServerLevel) owner.level(), owner.getUUID(), contactOrJump);
     }
 
-    private static void updateBuilderBlocks(Entity builder, ServerLevel level, UUID owner, boolean contactOrJump) {
+    private static void updateBuilderBlocks(Entity builder, ServerLevel level, ServerLevel counterpartLevel, UUID owner, boolean contactOrJump) {
+        // Platforms may only manifest where solid terrain exists at the matching position
+        // in the counterpart dimension.
+        if (counterpartLevel == null) return;
         if (!hasSolidSupport(level, builder)) {
             BlockPos underfoot = new BlockPos(
                 net.minecraft.util.Mth.floor(builder.getX()),
                 net.minecraft.util.Mth.floor(builder.getY()) - 1,
                 net.minecraft.util.Mth.floor(builder.getZ())
             );
-            addSpectralBlock(level, owner, underfoot, false);
+            addSpectralBlock(level, counterpartLevel, owner, underfoot, false);
         }
         if (contactOrJump) {
             // A half-height collision volume turns repeated jumps and wall contacts into climbable steps.
             BlockPos step = BlockPos.containing(builder.getX(), builder.getY(), builder.getZ());
-            addSpectralBlock(level, owner, step, true);
+            addSpectralBlock(level, counterpartLevel, owner, step, true);
         }
+    }
+
+    private static ServerLevel getCounterpartLevel(ServerLevel level) {
+        ResourceKey<Level> counterpart = level.dimension() == Level.NETHER
+            ? Level.OVERWORLD
+            : Level.NETHER;
+        return level.getServer().getLevel(counterpart);
+    }
+
+    private static boolean hasOppositeDimensionCollision(ServerLevel counterpartLevel, BlockPos pos) {
+        if (counterpartLevel == null || !counterpartLevel.hasChunkAt(pos)) return false;
+        BlockState counterpartState = counterpartLevel.getBlockState(pos);
+        return !counterpartState.getCollisionShape(counterpartLevel, pos, CollisionContext.empty()).isEmpty();
     }
 
     private static boolean hasSolidSupport(ServerLevel level, Entity entity) {
@@ -196,7 +213,8 @@ public final class ParmenidesManager {
             || !level.getBlockState(below).getCollisionShape(level, below, context).isEmpty();
     }
 
-    private static void addSpectralBlock(ServerLevel level, UUID owner, BlockPos pos, boolean step) {
+    private static void addSpectralBlock(ServerLevel level, ServerLevel counterpartLevel, UUID owner, BlockPos pos, boolean step) {
+        if (!hasOppositeDimensionCollision(counterpartLevel, pos)) return;
         if (pos.getY() < level.getMinBuildHeight() || pos.getY() >= level.getMaxBuildHeight()
                 || !level.hasChunkAt(pos)) return;
 
