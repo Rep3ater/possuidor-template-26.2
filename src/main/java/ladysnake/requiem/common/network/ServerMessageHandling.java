@@ -254,8 +254,19 @@ public final class ServerMessageHandling {
                                 net.minecraft.world.level.block.state.BlockState state = chunk.getBlockState(
                                     new net.minecraft.core.BlockPos((previewChunkX << 4) + x, worldY, (previewChunkZ << 4) + z));
                                 if (!state.isAir()) {
-                                    states.add((y * 256) + (z * 16) + x);
-                                    states.add(Block.BLOCK_STATE_REGISTRY.getId(state));
+                                    net.minecraft.core.BlockPos.MutableBlockPos neighbor = new net.minecraft.core.BlockPos.MutableBlockPos(
+                                        (previewChunkX << 4) + x, worldY, (previewChunkZ << 4) + z);
+                                    boolean exposed = false;
+                                    for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
+                                        if (chunk.getBlockState(neighbor.relative(direction)).isAir()) {
+                                            exposed = true;
+                                            break;
+                                        }
+                                    }
+                                    if (exposed) {
+                                        states.add((y * 256) + (z * 16) + x);
+                                        states.add(Block.BLOCK_STATE_REGISTRY.getId(state));
+                                    }
                                 }
                             }
                         }
