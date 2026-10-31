@@ -46,6 +46,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.world.entity.Entity;
@@ -255,14 +256,17 @@ public final class ServerMessageHandling {
                             for (int x = 0; x < 16; x++) {
                                 blockPos.set((previewChunkX << 4) + x, worldY, (previewChunkZ << 4) + z);
                                 net.minecraft.world.level.block.state.BlockState state = chunk.getBlockState(blockPos);
-                                if (!state.isAir()) {
+                                if (!state.isAir() && state.getRenderShape() != RenderShape.INVISIBLE) {
                                     neighbor.set(blockPos);
                                     boolean exposed = false;
                                     for (net.minecraft.core.Direction direction : net.minecraft.core.Direction.values()) {
                                         neighbor.move(direction);
-                                        boolean air = counterpart.getBlockState(neighbor).isAir();
+                                        net.minecraft.world.level.block.state.BlockState adjacent = counterpart.getBlockState(neighbor);
+                                        boolean visibleBoundary = adjacent.isAir()
+                                            || !adjacent.canOcclude()
+                                            || !adjacent.getFluidState().isEmpty();
                                         neighbor.move(direction.getOpposite());
-                                        if (air) {
+                                        if (visibleBoundary) {
                                             exposed = true;
                                             break;
                                         }
