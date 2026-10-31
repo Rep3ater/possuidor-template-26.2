@@ -18,20 +18,29 @@ jobs:
         run: |
           set -euo pipefail
           JAR="sayitenglish-neoforge-1.21.1-1.1.0.jar"
-          echo "=== ARCHIVE ENTRIES ==="
-          unzip -Z1 "$JAR" | grep -E '(^META-INF/|\.class$|\.json$|\.toml$)' | head -250
-          echo "=== MOD METADATA ==="
-          for f in META-INF/neoforge.mods.toml META-INF/mods.toml META-INF/MANIFEST.MF; do
-            if unzip -Z1 "$JAR" | grep -qx "$f"; then
-              echo "--- $f ---"
-              unzip -p "$JAR" "$f" | head -150
-            fi
-          done
-          echo "=== STRINGS FOR RELEVANT APIs ==="
-          strings "$JAR" | grep -iE 'say.?it|translation|translator|language|chat|command|speak|pronounc|item' | head -250 || true
-          echo "=== DECOMPILE ==="
           curl -fsSL https://repo.maven.apache.org/maven2/org/benf/cfr/0.152/cfr-0.152.jar -o /tmp/cfr.jar
           mkdir -p /tmp/sayit-dec
           java -jar /tmp/cfr.jar "$JAR" --outputdir /tmp/sayit-dec --silent true
-          echo "=== DECOMPILED API HOOKS ==="
-          grep -RInE 'ServerChatEvent|ChatEvent|PlayerChat|ClientChat|translation|translator|language|RegisterCommandsEvent|Commands\.literal|addEventListener|EventBus|ItemStack|Component\.literal|setMessage' /tmp/sayit-dec | head -300 || true
+          echo "=== MOD METADATA ==="
+          unzip -p "$JAR" META-INF/neoforge.mods.toml
+          for f in \
+            com/spicesfire/sayitenglish/SayIt.java \
+            com/spicesfire/sayitenglish/ChallengeManager.java \
+            com/spicesfire/sayitenglish/Config.java \
+            com/spicesfire/sayitenglish/Progress.java \
+            com/spicesfire/sayitenglish/Languages.java \
+            com/spicesfire/sayitenglish/Packets.java \
+            com/spicesfire/sayitenglish/client/ChallengeSession.java \
+            com/spicesfire/sayitenglish/client/ChallengeHud.java \
+            com/spicesfire/sayitenglish/client/SayItClient.java \
+            com/spicesfire/sayitenglish/client/Words.java \
+            com/spicesfire/sayitenglish/client/UtteranceGate.java \
+            com/spicesfire/sayitenglish/platform/Platform.java \
+            com/spicesfire/sayitenglish/platform/ClientPlatform.java \
+            com/spicesfire/sayitenglish/platform/neoforge/NeoForgePlatform.java \
+            com/spicesfire/sayitenglish/platform/neoforge/NeoForgeClientPlatform.java; do
+            echo "=== $f ==="
+            sed -n '1,300p' "/tmp/sayit-dec/$f" || true
+          done
+          echo "=== SAYIT MOD TOML CLASS LIBRARY INFO ==="
+          unzip -p "$JAR" META-INF/neoforge.mods.toml | grep -iE 'modId|version|modLoader|dependency|displayName' || true
