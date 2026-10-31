@@ -79,6 +79,8 @@ public final class RequiemNetworking {
     public static final ResourceLocation PARMENIDES_SWITCH = Requiem.id("parmenides_switch");
     public static final ResourceLocation PARMENIDES_STATE = Requiem.id("parmenides_state");
     public static final ResourceLocation OUT_OF_BODY_BODY = Requiem.id("out_of_body_body");
+    public static final ResourceLocation PARMENIDES_PREVIEW_REQUEST = Requiem.id("parmenides_preview_request");
+    public static final ResourceLocation PARMENIDES_PREVIEW_DATA = Requiem.id("parmenides_preview_data");
 
     // Client -> Server
     public static final ResourceLocation HOMUNCULUS_BRAIN_SAVE = Requiem.id("homunculus_brain_save");
@@ -234,6 +236,32 @@ public final class RequiemNetworking {
             ByteBufCodecs.VAR_INT, ParmenidesStatePayload::entityId,
             ByteBufCodecs.BOOL, ParmenidesStatePayload::active,
             ParmenidesStatePayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+
+    public record ParmenidesPreviewRequestPayload(boolean active, int chunkX, int chunkZ) implements CustomPacketPayload {
+        public static final Type<ParmenidesPreviewRequestPayload> TYPE = new Type<>(PARMENIDES_PREVIEW_REQUEST);
+        public static final StreamCodec<RegistryFriendlyByteBuf, ParmenidesPreviewRequestPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.BOOL, ParmenidesPreviewRequestPayload::active,
+            ByteBufCodecs.VAR_INT, ParmenidesPreviewRequestPayload::chunkX,
+            ByteBufCodecs.VAR_INT, ParmenidesPreviewRequestPayload::chunkZ,
+            ParmenidesPreviewRequestPayload::new
+        );
+        @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
+    }
+
+    public record ParmenidesPreviewDataPayload(int chunkX, int chunkZ, boolean playerInNether, int minY, int height, List<Integer> states) implements CustomPacketPayload {
+        public static final Type<ParmenidesPreviewDataPayload> TYPE = new Type<>(PARMENIDES_PREVIEW_DATA);
+        public static final StreamCodec<RegistryFriendlyByteBuf, ParmenidesPreviewDataPayload> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ParmenidesPreviewDataPayload::chunkX,
+            ByteBufCodecs.VAR_INT, ParmenidesPreviewDataPayload::chunkZ,
+            ByteBufCodecs.BOOL, ParmenidesPreviewDataPayload::playerInNether,
+            ByteBufCodecs.VAR_INT, ParmenidesPreviewDataPayload::minY,
+            ByteBufCodecs.VAR_INT, ParmenidesPreviewDataPayload::height,
+            ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), ParmenidesPreviewDataPayload::states,
+            ParmenidesPreviewDataPayload::new
         );
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
     }
