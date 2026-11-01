@@ -18,6 +18,15 @@ public abstract class SayItChallengeMixin {
         ServerPlayer player, @Coerce Object state, long now,
         String kind, String subject, String arg, int seconds, CallbackInfo ci
     ) {
-        if (!SayItCompatibilityManager.shouldRunVanillaSayIt(player)) ci.cancel();
+        if (!SayItCompatibilityManager.shouldAllowSayItChallenge(player)) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "finish", at = @At("HEAD"), require = 0, remap = false)
+    private static void requiem$onChallengeFinish(
+        ServerPlayer player, @Coerce Object state, int score, String heard, CallbackInfo ci
+    ) {
+        SayItCompatibilityManager.onChallengeCompleted(player, state, score, heard);
     }
 }
