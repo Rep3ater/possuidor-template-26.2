@@ -214,6 +214,7 @@ public final class RequiemClient {
     }
 
     public static void onRenderGuiPost(RenderGuiEvent.Post event) {
+        ladysnake.requiem.client.render.SpeechBubbleRenderer.renderHudBubble(event.getGuiGraphics());
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || !RemnantComponent.isIncorporeal(mc.player)
                 || (ladysnake.requiem.client.locki.LockiClientState.isLockiModeActive()
