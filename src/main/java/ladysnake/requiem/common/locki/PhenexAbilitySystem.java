@@ -41,7 +41,7 @@ import java.util.UUID;
 
 /** Server-authoritative implementation of Phenex's powers and ritual tools. */
 public final class PhenexAbilitySystem {
-    public static final String TAG = "phenex";
+    public static final String TAG = "PHENEX";
     private static final String ACTIVE_ABILITY = "requiem:phenex_active_ability";
     private static final String PENDING_TARGET = "requiem:phenex_pending_target";
     private static final String CORRUPTION = "requiem:phenex_corruption";
@@ -54,7 +54,11 @@ public final class PhenexAbilitySystem {
     private PhenexAbilitySystem() {}
 
     public static boolean isPhenex(Player player) {
-        return player != null && (player.getTags().contains(TAG) || player.getTags().contains("Phenex"));
+        if (player == null) return false;
+        for (String tag : player.getTags()) {
+            if ("PHENEX".equalsIgnoreCase(tag)) return true;
+        }
+        return false;
     }
 
     public static boolean isAbilityActive(Player player, String ability) {
@@ -368,6 +372,10 @@ public final class PhenexAbilitySystem {
             return true;
         }
         if (target instanceof LivingEntity livingTarget) {
+            if (isCoughing(phenex) || maybeAbilityCough(phenex)) {
+                phenex.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7* Phenex coughs ash; soul stealing sputters out *"));
+                return true;
+            }
             Optional<SoulCaptureEvents.CaptureType> captureType = EmptySoulVesselItem.checkCapturePreconditions(phenex, livingTarget);
             if (captureType.isEmpty() || !(livingTarget instanceof Mob)) {
                 phenex.sendSystemMessage(net.minecraft.network.chat.Component.literal("That target's soul cannot be stolen."));
@@ -396,6 +404,10 @@ public final class PhenexAbilitySystem {
     public static void onAttack(Player attacker, Entity target) {
         if (!(attacker instanceof ServerPlayer) || attacker.level().isClientSide()
                 || !isPhenex(attacker) || !isAbilityActive(attacker, "corromper")) return;
+        if (maybeAbilityCough((ServerPlayer) attacker)) {
+            attacker.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7* Phenex coughs ash; corruption sputters out *"));
+            return;
+        }
         if (target instanceof LivingEntity livingTarget && target != attacker) AttritionStatusEffect.apply(livingTarget, 1);
     }
 
@@ -485,7 +497,7 @@ public final class PhenexAbilitySystem {
             // Refresh the marker effect so White Vision can read the precise ash-lung level.
             player.addEffect(new MobEffectInstance(
                 ladysnake.requiem.common.entity.effect.RequiemStatusEffects.ASH_LUNG,
-                40, corruption - 1, false, false, false));
+                MobEffectInstance.INFINITE_DURATION, corruption - 1, false, false, true));
             if (!isCoughing(player)) {
                 // Natural coughing is deliberately far less common than an ability-triggered cough.
                 int naturalDenominator = Math.max(600, 6000 / corruption);
@@ -499,7 +511,7 @@ public final class PhenexAbilitySystem {
         }
     }
 
-    private static boolean maybeAbilityCough(ServerPlayer player) {
+    public static boolean maybeAbilityCough(ServerPlayer player) {
         int corruption = getCorruption(player);
         if (corruption <= 0) return false;
         int denominator = Math.max(2, (int) Math.round(25.0 - (corruption - 1) * (23.0 / 9.0)));
@@ -514,6 +526,7 @@ public final class PhenexAbilitySystem {
         int corruption = getCorruption(player);
         long until = player.level().getGameTime() + 30L;
         player.getPersistentData().putLong(COUGH_UNTIL, until);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), net.minecraft.sounds.SoundEvents.PANDA_SNEEZE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.7F);
         player.hurt(player.damageSources().magic(), 1.0F + corruption * 0.15F);
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 50, corruption >= 7 ? 1 : 0, false, true, true));
         player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 70, 0, false, true, false));

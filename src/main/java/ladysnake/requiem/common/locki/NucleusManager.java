@@ -62,6 +62,10 @@ public final class NucleusManager {
 
     public static boolean tryEnter(ServerPlayer phoenix, BlockPos clicked) {
         if (!PhenexAbilitySystem.isPhenex(phoenix) || !PhenexAbilitySystem.isAbilityActive(phoenix, "roubar")) return false;
+        if (PhenexAbilitySystem.isCoughing(phoenix) || PhenexAbilitySystem.maybeAbilityCough(phoenix)) {
+            phoenix.sendSystemMessage(Component.literal("§7* Phenex coughs ash violently; the rift into Nucleus collapses *"));
+            return true;
+        }
         if (phoenix.getXRot() < 89.0F) return false;
         if (!(phoenix.level() instanceof ServerLevel source)) return false;
         ServerLevel nucleus = source.getServer().getLevel(NUCLEUS_DIMENSION);

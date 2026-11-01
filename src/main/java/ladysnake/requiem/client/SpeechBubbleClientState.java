@@ -71,6 +71,10 @@ public final class SpeechBubbleClientState {
         return bubble != null && clientTick - bubble.startedAt() <= bubble.text().length() * 2L + 28L;
     }
 
+    public static java.util.Set<Integer> activeEntityIds() {
+        return new java.util.HashSet<>(BUBBLES.keySet());
+    }
+
     public static void clear() {
         BUBBLES.clear();
         clientTick = 0L;

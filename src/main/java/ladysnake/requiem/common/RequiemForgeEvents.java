@@ -139,6 +139,17 @@ public final class RequiemForgeEvents {
                 24, 0.45D, 0.5D, 0.45D, 0.035D);
         }
         NucleusManager.onLivingDeath(event);
+        if (event.getSource().getEntity() instanceof ServerPlayer phenexKiller && PhenexAbilitySystem.isPhenex(phenexKiller)) {
+            LivingEntity victim = event.getEntity();
+            boolean isYellowBuzzer = victim.getType() == EntityType.BEE
+                || victim.getType().getDescriptionId().toLowerCase(java.util.Locale.ROOT).contains("bee")
+                || victim.getName().getString().toLowerCase(java.util.Locale.ROOT).contains("buzzer")
+                || victim.getName().getString().toLowerCase(java.util.Locale.ROOT).contains("bee");
+            if (isYellowBuzzer) {
+                PhenexAbilitySystem.addCorruption(phenexKiller, 1);
+                phenexKiller.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7A yellow buzzer falls. Ash settles deeper in your lungs."));
+            }
+        }
         if (event.getEntity() instanceof ServerPlayer player) {
             if (player.level().dimension() == ladysnake.requiem.common.construct.ConstructWorkshopManager.WORKSHOP_DIMENSION) {
                 event.setCanceled(true);
@@ -464,6 +475,16 @@ public final class RequiemForgeEvents {
         Player player = event.getPlayer();
         if (RemnantComponent.isIncorporeal(player)) {
             event.setCanPickup(TriState.FALSE);
+            return;
+        }
+        if (player instanceof ServerPlayer phenex && PhenexAbilitySystem.isPhenex(phenex)) {
+            ItemStack stack = event.getItemEntity().getItem();
+            if (stack.is(ladysnake.requiem.common.item.RequiemItems.SUFFERING_HEAD)
+                    && !event.getItemEntity().getPersistentData().getBoolean("requiem:phenex_ash_claimed")) {
+                event.getItemEntity().getPersistentData().putBoolean("requiem:phenex_ash_claimed", true);
+                PhenexAbilitySystem.addCorruption(phenex, 1);
+                phenex.sendSystemMessage(net.minecraft.network.chat.Component.literal("§7The Suffering Head chills your hands. Ash settles deeper in your lungs."));
+            }
         }
     }
 

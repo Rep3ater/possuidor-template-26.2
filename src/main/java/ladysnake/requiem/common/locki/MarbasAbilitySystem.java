@@ -42,7 +42,7 @@ import java.util.Locale;
 
 /** Marbas' embryo, homunculus brain, cauldron rituals, and immortal transmutation. */
 public final class MarbasAbilitySystem {
-    public static final String TAG = "marbas";
+    public static final String TAG = "MARBAS";
     public static final String HOMUNCULUS = "requiem:homunculus";
     public static final String BRAIN = "requiem:homunculus_brain";
     private static final String TRANSFERRED_BRAIN = "requiem:homunculus_souled";
@@ -74,8 +74,26 @@ public final class MarbasAbilitySystem {
         return tag.contains(key) ? tag.getBoolean(key) : fallback;
     }
 
+    public static int getBrainDamage(Player player) {
+        return player != null && player.getPersistentData().contains("requiem:marbas_brain_damage")
+            ? Math.max(0, player.getPersistentData().getInt("requiem:marbas_brain_damage")) : 0;
+    }
+
+    public static int addBrainDamage(ServerPlayer player, int amount) {
+        int damage = Math.min(50, getBrainDamage(player) + amount);
+        player.getPersistentData().putInt("requiem:marbas_brain_damage", damage);
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+            ladysnake.requiem.common.entity.effect.RequiemStatusEffects.BRAIN_DAMAGE,
+            net.minecraft.world.effect.MobEffectInstance.INFINITE_DURATION,
+            damage - 1, false, false, true));
+        return damage;
+    }
     public static boolean isMarbas(Player player) {
-        return player != null && (player.getTags().contains(TAG) || player.getTags().contains("Marbas"));
+        if (player == null) return false;
+        for (String tag : player.getTags()) {
+            if ("MARBAS".equalsIgnoreCase(tag)) return true;
+        }
+        return false;
     }
 
     public static void onChat(ServerChatEvent event) {
@@ -98,6 +116,7 @@ public final class MarbasAbilitySystem {
             tag.putString("requiem:donor_head_name", "Embryo");
         });
         if (!player.getInventory().add(embryo)) player.drop(embryo, false);
+        addBrainDamage(player, 1);
         player.sendSystemMessage(Component.literal("A named Embryo has been prepared. Place it in a water-filled cauldron to grow a homunculus."));
     }
 
@@ -221,6 +240,7 @@ public final class MarbasAbilitySystem {
         if (stack.is(RequiemItems.HOMUNCULUS) && player.getOffhandItem().is(RequiemItems.SUFFERING_HEAD)) {
             Mob mob = growHomunculus(level, pos, player, "", "suffering");
             if (mob != null) mob.getPersistentData().putBoolean(BERSERK, true);
+            addBrainDamage(player, 2);
             if (!player.getAbilities().instabuild) { stack.shrink(1); player.getOffhandItem().shrink(1); }
             level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
             player.sendSystemMessage(Component.literal("The Suffering Head fuses with the homunculus. It is immortal, unstable, and will ignore its programmed brain."));
@@ -233,6 +253,7 @@ public final class MarbasAbilitySystem {
             String program = (readItemData(stack).getString(BRAIN).isEmpty() ? "return home" : readItemData(stack).getString(BRAIN));
             Mob mob = growHomunculus(level, pos, player, program, traits);
             if (mob != null) mob.getPersistentData().putString(TRAITS, traits);
+            addBrainDamage(player, 1);
             if (!player.getAbilities().instabuild) { stack.shrink(1); player.getOffhandItem().shrink(1); }
             level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
             player.sendSystemMessage(Component.literal("The homunculus inherits traits from " + headName + "."));
@@ -539,15 +560,24 @@ public final class MarbasAbilitySystem {
         int newNodeCount = Math.max(1, normalized.split(";").length);
         mobData.putString(BRAIN, normalized);
         mobData.putInt(NODE, Math.min(previousNode, newNodeCount - 1));
-        int damage = Math.min(10, (player.getPersistentData().contains("requiem:marbas_brain_damage") ? player.getPersistentData().getInt("requiem:marbas_brain_damage") : 0) + 1);
-        player.getPersistentData().putInt("requiem:marbas_brain_damage", damage);
-        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-            ladysnake.requiem.common.entity.effect.RequiemStatusEffects.BRAIN_DAMAGE, 1200, damage - 1, false, false, false));
+        addBrainDamage(player, 1);
         player.sendSystemMessage(Component.literal("The homunculus brain/soul has been rewritten. You feel the process strain your own mind."));
     }
 
     /** Counts completed nights of actual sleep, rather than merely clicking a bed. */
     public static void onPlayerTick(ServerPlayer player) {
+        if (isMarbas(player)) {
+            int damage = getBrainDamage(player);
+            if (damage > 0) {
+                var current = player.getEffect(ladysnake.requiem.common.entity.effect.RequiemStatusEffects.BRAIN_DAMAGE);
+                if (current == null || current.getAmplifier() != damage - 1 || current.getDuration() <= 200) {
+                    player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                        ladysnake.requiem.common.entity.effect.RequiemStatusEffects.BRAIN_DAMAGE,
+                        net.minecraft.world.effect.MobEffectInstance.INFINITE_DURATION,
+                        damage - 1, false, false, true));
+                }
+            }
+        }
         CompoundTag data = player.getPersistentData();
         // Older builds could store more than two nights; normalize that data on login/tick.
         int storedSleepCount = (data.contains("requiem:marbas_sleep_count") ? data.getInt("requiem:marbas_sleep_count") : 0);

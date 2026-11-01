@@ -1,6 +1,7 @@
 package ladysnake.requiem.mixin.client;
 
 import ladysnake.requiem.client.ParmenidesClientState;
+import ladysnake.requiem.client.marbas.MarbasRealityDegradationState;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -14,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Suppresses the local dimension's complete block column inside the revealed domain.
- * The counterpart renderer then draws the other dimension in the same coordinates.
+ * Suppresses the local dimension's complete block column inside the revealed domain,
+ * or suppresses individual ghost blocks resulting from Marbas' brain damage degradation.
  */
 @Mixin(BlockRenderDispatcher.class)
 public abstract class BlockRenderDispatcherMixin {
@@ -23,7 +24,7 @@ public abstract class BlockRenderDispatcherMixin {
     private void requiem$hideReplacedDimension(BlockState state, BlockPos pos, BlockAndTintGetter level,
                                                PoseStack poseStack, VertexConsumer consumer,
                                                boolean checkSides, RandomSource random, CallbackInfo ci) {
-        if (ParmenidesClientState.shouldHideOriginalBlock(pos)) {
+        if (ParmenidesClientState.shouldHideOriginalBlock(pos) || MarbasRealityDegradationState.shouldHideBlock(pos)) {
             ci.cancel();
         }
     }

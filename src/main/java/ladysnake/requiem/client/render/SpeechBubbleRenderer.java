@@ -66,12 +66,13 @@ public final class SpeechBubbleRenderer {
         boolean renderedAny = false;
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
 
-        for (Player player : minecraft.level.players()) {
-            if (player.isRemoved() || player.distanceToSqr(cameraPosition) > MAX_RENDER_DISTANCE_SQR) {
+        for (int entityId : SpeechBubbleClientState.activeEntityIds()) {
+            net.minecraft.world.entity.Entity entity = minecraft.level.getEntity(entityId);
+            if (entity == null || entity.isRemoved() || entity.distanceToSqr(cameraPosition) > MAX_RENDER_DISTANCE_SQR) {
                 continue;
             }
 
-            String text = SpeechBubbleClientState.visibleText(player.getId());
+            String text = SpeechBubbleClientState.visibleText(entity.getId());
             if (text.isEmpty()) continue;
 
             List<FormattedCharSequence> lines = font.split(Component.literal(text), MAX_LINE_WIDTH);
@@ -82,14 +83,24 @@ public final class SpeechBubbleRenderer {
                 maxLineWidth = Math.max(maxLineWidth, font.width(line));
             }
 
-            int outlineColor = SpeechBubbleClientState.color(player.getId());
+            int outlineColor = SpeechBubbleClientState.color(entity.getId());
             var theme = ladysnake.requiem.common.SpeechBubbleColor.getTheme(outlineColor);
             int currentBg = theme.backgroundColor();
             int currentOutline = theme.outlineColor();
 
-            double px = Mth.lerp((double) partialTick, player.xo, player.getX()) - cameraPosition.x;
-            double py = Mth.lerp((double) partialTick, player.yo, player.getY()) - cameraPosition.y;
-            double pz = Mth.lerp((double) partialTick, player.zo, player.getZ()) - cameraPosition.z;
+            double px = Mth.lerp((double) partialTick, entity.xo, entity.getX()) - cameraPosition.x;
+            double py = Mth.lerp((double) partialTick, entity.yo, entity.getY()) - cameraPosition.y;
+            double pz = Mth.lerp((double) partialTick, entity.zo, entity.getZ()) - cameraPosition.z;
+
+            // Follow model offset if Marbas reality degradation model shifting is active
+            if (ladysnake.requiem.client.marbas.MarbasRealityDegradationState.isModelShiftingActive()) {
+                net.minecraft.world.phys.Vec3 shift = ladysnake.requiem.client.marbas.MarbasRealityDegradationState.getModelShiftOffset();
+                if (shift != null) {
+                    px += shift.x;
+                    py += shift.y;
+                    pz += shift.z;
+                }
+            }
 
             pose.pushPose();
             int lineSpacing = 11;
@@ -99,8 +110,8 @@ public final class SpeechBubbleRenderer {
             float boxHeight = (lines.size() - 1) * lineSpacing + 9 + vPad * 2.0F;
             float tailHeight = 4.0F;
 
-            // Position above player head and nametag
-            pose.translate(px, py + player.getBbHeight() + 0.65D + (boxHeight * 0.025D * 0.5D), pz);
+            // Position above entity head
+            pose.translate(px, py + entity.getBbHeight() + 0.65D + (boxHeight * 0.025D * 0.5D), pz);
             pose.mulPose(minecraft.getEntityRenderDispatcher().cameraOrientation());
             pose.scale(0.025F, -0.025F, 0.025F);
 

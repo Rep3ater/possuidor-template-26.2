@@ -217,6 +217,9 @@ public final class RequiemClient {
     }
 
     public static void onRenderGuiPre(RenderGuiEvent.Pre event) {
+        if (ladysnake.requiem.client.marbas.MarbasRealityDegradationState.getImpactFrameTicks() > 0) {
+            ladysnake.requiem.client.marbas.MarbasRealityDegradationState.renderImpactFrame(event.getGuiGraphics());
+        }
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && (RemnantComponent.isIncorporeal(mc.player)
                 || ParmenidesClientState.isOutOfBodyBody(mc.player.getId()))) {
@@ -329,6 +332,7 @@ public final class RequiemClient {
     }
 
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        ladysnake.requiem.client.marbas.MarbasRealityDegradationState.clearAll();
         ladysnake.requiem.client.SpeechLanguageSync.reset();
         ladysnake.requiem.client.SpeechBubbleClientState.clear();
         SharedBodyClientState.reset();
@@ -343,6 +347,7 @@ public final class RequiemClient {
     }
 
     public static void onClientTick(ClientTickEvent.Post event) {
+        ladysnake.requiem.client.marbas.MarbasRealityDegradationState.tick();
         ladysnake.requiem.client.SpeechBubbleClientState.tick();
         Minecraft mc = Minecraft.getInstance();
         ladysnake.requiem.client.SpeechLanguageSync.tick(mc);
