@@ -96,11 +96,16 @@ public final class RequiemNetworking {
     public static final ResourceLocation CONSTRUCT_ACTION = Requiem.id("construct_action");
     public static final ResourceLocation LOCKI_PLANT_CHOICE = Requiem.id("locki_plant_choice");
 
-    public record SpeechBubblePayload(int entityId, String text) implements CustomPacketPayload {
+    public record SpeechBubblePayload(int entityId, String text, int color) implements CustomPacketPayload {
+        public SpeechBubblePayload(int entityId, String text) {
+            this(entityId, text, ladysnake.requiem.common.SpeechBubbleColor.DEFAULT_OUTLINE);
+        }
+
         public static final Type<SpeechBubblePayload> TYPE = new Type<>(SPEECH_BUBBLE);
         public static final StreamCodec<RegistryFriendlyByteBuf, SpeechBubblePayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, SpeechBubblePayload::entityId,
             ByteBufCodecs.STRING_UTF8, SpeechBubblePayload::text,
+            ByteBufCodecs.INT, SpeechBubblePayload::color,
             SpeechBubblePayload::new
         );
         @Override public Type<? extends CustomPacketPayload> type() { return TYPE; }

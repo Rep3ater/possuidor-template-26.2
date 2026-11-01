@@ -460,5 +460,140 @@
         "volume": 0.25
       }
     ]
+  },
+  "speech.animalese.a": {
+    "sounds": [
+      "requiem:animalese/a"
+    ]
+  },
+  "speech.animalese.b": {
+    "sounds": [
+      "requiem:animalese/b"
+    ]
+  },
+  "speech.animalese.c": {
+    "sounds": [
+      "requiem:animalese/c"
+    ]
+  },
+  "speech.animalese.d": {
+    "sounds": [
+      "requiem:animalese/d"
+    ]
+  },
+  "speech.animalese.e": {
+    "sounds": [
+      "requiem:animalese/e"
+    ]
+  },
+  "speech.animalese.f": {
+    "sounds": [
+      "requiem:animalese/f"
+    ]
+  },
+  "speech.animalese.g": {
+    "sounds": [
+      "requiem:animalese/g"
+    ]
+  },
+  "speech.animalese.h": {
+    "sounds": [
+      "requiem:animalese/h"
+    ]
+  },
+  "speech.animalese.i": {
+    "sounds": [
+      "requiem:animalese/i"
+    ]
+  },
+  "speech.animalese.j": {
+    "sounds": [
+      "requiem:animalese/j"
+    ]
+  },
+  "speech.animalese.k": {
+    "sounds": [
+      "requiem:animalese/k"
+    ]
+  },
+  "speech.animalese.l": {
+    "sounds": [
+      "requiem:animalese/l"
+    ]
+  },
+  "speech.animalese.m": {
+    "sounds": [
+      "requiem:animalese/m"
+    ]
+  },
+  "speech.animalese.n": {
+    "sounds": [
+      "requiem:animalese/n"
+    ]
+  },
+  "speech.animalese.o": {
+    "sounds": [
+      "requiem:animalese/o"
+    ]
+  },
+  "speech.animalese.p": {
+    "sounds": [
+      "requiem:animalese/p"
+    ]
+  },
+  "speech.animalese.q": {
+    "sounds": [
+      "requiem:animalese/q"
+    ]
+  },
+  "speech.animalese.r": {
+    "sounds": [
+      "requiem:animalese/r"
+    ]
+  },
+  "speech.animalese.s": {
+    "sounds": [
+      "requiem:animalese/s"
+    ]
+  },
+  "speech.animalese.t": {
+    "sounds": [
+      "requiem:animalese/t"
+    ]
+  },
+  "speech.animalese.u": {
+    "sounds": [
+      "requiem:animalese/u"
+    ]
+  },
+  "speech.animalese.v": {
+    "sounds": [
+      "requiem:animalese/v"
+    ]
+  },
+  "speech.animalese.w": {
+    "sounds": [
+      "requiem:animalese/w"
+    ]
+  },
+  "speech.animalese.x": {
+    "sounds": [
+      "requiem:animalese/x"
+    ]
+  },
+  "speech.animalese.y": {
+    "sounds": [
+      "requiem:animalese/y"
+    ]
+  },
+  "speech.animalese.z": {
+    "sounds": [
+      "requiem:animalese/z"
+    ]
+  },
+  "speech.animalese.general": {
+    "sounds": [
+      "requiem:animalese/general"
+    ]
   }
 }

@@ -31,7 +31,7 @@ public final class SpeechBubbleRenderer {
     private static final int MAX_LINE_WIDTH = 164;
     private static final int DARK_BACKGROUND = 0xB91A1727;
     private static final int OUTLINE = 0xFF77D7E7;
-    private static final int TEXT = 0xFFFFF6E9;
+    private static final int TEXT = 0xFFFFFFFF; // Emissive bright white
     private static final int FULL_BRIGHT = 0x00F000F0;
     private static final double MAX_RENDER_DISTANCE_SQR = 128.0D * 128.0D;
 
@@ -82,6 +82,11 @@ public final class SpeechBubbleRenderer {
                 maxLineWidth = Math.max(maxLineWidth, font.width(line));
             }
 
+            int outlineColor = SpeechBubbleClientState.color(player.getId());
+            var theme = ladysnake.requiem.common.SpeechBubbleColor.getTheme(outlineColor);
+            int currentBg = theme.backgroundColor();
+            int currentOutline = theme.outlineColor();
+
             double px = Mth.lerp((double) partialTick, player.xo, player.getX()) - cameraPosition.x;
             double py = Mth.lerp((double) partialTick, player.yo, player.getY()) - cameraPosition.y;
             double pz = Mth.lerp((double) partialTick, player.zo, player.getZ()) - cameraPosition.z;
@@ -108,19 +113,19 @@ public final class SpeechBubbleRenderer {
             VertexConsumer bgConsumer = buffers.getBuffer(RenderType.textBackgroundSeeThrough());
 
             // 1. Background box and pointer tail (SEE_THROUGH)
-            drawQuad(bgConsumer, matrix, left, top, right, bottom, 0.02F, DARK_BACKGROUND);
-            drawQuad(bgConsumer, matrix, -3.0F, bottom, 3.0F, bottom + tailHeight, 0.02F, DARK_BACKGROUND);
+            drawQuad(bgConsumer, matrix, left, top, right, bottom, 0.02F, currentBg);
+            drawQuad(bgConsumer, matrix, -3.0F, bottom, 3.0F, bottom + tailHeight, 0.02F, currentBg);
 
-            // 2. Cyan border outline (SEE_THROUGH)
+            // 2. Themed border outline (SEE_THROUGH)
             float border = 1.0F;
-            drawQuad(bgConsumer, matrix, left - border, top - border, right + border, top, 0.015F, OUTLINE);
-            drawQuad(bgConsumer, matrix, left - border, bottom, -3.0F, bottom + border, 0.015F, OUTLINE);
-            drawQuad(bgConsumer, matrix, 3.0F, bottom, right + border, bottom + border, 0.015F, OUTLINE);
-            drawQuad(bgConsumer, matrix, left - border, top, left, bottom, 0.015F, OUTLINE);
-            drawQuad(bgConsumer, matrix, right, top, right + border, bottom, 0.015F, OUTLINE);
-            drawQuad(bgConsumer, matrix, -3.0F - border, bottom, -3.0F, bottom + tailHeight, 0.015F, OUTLINE);
-            drawQuad(bgConsumer, matrix, 3.0F, bottom, 3.0F + border, bottom + tailHeight, 0.015F, OUTLINE);
-            drawQuad(bgConsumer, matrix, -3.0F, bottom + tailHeight, 3.0F, bottom + tailHeight + border, 0.015F, OUTLINE);
+            drawQuad(bgConsumer, matrix, left - border, top - border, right + border, top, 0.015F, currentOutline);
+            drawQuad(bgConsumer, matrix, left - border, bottom, -3.0F, bottom + border, 0.015F, currentOutline);
+            drawQuad(bgConsumer, matrix, 3.0F, bottom, right + border, bottom + border, 0.015F, currentOutline);
+            drawQuad(bgConsumer, matrix, left - border, top, left, bottom, 0.015F, currentOutline);
+            drawQuad(bgConsumer, matrix, right, top, right + border, bottom, 0.015F, currentOutline);
+            drawQuad(bgConsumer, matrix, -3.0F - border, bottom, -3.0F, bottom + tailHeight, 0.015F, currentOutline);
+            drawQuad(bgConsumer, matrix, 3.0F, bottom, 3.0F + border, bottom + tailHeight, 0.015F, currentOutline);
+            drawQuad(bgConsumer, matrix, -3.0F, bottom + tailHeight, 3.0F, bottom + tailHeight + border, 0.015F, currentOutline);
 
             // 3. Draw text lines
             float curY = top + vPad;
@@ -172,6 +177,11 @@ public final class SpeechBubbleRenderer {
         int boxWidth = Math.max(maxLineWidth + hPadding * 2, 70);
         int boxHeight = (lines.size() - 1) * lineSpacing + 9 + vPadding * 2;
 
+        int outlineColor = SpeechBubbleClientState.color(mc.player.getId());
+        var theme = ladysnake.requiem.common.SpeechBubbleColor.getTheme(outlineColor);
+        int currentBg = theme.backgroundColor();
+        int currentOutline = theme.outlineColor();
+
         int screenWidth = graphics.guiWidth();
         int screenHeight = graphics.guiHeight();
 
@@ -185,41 +195,41 @@ public final class SpeechBubbleRenderer {
         int bottom = y + boxHeight;
 
         // 1. Draw rounded dark background body
-        graphics.fill(x + 2, y, x + boxWidth - 2, bottom, DARK_BACKGROUND);
-        graphics.fill(x, y + 2, x + boxWidth, bottom - 2, DARK_BACKGROUND);
-        graphics.fill(x + 1, y + 1, x + 2, y + 2, DARK_BACKGROUND);
-        graphics.fill(x + boxWidth - 2, y + 1, x + boxWidth - 1, y + 2, DARK_BACKGROUND);
-        graphics.fill(x + 1, bottom - 2, x + 2, bottom - 1, DARK_BACKGROUND);
-        graphics.fill(x + boxWidth - 2, bottom - 2, x + boxWidth - 1, bottom - 1, DARK_BACKGROUND);
+        graphics.fill(x + 2, y, x + boxWidth - 2, bottom, currentBg);
+        graphics.fill(x, y + 2, x + boxWidth, bottom - 2, currentBg);
+        graphics.fill(x + 1, y + 1, x + 2, y + 2, currentBg);
+        graphics.fill(x + boxWidth - 2, y + 1, x + boxWidth - 1, y + 2, currentBg);
+        graphics.fill(x + 1, bottom - 2, x + 2, bottom - 1, currentBg);
+        graphics.fill(x + boxWidth - 2, bottom - 2, x + boxWidth - 1, bottom - 1, currentBg);
 
         // 2. Draw speech bubble tail (downward pointer pointing toward the speaker/hotbar)
         for (int i = 0; i < tailHeight; i++) {
             int w = (tailHeight - i);
-            graphics.fill(tailX - w, bottom + i, tailX + w, bottom + i + 1, DARK_BACKGROUND);
+            graphics.fill(tailX - w, bottom + i, tailX + w, bottom + i + 1, currentBg);
         }
 
-        // 3. Draw cyan outline around rounded bubble and tail
+        // 3. Draw themed outline around rounded bubble and tail
         // Top border
-        graphics.fill(x + 2, y, x + boxWidth - 2, y + 1, OUTLINE);
+        graphics.fill(x + 2, y, x + boxWidth - 2, y + 1, currentOutline);
         // Corner bevels
-        graphics.fill(x + 1, y + 1, x + 2, y + 2, OUTLINE);
-        graphics.fill(x + boxWidth - 2, y + 1, x + boxWidth - 1, y + 2, OUTLINE);
-        graphics.fill(x + 1, bottom - 2, x + 2, bottom - 1, OUTLINE);
-        graphics.fill(x + boxWidth - 2, bottom - 2, x + boxWidth - 1, bottom - 1, OUTLINE);
+        graphics.fill(x + 1, y + 1, x + 2, y + 2, currentOutline);
+        graphics.fill(x + boxWidth - 2, y + 1, x + boxWidth - 1, y + 2, currentOutline);
+        graphics.fill(x + 1, bottom - 2, x + 2, bottom - 1, currentOutline);
+        graphics.fill(x + boxWidth - 2, bottom - 2, x + boxWidth - 1, bottom - 1, currentOutline);
         // Left & right borders
-        graphics.fill(x, y + 2, x + 1, bottom - 2, OUTLINE);
-        graphics.fill(x + boxWidth - 1, y + 2, x + boxWidth, bottom - 2, OUTLINE);
+        graphics.fill(x, y + 2, x + 1, bottom - 2, currentOutline);
+        graphics.fill(x + boxWidth - 1, y + 2, x + boxWidth, bottom - 2, currentOutline);
         // Bottom border (split around tail)
         int tailBaseWidth = tailHeight;
-        graphics.fill(x + 2, bottom - 1, tailX - tailBaseWidth, bottom, OUTLINE);
-        graphics.fill(tailX + tailBaseWidth, bottom - 1, x + boxWidth - 2, bottom, OUTLINE);
+        graphics.fill(x + 2, bottom - 1, tailX - tailBaseWidth, bottom, currentOutline);
+        graphics.fill(tailX + tailBaseWidth, bottom - 1, x + boxWidth - 2, bottom, currentOutline);
         // Tail angled border
         for (int i = 0; i < tailHeight; i++) {
             int w = (tailHeight - i);
-            graphics.fill(tailX - w - 1, bottom + i, tailX - w, bottom + i + 1, OUTLINE);
-            graphics.fill(tailX + w, bottom + i, tailX + w + 1, bottom + i + 1, OUTLINE);
+            graphics.fill(tailX - w - 1, bottom + i, tailX - w, bottom + i + 1, currentOutline);
+            graphics.fill(tailX + w, bottom + i, tailX + w + 1, bottom + i + 1, currentOutline);
         }
-        graphics.fill(tailX, bottom + tailHeight, tailX + 1, bottom + tailHeight + 1, OUTLINE);
+        graphics.fill(tailX, bottom + tailHeight, tailX + 1, bottom + tailHeight + 1, currentOutline);
 
         // 4. Render typewriter text lines centered with generous spacing
         int textY = y + vPadding;

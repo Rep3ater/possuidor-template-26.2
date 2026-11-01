@@ -93,4 +93,61 @@ public class SpeechCompatibilityTest {
         assertEquals("", SpeechBubbleClientState.visibleText(99));
         assertFalse(SpeechBubbleClientState.isGesturing(99));
     }
+
+    @Test
+    public void testColorTagParsing() {
+        // Red color tag
+        SpeechBubbleColor.ParsedMessage redMsg = SpeechBubbleColor.parseMessage("[red] Hello world");
+        assertEquals(0xFFC92828, redMsg.outlineColor());
+        assertEquals("Hello world", redMsg.text());
+
+        // Blue color tag with case insensitivity
+        SpeechBubbleColor.ParsedMessage blueMsg = SpeechBubbleColor.parseMessage("[BLUE] Buenos días");
+        assertEquals(0xFF3C44AA, blueMsg.outlineColor());
+        assertEquals("Buenos días", blueMsg.text());
+
+        // Light blue variations
+        SpeechBubbleColor.ParsedMessage lb1 = SpeechBubbleColor.parseMessage("[light_blue] Sky");
+        assertEquals(0xFF3AB3DA, lb1.outlineColor());
+        assertEquals("Sky", lb1.text());
+
+        SpeechBubbleColor.ParsedMessage lb2 = SpeechBubbleColor.parseMessage("[light blue] Sky");
+        assertEquals(0xFF3AB3DA, lb2.outlineColor());
+        assertEquals("Sky", lb2.text());
+
+        SpeechBubbleColor.ParsedMessage lb3 = SpeechBubbleColor.parseMessage("[lightblue] Sky");
+        assertEquals(0xFF3AB3DA, lb3.outlineColor());
+        assertEquals("Sky", lb3.text());
+
+        // Non-color bracket tags should not be stripped
+        SpeechBubbleColor.ParsedMessage normal = SpeechBubbleColor.parseMessage("[potato] Hello");
+        assertEquals(SpeechBubbleColor.DEFAULT_OUTLINE, normal.outlineColor());
+        assertEquals("[potato] Hello", normal.text());
+
+        // Tag not at the beginning
+        SpeechBubbleColor.ParsedMessage mid = SpeechBubbleColor.parseMessage("Hey [red] there");
+        assertEquals(SpeechBubbleColor.DEFAULT_OUTLINE, mid.outlineColor());
+        assertEquals("Hey [red] there", mid.text());
+    }
+
+    @Test
+    public void testSpeechBubbleCustomColorState() {
+        int redColor = 0xFFC92828;
+        SpeechBubbleClientState.show(101, "Custom colored bubble", redColor);
+        assertEquals(redColor, SpeechBubbleClientState.color(101));
+
+        SpeechBubbleColor.Theme theme = SpeechBubbleColor.getTheme(redColor);
+        assertEquals(redColor, theme.outlineColor());
+        assertEquals(0xCC381111, theme.backgroundColor());
+    }
+
+    @Test
+    public void testAnimalesePhonemesAndPitch() {
+        assertEquals('a', ladysnake.requiem.client.SpeechBubbleSound.normalizePhoneme('á'));
+        assertEquals('e', ladysnake.requiem.client.SpeechBubbleSound.normalizePhoneme('é'));
+        assertEquals('n', ladysnake.requiem.client.SpeechBubbleSound.normalizePhoneme('ñ'));
+        assertEquals('c', ladysnake.requiem.client.SpeechBubbleSound.normalizePhoneme('ç'));
+
+        assertTrue(ladysnake.requiem.client.SpeechBubbleSound.calculatePitch('?') > ladysnake.requiem.client.SpeechBubbleSound.calculatePitch('.'));
+    }
 }

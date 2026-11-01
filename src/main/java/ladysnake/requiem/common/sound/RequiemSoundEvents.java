@@ -66,6 +66,15 @@ public final class RequiemSoundEvents {
     public static final SoundEvent ITEM_OPUS_USE = SoundEvent.createVariableRangeEvent(Requiem.id("item.opus.use"));
     public static final SoundEvent ITEM_EMPTY_VESSEL_USE = SoundEvent.createVariableRangeEvent(Requiem.id("item.empty_vessel.use"));
     public static final SoundEvent ITEM_FILLED_VESSEL_USE = SoundEvent.createVariableRangeEvent(Requiem.id("item.filled_vessel.use"));
+    public static final SoundEvent[] ANIMALESE_LETTERS = new SoundEvent[26];
+    public static final SoundEvent ANIMALESE_GENERAL = SoundEvent.createVariableRangeEvent(Requiem.id("speech.animalese.general"));
+
+    static {
+        for (int i = 0; i < 26; i++) {
+            char c = (char) ('a' + i);
+            ANIMALESE_LETTERS[i] = SoundEvent.createVariableRangeEvent(Requiem.id("speech.animalese." + c));
+        }
+    }
 
     public static void register(RegisterEvent.RegisterHelper<SoundEvent> helper) {
         helper.register(Requiem.id("block.obelisk.activate"), BLOCK_OBELISK_ACTIVATE);
@@ -95,6 +104,11 @@ public final class RequiemSoundEvents {
         helper.register(Requiem.id("item.opus.use"), ITEM_OPUS_USE);
         helper.register(Requiem.id("item.empty_vessel.use"), ITEM_EMPTY_VESSEL_USE);
         helper.register(Requiem.id("item.filled_vessel.use"), ITEM_FILLED_VESSEL_USE);
+        for (int i = 0; i < 26; i++) {
+            char c = (char) ('a' + i);
+            helper.register(Requiem.id("speech.animalese." + c), ANIMALESE_LETTERS[i]);
+        }
+        helper.register(Requiem.id("speech.animalese.general"), ANIMALESE_GENERAL);
     }
 
     public static void init() {
