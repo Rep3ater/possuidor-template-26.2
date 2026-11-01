@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -41,6 +42,7 @@ public final class SpeechBubbleRenderer {
         Font font = minecraft.font;
         var buffers = minecraft.renderBuffers().bufferSource();
         boolean renderedAny = false;
+        float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
 
         // Level-stage pose stacks are in world-render space. Translate once by the
         // camera position, then place each billboard at its speaker's current position.
@@ -59,8 +61,10 @@ public final class SpeechBubbleRenderer {
             if (lines.isEmpty()) continue;
 
             pose.pushPose();
-            Vec3 playerPosition = player.position();
-            pose.translate(playerPosition.x, playerPosition.y + player.getBbHeight() + 0.38D, playerPosition.z);
+            double px = Mth.lerp((double) partialTick, player.xOld, player.getX());
+            double py = Mth.lerp((double) partialTick, player.yOld, player.getY());
+            double pz = Mth.lerp((double) partialTick, player.zOld, player.getZ());
+            pose.translate(px, py + player.getBbHeight() + 0.38D, pz);
             pose.mulPose(minecraft.getEntityRenderDispatcher().cameraOrientation());
             pose.scale(-0.025F, -0.025F, 0.025F);
 

@@ -68,6 +68,13 @@ configurations {
 }
 
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'com.google.code.gson:gson:2.10.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
