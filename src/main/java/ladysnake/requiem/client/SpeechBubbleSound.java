@@ -1,17 +1,22 @@
 package ladysnake.requiem.client;
 
+import ladysnake.requiem.common.SpeechBubbleColor;
 import ladysnake.requiem.common.sound.RequiemSoundEvents;
 import net.minecraft.sounds.SoundEvent;
 
 /**
- * Plays Animal Crossing (Animalese) synthesized phoneme chatter for speech bubbles.
+ * Plays Animal Crossing (Animalese) synthesized phoneme chatter for speech bubbles with pitch regulation.
  */
 public final class SpeechBubbleSound {
     private SpeechBubbleSound() {}
 
     public static void play(char c) {
+        play(c, SpeechBubbleColor.DEFAULT_PITCH);
+    }
+
+    public static void play(char c, float pitchFactor) {
         try {
-            SoundPlayer.playUI(c);
+            SoundPlayer.playUI(c, pitchFactor);
         } catch (Throwable ignored) {
             // Safe fallback in headless / unit-test environments
         }
@@ -32,8 +37,12 @@ public final class SpeechBubbleSound {
     }
 
     public static float calculatePitch(char c) {
+        return calculatePitch(c, SpeechBubbleColor.DEFAULT_PITCH);
+    }
+
+    public static float calculatePitch(char c, float pitchFactor) {
         char lower = normalizePhoneme(c);
-        return switch (lower) {
+        float base = switch (lower) {
             case 'a' -> 1.15F;
             case 'e' -> 1.35F;
             case 'i' -> 1.55F;
@@ -51,11 +60,16 @@ public final class SpeechBubbleSound {
                 yield 1.20F;
             }
         };
+
+        // Pitch scale 0.0 - 1.0 maps from deep villager rumble (0.55x) to high squeak (1.55x)
+        float clampedFactor = Math.max(0.0F, Math.min(1.0F, pitchFactor));
+        float multiplier = 0.55F + clampedFactor * 1.00F;
+        return Math.max(0.5F, Math.min(2.0F, base * multiplier));
     }
 
     /** Inner class isolated from classloading in headless environments. */
     private static final class SoundPlayer {
-        private static void playUI(char c) {
+        private static void playUI(char c, float pitchFactor) {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             if (mc != null && mc.level != null && mc.getSoundManager() != null) {
                 char phoneme = normalizePhoneme(c);
@@ -66,7 +80,7 @@ public final class SpeechBubbleSound {
                 if (event == null) {
                     event = RequiemSoundEvents.ANIMALESE_GENERAL;
                 }
-                float pitch = calculatePitch(c);
+                float pitch = calculatePitch(c, pitchFactor);
                 mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(event, pitch, 0.42F));
             }
         }

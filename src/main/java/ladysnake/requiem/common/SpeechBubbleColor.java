@@ -8,17 +8,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Palette mapping and bracket color parser for Minecraft dye-colored speech bubbles.
+ * Palette mapping, pitch tag extraction (0.0 - 1.0), and bracket color parser for speech bubbles.
  */
 public final class SpeechBubbleColor {
     public static final int DEFAULT_OUTLINE = 0xFF77D7E7;      // Classic cyan
     public static final int DEFAULT_BACKGROUND = 0xB91A1727;   // Classic dark translucent
     public static final int EMISSIVE_WHITE_TEXT = 0xFFFFFFFF;  // Emissive bright white
+    public static final float DEFAULT_PITCH = 0.5F;            // Standard medium pitch on 0.0 - 1.0 scale
 
     public record Theme(int outlineColor, int backgroundColor) {}
-    public record ParsedMessage(int outlineColor, String text) {}
+    public record ParsedMessage(int outlineColor, float pitch, String text) {}
 
     private static final Pattern COLOR_PREFIX_PATTERN = Pattern.compile("^\\[([a-zA-Z_\\- ]+)\\]\\s*(.*)$");
+    private static final Pattern PITCH_PATTERN = Pattern.compile(
+        "(?i)[\\(\\[](?:pitch\\s*(?:from\\s*)?[:= ]?\\s*)?([0-2](?:\\.\\d+)?|\\.\\d+)[\\)\\]]"
+    );
+    private static final Pattern PITCH_LITERAL_RANGE_PATTERN = Pattern.compile(
+        "(?i)[\\(\\[]pitch\\s*(?:from\\s*)?0[\\s\\-_/to]+1[\\)\\]]"
+    );
+
     private static final Map<String, Theme> THEMES = new HashMap<>();
 
     static {
@@ -83,30 +91,57 @@ public final class SpeechBubbleColor {
     }
 
     /**
-     * Parses a chat message starting with a bracketed Minecraft dye color (e.g. "[red] Hello").
-     * If matched, the bracket tag is stripped from the text and the corresponding dye color is returned.
-     * If no color prefix matches, the default outline color and untouched text are returned.
+     * Parses a chat message:
+     * 1. Strips any pitch regulation tag e.g. "(pitch 0.8)", "(0.8)", "(pitch from 0-1)" and extracts pitch factor [0.0 - 1.0].
+     * 2. Checks for a starting bracketed Minecraft dye color e.g. "[red]", extracts color, and strips tag.
+     * 3. Returns the cleaned message text free of tags, along with the color and pitch factor.
      */
     public static ParsedMessage parseMessage(String input) {
         if (input == null || input.isBlank()) {
-            return new ParsedMessage(DEFAULT_OUTLINE, input == null ? "" : input);
+            return new ParsedMessage(DEFAULT_OUTLINE, DEFAULT_PITCH, input == null ? "" : input);
         }
 
-        Matcher matcher = COLOR_PREFIX_PATTERN.matcher(input);
-        if (matcher.matches()) {
-            String colorTag = matcher.group(1).trim().toLowerCase(Locale.ROOT);
+        String workingText = input;
+        float pitch = DEFAULT_PITCH;
+
+        // 1. Check for literal "pitch from 0-1" in parens/brackets
+        Matcher rangeMatcher = PITCH_LITERAL_RANGE_PATTERN.matcher(workingText);
+        if (rangeMatcher.find()) {
+            workingText = rangeMatcher.replaceAll(" ");
+            pitch = DEFAULT_PITCH;
+        }
+
+        // 2. Check for "(pitch 0.8)", "(0.8)", "(pitch: 0.5)" in parens/brackets
+        Matcher pitchMatcher = PITCH_PATTERN.matcher(workingText);
+        if (pitchMatcher.find()) {
+            try {
+                float val = Float.parseFloat(pitchMatcher.group(1));
+                pitch = Math.max(0.0F, Math.min(1.0F, val));
+            } catch (NumberFormatException ignored) {
+            }
+            workingText = pitchMatcher.replaceAll(" ");
+        }
+
+        workingText = workingText.trim();
+        int outlineColor = DEFAULT_OUTLINE;
+
+        // 3. Check for "[red]" dye color at start of message
+        Matcher colorMatcher = COLOR_PREFIX_PATTERN.matcher(workingText);
+        if (colorMatcher.matches()) {
+            String colorTag = colorMatcher.group(1).trim().toLowerCase(Locale.ROOT);
             Theme theme = THEMES.get(colorTag);
             if (theme == null) {
-                // Try normalizing spaces/hyphens to underscore
                 theme = THEMES.get(colorTag.replace(' ', '_').replace('-', '_'));
             }
             if (theme != null) {
-                String cleanText = matcher.group(2).trim();
-                return new ParsedMessage(theme.outlineColor(), cleanText);
+                outlineColor = theme.outlineColor();
+                workingText = colorMatcher.group(2).trim();
             }
         }
 
-        return new ParsedMessage(DEFAULT_OUTLINE, input);
+        // Clean up redundant internal spaces left by tag removal
+        workingText = workingText.replaceAll("\\s{2,}", " ").trim();
+        return new ParsedMessage(outlineColor, pitch, workingText);
     }
 
     public static Map<String, Theme> getAllThemes() {

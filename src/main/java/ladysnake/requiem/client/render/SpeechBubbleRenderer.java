@@ -127,18 +127,21 @@ public final class SpeechBubbleRenderer {
             drawQuad(bgConsumer, matrix, 3.0F, bottom, 3.0F + border, bottom + tailHeight, 0.015F, currentOutline);
             drawQuad(bgConsumer, matrix, -3.0F, bottom + tailHeight, 3.0F, bottom + tailHeight + border, 0.015F, currentOutline);
 
-            // 3. Draw text lines
+            // 3. Draw text lines on a forward layer above the background so it is never behind or darkened
+            pose.pushPose();
+            pose.translate(0.0F, 0.0F, -0.05F);
+            var textMatrix = pose.last().pose();
+
             float curY = top + vPad;
             for (FormattedCharSequence line : lines) {
                 float curX = -font.width(line) / 2.0F;
 
-                font.drawInBatch(line, curX, curY, TEXT, false, matrix,
-                    buffers, Font.DisplayMode.SEE_THROUGH, 0, FULL_BRIGHT);
-                font.drawInBatch(line, curX, curY, TEXT, false, matrix,
-                    buffers, Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+                font.drawInBatch(line, curX, curY, TEXT, false, textMatrix,
+                    buffers, Font.DisplayMode.POLYGON_OFFSET, 0, FULL_BRIGHT);
 
                 curY += lineSpacing;
             }
+            pose.popPose();
 
             pose.popPose();
             renderedAny = true;
@@ -231,12 +234,15 @@ public final class SpeechBubbleRenderer {
         }
         graphics.fill(tailX, bottom + tailHeight, tailX + 1, bottom + tailHeight + 1, currentOutline);
 
-        // 4. Render typewriter text lines centered with generous spacing
+        // 4. Render typewriter text lines centered with generous spacing on an elevated layer
+        graphics.pose().pushPose();
+        graphics.pose().translate(0.0F, 0.0F, 100.0F); // Float text well above the background card
         int textY = y + vPadding;
         for (FormattedCharSequence line : lines) {
             int textX = x + (boxWidth - font.width(line)) / 2;
             graphics.drawString(font, line, textX, textY, TEXT, false);
             textY += lineSpacing;
         }
+        graphics.pose().popPose();
     }
 }

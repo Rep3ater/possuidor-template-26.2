@@ -149,5 +149,47 @@ public class SpeechCompatibilityTest {
         assertEquals('c', ladysnake.requiem.client.SpeechBubbleSound.normalizePhoneme('ç'));
 
         assertTrue(ladysnake.requiem.client.SpeechBubbleSound.calculatePitch('?') > ladysnake.requiem.client.SpeechBubbleSound.calculatePitch('.'));
+
+        // Test pitch regulation from 0 to 1
+        float deepPitch = ladysnake.requiem.client.SpeechBubbleSound.calculatePitch('a', 0.0F);
+        float mediumPitch = ladysnake.requiem.client.SpeechBubbleSound.calculatePitch('a', 0.5F);
+        float highPitch = ladysnake.requiem.client.SpeechBubbleSound.calculatePitch('a', 1.0F);
+        assertTrue(deepPitch < mediumPitch, "0.0 pitch should be deeper than 0.5");
+        assertTrue(mediumPitch < highPitch, "0.5 pitch should be lower than 1.0");
+    }
+
+    @Test
+    public void testPitchTagParsing() {
+        // Tag with keyword: (pitch 0.8)
+        SpeechBubbleColor.ParsedMessage p1 = SpeechBubbleColor.parseMessage("(pitch 0.8) Hello");
+        assertEquals(0.8F, p1.pitch(), 0.001F);
+        assertEquals("Hello", p1.text());
+
+        // Tag with colon: (pitch: 0.2)
+        SpeechBubbleColor.ParsedMessage p2 = SpeechBubbleColor.parseMessage("(pitch: 0.2) Deep voice");
+        assertEquals(0.2F, p2.pitch(), 0.001F);
+        assertEquals("Deep voice", p2.text());
+
+        // Number only in parens: (0.3)
+        SpeechBubbleColor.ParsedMessage p3 = SpeechBubbleColor.parseMessage("(0.3) Low voice");
+        assertEquals(0.3F, p3.pitch(), 0.001F);
+        assertEquals("Low voice", p3.text());
+
+        // Literal range in parens: (pitch from 0-1)
+        SpeechBubbleColor.ParsedMessage p4 = SpeechBubbleColor.parseMessage("Hello (pitch from 0-1) world");
+        assertEquals(0.5F, p4.pitch(), 0.001F);
+        assertEquals("Hello world", p4.text());
+
+        // Combined with dye color: [red] (pitch 0.9) Test
+        SpeechBubbleColor.ParsedMessage p5 = SpeechBubbleColor.parseMessage("[red] (pitch 0.9) Test message");
+        assertEquals(0xFFC92828, p5.outlineColor());
+        assertEquals(0.9F, p5.pitch(), 0.001F);
+        assertEquals("Test message", p5.text());
+    }
+
+    @Test
+    public void testClientStatePitch() {
+        SpeechBubbleClientState.show(102, "Testing pitch", 0xFFFFFFFF, 0.75F);
+        assertEquals(0.75F, SpeechBubbleClientState.pitch(102), 0.001F);
     }
 }

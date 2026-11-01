@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class SayItCompatibilityManager {
     public enum Mode { SAYIT, REQUIEM, DISABLED }
 
-    public record PendingSpeech(String speechText, String originalInput, int color, long createdAt) {}
+    public record PendingSpeech(String speechText, String originalInput, int color, float pitch, long createdAt) {}
 
     private static final String NBT_KEY_MODE = "RequiemSpeechMode";
     private static final String NBT_KEY_LANG = "RequiemSpeechLanguage";
@@ -198,7 +198,7 @@ public final class SayItCompatibilityManager {
                 player.getGameProfile().getName(), pending.speechText(), score, passScore);
             MinecraftServer server = player.getServer();
             if (server != null) {
-                broadcastSpeechBubble(server, player, pending.speechText(), pending.color());
+                broadcastSpeechBubble(server, player, pending.speechText(), pending.color(), pending.pitch());
             }
         } else {
             Requiem.LOGGER.info("[Requiem] Player {} failed speech challenge for '{}' (score {} < {})",
@@ -240,6 +240,7 @@ public final class SayItCompatibilityManager {
 
         SpeechBubbleColor.ParsedMessage parsed = SpeechBubbleColor.parseMessage(rawText);
         int bubbleColor = parsed.outlineColor();
+        float pitch = parsed.pitch();
         String cleanText = parsed.text();
         if (cleanText.isBlank()) return;
         final String original = cleanText.length() > 256 ? cleanText.substring(0, 256) : cleanText;
@@ -257,12 +258,12 @@ public final class SayItCompatibilityManager {
                 ? promptText : original;
 
             server.execute(() -> {
-                PENDING_SPEECH.put(speaker.getUUID(), new PendingSpeech(toSpeak, original, bubbleColor, System.currentTimeMillis()));
+                PENDING_SPEECH.put(speaker.getUUID(), new PendingSpeech(toSpeak, original, bubbleColor, pitch, System.currentTimeMillis()));
                 boolean challenged = promptSayItChallenge(speaker, toSpeak, original);
                 if (!challenged) {
                     // Fallback if Say It English is not installed or could not prompt
                     PENDING_SPEECH.remove(speaker.getUUID());
-                    broadcastSpeechBubble(server, speaker, toSpeak, bubbleColor);
+                    broadcastSpeechBubble(server, speaker, toSpeak, bubbleColor, pitch);
                 }
             });
         });
@@ -273,14 +274,18 @@ public final class SayItCompatibilityManager {
      * automatically translating the message into each viewer's chosen language.
      */
     public static void broadcastSpeechBubble(MinecraftServer server, ServerPlayer speaker, String text) {
-        broadcastSpeechBubble(server, speaker, text, SpeechBubbleColor.DEFAULT_OUTLINE);
+        broadcastSpeechBubble(server, speaker, text, SpeechBubbleColor.DEFAULT_OUTLINE, SpeechBubbleColor.DEFAULT_PITCH);
+    }
+
+    public static void broadcastSpeechBubble(MinecraftServer server, ServerPlayer speaker, String text, int color) {
+        broadcastSpeechBubble(server, speaker, text, color, SpeechBubbleColor.DEFAULT_PITCH);
     }
 
     /**
-     * Broadcasts the speech bubble to the speaker and nearby viewers with the specified theme color,
+     * Broadcasts the speech bubble to the speaker and nearby viewers with the specified theme color and pitch,
      * automatically translating the message into each viewer's chosen language.
      */
-    public static void broadcastSpeechBubble(MinecraftServer server, ServerPlayer speaker, String text, int color) {
+    public static void broadcastSpeechBubble(MinecraftServer server, ServerPlayer speaker, String text, int color, float pitch) {
         UUID speakerId = speaker.getUUID();
         Map<String, List<UUID>> viewersByLanguage = new HashMap<>();
 
@@ -302,11 +307,11 @@ public final class SayItCompatibilityManager {
         // Deliver original speech text immediately
         int recipientCount = 0;
         for (List<UUID> viewerIds : viewersByLanguage.values()) {
-            recipientCount += sendBubble(server, speakerId, viewerIds, text, color);
+            recipientCount += sendBubble(server, speakerId, viewerIds, text, color, pitch);
         }
-        Requiem.LOGGER.info("[Requiem] Speech bubble from {} (entity {}) sent to {}/{} nearby viewer(s): '{}'",
+        Requiem.LOGGER.info("[Requiem] Speech bubble from {} (entity {}) sent to {}/{} nearby viewer(s): '{}' (pitch: {})",
             speaker.getGameProfile().getName(), speaker.getId(), recipientCount,
-            viewersByLanguage.values().stream().mapToInt(List::size).sum(), text);
+            viewersByLanguage.values().stream().mapToInt(List::size).sum(), text, pitch);
 
         if (!RequiemConfig.speech.translateBubbles) return;
 
@@ -321,7 +326,7 @@ public final class SayItCompatibilityManager {
                     return;
                 }
                 try {
-                    server.execute(() -> sendBubble(server, speakerId, viewerIds, translated, color));
+                    server.execute(() -> sendBubble(server, speakerId, viewerIds, translated, color, pitch));
                 } catch (RuntimeException ignored) {
                 }
             });
@@ -332,7 +337,7 @@ public final class SayItCompatibilityManager {
      * Sends a bubble only to players who are still online, in the speaker's dimension,
      * and within the tracking range. This method is called on the logical server thread.
      */
-    private static int sendBubble(MinecraftServer server, UUID speakerId, List<UUID> viewerIds, String text, int color) {
+    private static int sendBubble(MinecraftServer server, UUID speakerId, List<UUID> viewerIds, String text, int color, float pitch) {
         ServerPlayer currentSpeaker = server.getPlayerList().getPlayer(speakerId);
         if (currentSpeaker == null) return 0;
 
@@ -346,7 +351,7 @@ public final class SayItCompatibilityManager {
                 continue;
             }
             PacketDistributor.sendToPlayer(currentViewer,
-                new RequiemNetworking.SpeechBubblePayload(currentSpeaker.getId(), text, color));
+                new RequiemNetworking.SpeechBubblePayload(currentSpeaker.getId(), text, color, pitch));
             sent++;
         }
         return sent;

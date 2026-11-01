@@ -55,6 +55,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
@@ -67,6 +68,7 @@ import org.lwjgl.glfw.GLFW;
 public final class RequiemClient {
 
     public static final ResourceLocation SPECTRE_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "spectre");
+    public static final ResourceLocation SPECTRE_VIGNETTE = ResourceLocation.fromNamespaceAndPath("requiem", "textures/gui/spectre_vignette.png");
     public static final ResourceLocation LOCKI_SPIRIT_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "locki_spirit");
     public static final ResourceLocation LOCKI_APPLE_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "locki_apple_vision");
     public static final ResourceLocation LOCKI_WHITE_VISION_POST_EFFECT = ResourceLocation.fromNamespaceAndPath("requiem", "locki_white_vision");
@@ -116,6 +118,7 @@ public final class RequiemClient {
         NeoForge.EVENT_BUS.addListener(ladysnake.requiem.client.render.ParmenidesChunkPreviewRenderer::render);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderLivingPre);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderHand);
+        NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderGuiPre);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onRenderGuiPost);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onInteractionKeyMapping);
         NeoForge.EVENT_BUS.addListener(RequiemClient::onLoggingOut);
@@ -211,6 +214,28 @@ public final class RequiemClient {
                 || event.getEntity() == possessedHost) {
             event.setCanceled(true);
         }
+    }
+
+    public static void onRenderGuiPre(RenderGuiEvent.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && (RemnantComponent.isIncorporeal(mc.player)
+                || ParmenidesClientState.isOutOfBodyBody(mc.player.getId()))) {
+            renderCyanVignette(event.getGuiGraphics());
+        }
+    }
+
+    public static void renderCyanVignette(GuiGraphics graphics) {
+        int width = graphics.guiWidth();
+        int height = graphics.guiHeight();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        graphics.blit(SPECTRE_VIGNETTE, 0, 0, width, height, 0.0F, 0.0F, 256, 256, 256, 256);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
     }
 
     public static void onRenderGuiPost(RenderGuiEvent.Post event) {
