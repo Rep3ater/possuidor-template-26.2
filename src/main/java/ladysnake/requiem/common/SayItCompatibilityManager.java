@@ -2,6 +2,8 @@ package ladysnake.requiem.common;
 
 import ladysnake.requiem.Requiem;
 import ladysnake.requiem.common.network.RequiemNetworking;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.ServerChatEvent;
@@ -10,6 +12,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class SayItCompatibilityManager {
     public enum Mode { SAYIT, REQUIEM, DISABLED }
 
+    private static final String NBT_KEY_MODE = "RequiemSpeechMode";
+    private static final String NBT_KEY_LANG = "RequiemSpeechLanguage";
     private static final Map<UUID, Mode> PLAYER_MODES = new ConcurrentHashMap<>();
     private static final Map<UUID, String> PLAYER_LANGUAGES = new ConcurrentHashMap<>();
     private static volatile boolean globallyEnabled = true;
@@ -26,7 +31,23 @@ public final class SayItCompatibilityManager {
     private SayItCompatibilityManager() { }
 
     public static Mode mode(ServerPlayer player) {
-        return PLAYER_MODES.getOrDefault(player.getUUID(), Mode.SAYIT);
+        Mode cached = PLAYER_MODES.get(player.getUUID());
+        if (cached != null) return cached;
+
+        CompoundTag persistent = player.getPersistentData();
+        if (persistent.contains(NBT_KEY_MODE, Tag.TAG_STRING)) {
+            try {
+                String saved = persistent.getString(NBT_KEY_MODE);
+                Mode mode = Mode.valueOf(saved.toUpperCase(Locale.ROOT));
+                PLAYER_MODES.put(player.getUUID(), mode);
+                return mode;
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        Mode fallback = Mode.SAYIT;
+        PLAYER_MODES.put(player.getUUID(), fallback);
+        return fallback;
     }
 
     public static boolean shouldRunVanillaSayIt(ServerPlayer player) {
@@ -43,32 +64,59 @@ public final class SayItCompatibilityManager {
 
     public static void setPlayerMode(ServerPlayer player, Mode requested, boolean enabled) {
         Mode current = mode(player);
+        Mode newMode;
         if (enabled) {
-            PLAYER_MODES.put(player.getUUID(), requested);
+            newMode = requested;
         } else if (current == requested) {
-            PLAYER_MODES.put(player.getUUID(), requested == Mode.REQUIEM
+            newMode = (requested == Mode.REQUIEM
                 ? (globallyEnabled ? Mode.SAYIT : Mode.DISABLED)
                 : Mode.DISABLED);
+        } else {
+            return;
         }
+        PLAYER_MODES.put(player.getUUID(), newMode);
+        player.getPersistentData().putString(NBT_KEY_MODE, newMode.name());
     }
 
     /** Stores a language reported by the client; only a short ISO language code is accepted. */
     public static void setPlayerLanguage(ServerPlayer player, String language) {
         if (language == null) return;
-        String normalized = language.trim().toLowerCase(java.util.Locale.ROOT);
+        String normalized = language.trim().toLowerCase(Locale.ROOT);
         if (normalized.matches("[a-z]{2,3}")) {
             PLAYER_LANGUAGES.put(player.getUUID(), normalized);
+            player.getPersistentData().putString(NBT_KEY_LANG, normalized);
         }
     }
 
     private static String languageFor(ServerPlayer player) {
+        String cached = PLAYER_LANGUAGES.get(player.getUUID());
+        if (cached != null) return cached;
+
+        CompoundTag persistent = player.getPersistentData();
+        if (persistent.contains(NBT_KEY_LANG, Tag.TAG_STRING)) {
+            String saved = persistent.getString(NBT_KEY_LANG).trim().toLowerCase(Locale.ROOT);
+            if (saved.matches("[a-z]{2,3}")) {
+                PLAYER_LANGUAGES.put(player.getUUID(), saved);
+                return saved;
+            }
+        }
+
         String configured = RequiemConfig.speech.defaultLanguage;
-        String fallback = configured == null ? "en" : configured.trim().toLowerCase(java.util.Locale.ROOT);
+        String fallback = configured == null ? "en" : configured.trim().toLowerCase(Locale.ROOT);
         if (!fallback.matches("[a-z]{2,3}")) fallback = "en";
-        return PLAYER_LANGUAGES.getOrDefault(player.getUUID(), fallback);
+        return fallback;
+    }
+
+    public static void onLogin(ServerPlayer player) {
+        mode(player);
+        languageFor(player);
     }
 
     public static void onLogout(ServerPlayer player) {
+        Mode mode = PLAYER_MODES.get(player.getUUID());
+        if (mode != null) {
+            player.getPersistentData().putString(NBT_KEY_MODE, mode.name());
+        }
         PLAYER_MODES.remove(player.getUUID());
         PLAYER_LANGUAGES.remove(player.getUUID());
     }

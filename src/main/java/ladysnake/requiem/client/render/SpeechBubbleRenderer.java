@@ -1,9 +1,11 @@
 package ladysnake.requiem.client.render;
 
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ladysnake.requiem.client.SpeechBubbleClientState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -16,8 +18,8 @@ import java.util.List;
 /**
  * Renders active speech bubbles in the world pass after entities have been drawn.
  *
- * Rendering from a dedicated level stage avoids depending on the per-player renderer's
- * post-render pose stack, which can be affected by renderer and shader integrations.
+ * Uses an isolated buffer source so flushing text batches does not prematurely
+ * flush pending entity-render batches (such as player skin layers) in the global buffer source.
  */
 public final class SpeechBubbleRenderer {
     private static final int MAX_LINE_WIDTH = 164;
@@ -26,6 +28,9 @@ public final class SpeechBubbleRenderer {
     private static final int TEXT = 0xFFFFF6E9;
     private static final int FULL_BRIGHT = 0x00F000F0;
     private static final double MAX_RENDER_DISTANCE_SQR = 128.0D * 128.0D;
+
+    private static final MultiBufferSource.BufferSource BUBBLE_BUFFERS =
+        MultiBufferSource.immediate(new ByteBufferBuilder(1536));
 
     private SpeechBubbleRenderer() { }
 
@@ -40,7 +45,7 @@ public final class SpeechBubbleRenderer {
 
         Vec3 cameraPosition = event.getCamera().getPosition();
         Font font = minecraft.font;
-        var buffers = minecraft.renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource buffers = BUBBLE_BUFFERS;
         boolean renderedAny = false;
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
 
@@ -93,8 +98,7 @@ public final class SpeechBubbleRenderer {
 
         pose.popPose();
 
-        // Font uses texture-specific render types, so flush the source after all lines
-        // have been submitted rather than waiting for an unrelated later render pass.
+        // Flush dedicated buffer source so text renders without affecting the shared global buffers.
         if (renderedAny) {
             buffers.endBatch();
         }

@@ -28,13 +28,16 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Asynchronous chat translation for Requiem speech bubbles.
  *
- * The default provider uses Google's public web translation endpoint (no key, but
- * undocumented and subject to throttling). Servers can instead point at a private
- * or managed LibreTranslate instance in config/requiem.json.
+ * Inherent / built-in translation requires zero setup or external services out of the box,
+ * featuring redundant fallback endpoints (Google Chrome Translation API, Google Web, and MyMemory).
+ * Servers can also optionally point at a private LibreTranslate instance in config/requiem.json.
  */
 public final class SpeechTranslationService {
+    private static final String BROWSER_USER_AGENT =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
+
     private static final HttpClient HTTP = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(4))
+        .connectTimeout(Duration.ofSeconds(6))
         .followRedirects(HttpClient.Redirect.NORMAL)
         .build();
 
@@ -128,20 +131,77 @@ public final class SpeechTranslationService {
             long now = System.currentTimeMillis();
             long previous = LAST_FAILURE_LOG.get();
             if (now - previous > 60_000L && LAST_FAILURE_LOG.compareAndSet(previous, now)) {
-                Requiem.LOGGER.warn("[Requiem] Speech translation provider '{}' failed; showing the original text ({})",
-                    provider, exception.getClass().getSimpleName());
+                Requiem.LOGGER.warn("[Requiem] Speech translation provider '{}' failed: {} ({})",
+                    provider, exception.getMessage(), exception.getClass().getSimpleName());
             }
             return text;
         }
     }
 
     private static String translateGoogle(String text, String target, int timeoutSeconds) throws IOException, InterruptedException {
+        // Stage 1: Google Chrome official extension translation API
+        try {
+            return translateClients5(text, target, timeoutSeconds);
+        } catch (Exception primaryError) {
+            // Stage 2: Google web translation API
+            try {
+                return translateGoogleWeb(text, target, timeoutSeconds);
+            } catch (Exception secondaryError) {
+                // Stage 3: MyMemory free translation API
+                return translateMyMemory(text, target, timeoutSeconds);
+            }
+        }
+    }
+
+    private static String translateClients5(String text, String target, int timeoutSeconds) throws IOException, InterruptedException {
+        String query = "https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl="
+            + URLEncoder.encode(target, StandardCharsets.UTF_8)
+            + "&q=" + URLEncoder.encode(text, StandardCharsets.UTF_8);
+        HttpRequest request = HttpRequest.newBuilder(URI.create(query))
+            .timeout(Duration.ofSeconds(timeoutSeconds))
+            .header("User-Agent", BROWSER_USER_AGENT)
+            .header("Accept", "*/*")
+            .GET()
+            .build();
+        HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new IOException("Clients5 translation HTTP " + response.statusCode());
+        }
+        return parseClients5Response(response.body());
+    }
+
+    static String parseClients5Response(String body) throws IOException {
+        try {
+            JsonElement root = JsonParser.parseString(body);
+            if (root.isJsonArray()) {
+                JsonArray outer = root.getAsJsonArray();
+                if (!outer.isEmpty() && outer.get(0).isJsonArray()) {
+                    JsonArray inner = outer.get(0).getAsJsonArray();
+                    if (!inner.isEmpty() && inner.get(0).isJsonPrimitive()) {
+                        String res = inner.get(0).getAsString().strip();
+                        if (!res.isEmpty()) return res;
+                    }
+                } else if (!outer.isEmpty() && outer.get(0).isJsonPrimitive()) {
+                    String res = outer.get(0).getAsString().strip();
+                    if (!res.isEmpty()) return res;
+                }
+            } else if (root.isJsonPrimitive()) {
+                String res = root.getAsString().strip();
+                if (!res.isEmpty()) return res;
+            }
+            throw new IOException("Unexpected clients5 format");
+        } catch (Exception e) {
+            throw new IOException("Malformed clients5 translation response", e);
+        }
+    }
+
+    private static String translateGoogleWeb(String text, String target, int timeoutSeconds) throws IOException, InterruptedException {
         String query = "https://translate.googleapis.com/translate_a/single"
             + "?client=gtx&sl=auto&tl=" + URLEncoder.encode(target, StandardCharsets.UTF_8)
             + "&dt=t&q=" + URLEncoder.encode(text, StandardCharsets.UTF_8);
         HttpRequest request = HttpRequest.newBuilder(URI.create(query))
             .timeout(Duration.ofSeconds(timeoutSeconds))
-            .header("User-Agent", "Mozilla/5.0 Requiem/1.0 (Minecraft 1.21.1)")
+            .header("User-Agent", BROWSER_USER_AGENT)
             .header("Accept", "application/json")
             .GET()
             .build();
@@ -178,6 +238,37 @@ public final class SpeechTranslationService {
         }
     }
 
+    private static String translateMyMemory(String text, String target, int timeoutSeconds) throws IOException, InterruptedException {
+        String query = "https://api.mymemory.translated.net/get?langpair=autodetect|"
+            + URLEncoder.encode(target, StandardCharsets.UTF_8)
+            + "&q=" + URLEncoder.encode(text, StandardCharsets.UTF_8);
+        HttpRequest request = HttpRequest.newBuilder(URI.create(query))
+            .timeout(Duration.ofSeconds(timeoutSeconds))
+            .header("User-Agent", BROWSER_USER_AGENT)
+            .header("Accept", "application/json")
+            .GET()
+            .build();
+        HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new IOException("MyMemory translation HTTP " + response.statusCode());
+        }
+        return parseMyMemoryResponse(response.body());
+    }
+
+    static String parseMyMemoryResponse(String body) throws IOException {
+        try {
+            JsonObject root = JsonParser.parseString(body).getAsJsonObject();
+            JsonObject responseData = root.getAsJsonObject("responseData");
+            if (responseData != null && responseData.has("translatedText")) {
+                String translated = responseData.get("translatedText").getAsString().strip();
+                if (!translated.isEmpty()) return translated;
+            }
+            throw new IOException("Missing translatedText in MyMemory response");
+        } catch (Exception e) {
+            throw new IOException("Malformed MyMemory translation response", e);
+        }
+    }
+
     private static String translateLibreTranslate(String text, String target, int timeoutSeconds)
             throws IOException, InterruptedException {
         String base = RequiemConfig.speech.libreTranslateUrl == null
@@ -200,6 +291,7 @@ public final class SpeechTranslationService {
 
         HttpRequest request = HttpRequest.newBuilder(uri)
             .timeout(Duration.ofSeconds(timeoutSeconds))
+            .header("User-Agent", BROWSER_USER_AGENT)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(payload.toString(), StandardCharsets.UTF_8))

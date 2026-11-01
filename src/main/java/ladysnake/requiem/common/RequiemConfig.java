@@ -61,7 +61,7 @@ public final class RequiemConfig {
     public static class Speech {
         /** Automatically translate Requiem speech bubbles into each viewer's Minecraft language. */
         public boolean translateBubbles = true;
-        /** "google" uses Google's undocumented free web endpoint; "libretranslate" uses the URL below. */
+        /** "google" uses Google's free endpoint; "libretranslate" uses the URL below. */
         public String translationProvider = "google";
         /** Base URL of a LibreTranslate instance; /translate is appended automatically. */
         public String libreTranslateUrl = "http://127.0.0.1:5000";
@@ -71,6 +71,8 @@ public final class RequiemConfig {
         public String defaultLanguage = "en";
         /** HTTP timeout in seconds. */
         public int timeoutSeconds = 8;
+        /** Server-wide integration toggle for Say It English challenge system. */
+        public boolean sayItGloballyEnabled = true;
     }
 
     private static class ConfigData {
@@ -83,6 +85,7 @@ public final class RequiemConfig {
         public String libreTranslateApiKey = "";
         public String defaultLanguage = "en";
         public int timeoutSeconds = 8;
+        public boolean sayItGloballyEnabled = true;
     }
 
     public static void load() {
@@ -102,6 +105,8 @@ public final class RequiemConfig {
                     speech.defaultLanguage = data.defaultLanguage == null || data.defaultLanguage.isBlank()
                         ? "en" : data.defaultLanguage.trim().toLowerCase(java.util.Locale.ROOT);
                     speech.timeoutSeconds = Math.max(2, Math.min(15, data.timeoutSeconds));
+                    speech.sayItGloballyEnabled = data.sayItGloballyEnabled;
+                    SayItCompatibilityManager.setGlobalEnabled(data.sayItGloballyEnabled);
                 }
             } catch (Exception e) {
                 Requiem.LOGGER.error("[Requiem] Failed to load config", e);
@@ -126,6 +131,7 @@ public final class RequiemConfig {
                 data.libreTranslateApiKey = speech.libreTranslateApiKey;
                 data.defaultLanguage = speech.defaultLanguage;
                 data.timeoutSeconds = speech.timeoutSeconds;
+                data.sayItGloballyEnabled = speech.sayItGloballyEnabled;
                 GSON.toJson(data, writer);
             }
         } catch (Exception e) {

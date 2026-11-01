@@ -38,7 +38,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
 
     @ModifyVariable(method = "render", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private MultiBufferSource requiem$applyOutOfBodyAlpha(MultiBufferSource buffers) {
-        return new OutOfBodyAlphaBufferSource(buffers, () -> Boolean.TRUE.equals(REQUIEM$TRANSLUCENT_ENTITY.get()), 0.38F);
+        if (!Boolean.TRUE.equals(REQUIEM$TRANSLUCENT_ENTITY.get())) {
+            return buffers;
+        }
+        return new OutOfBodyAlphaBufferSource(buffers, () -> true, 0.38F);
     }
 
     private boolean requiem$isOutOfBody(T entity) {

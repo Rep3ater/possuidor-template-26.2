@@ -40,6 +40,20 @@ public class SpeechCompatibilityTest {
     }
 
     @Test
+    public void testClients5ResponseParsing() throws Exception {
+        String mockClients5 = "[[\"Olá mundo\",\"en\"]]";
+        String translated = SpeechTranslationService.parseClients5Response(mockClients5);
+        assertEquals("Olá mundo", translated);
+    }
+
+    @Test
+    public void testMyMemoryResponseParsing() throws Exception {
+        String mockMyMemory = "{\"responseData\":{\"translatedText\":\"Hello World!\",\"match\":0.97}}";
+        String translated = SpeechTranslationService.parseMyMemoryResponse(mockMyMemory);
+        assertEquals("Hello World!", translated);
+    }
+
+    @Test
     public void testSpeechBubbleTypewriterAndGesture() {
         int entityId = 42;
         String message = "Hello";

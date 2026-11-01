@@ -19,11 +19,15 @@ public final class RequiemSayItCommand {
         return literal("sayit")
             .then(literal("enable").executes(context -> {
                 SayItCompatibilityManager.setGlobalEnabled(true);
+                RequiemConfig.speech.sayItGloballyEnabled = true;
+                RequiemConfig.save();
                 context.getSource().sendSuccess(() -> Component.literal("Say It English is enabled for the server."), true);
                 return 1;
             }))
             .then(literal("disable").executes(context -> {
                 SayItCompatibilityManager.setGlobalEnabled(false);
+                RequiemConfig.speech.sayItGloballyEnabled = false;
+                RequiemConfig.save();
                 context.getSource().sendSuccess(() -> Component.literal("Say It English challenges are disabled server-wide."), true);
                 return 1;
             }))
