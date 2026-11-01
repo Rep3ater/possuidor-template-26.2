@@ -3,10 +3,11 @@ package ladysnake.requiem.client;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Client-only state for short-lived, typewritten Requiem speech bubbles. */
+/** Client-only state for short-lived, typewritten Requiem speech bubbles with Animal Crossing sounds. */
 public final class SpeechBubbleClientState {
     private static final Map<Integer, Bubble> BUBBLES = new HashMap<>();
     private static long clientTick;
+
     private SpeechBubbleClientState() { }
 
     public static void show(int entityId, String originalText) {
@@ -17,6 +18,23 @@ public final class SpeechBubbleClientState {
 
     public static void tick() {
         clientTick++;
+
+        // Animal Crossing gibberish chatter sound effect on character reveal
+        for (Bubble bubble : BUBBLES.values()) {
+            int prevVisible = (int) Math.min(bubble.text().length(), Math.max(0L, (clientTick - 1L - bubble.startedAt()) / 2L));
+            int currVisible = (int) Math.min(bubble.text().length(), Math.max(0L, (clientTick - bubble.startedAt()) / 2L));
+
+            if (currVisible > prevVisible && currVisible <= bubble.text().length()) {
+                char c = bubble.text().charAt(currVisible - 1);
+                if (!Character.isWhitespace(c)) {
+                    try {
+                        SpeechBubbleSound.play(c);
+                    } catch (Throwable ignored) {
+                    }
+                }
+            }
+        }
+
         BUBBLES.entrySet().removeIf(entry ->
             clientTick - entry.getValue().startedAt() > entry.getValue().text().length() * 2L + 52L);
     }
